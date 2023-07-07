@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+Nothing yet.
+
+## [1.0.0] - 2023-07-07
+
 ### Added
 
 - Implemented StringExtensions.
+
+[unreleased]: https://github.com/Logitar/Logitar.NET/compare/v1.0.0...HEAD
+[0.0.1]: https://github.com/Logitar/Logitar.NET/releases/tag/v1.0.0
