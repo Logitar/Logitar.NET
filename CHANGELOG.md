@@ -16,4 +16,4 @@ Nothing yet.
 - Implemented StringExtensions.
 
 [unreleased]: https://github.com/Logitar/Logitar.NET/compare/v1.0.0...HEAD
-[0.0.1]: https://github.com/Logitar/Logitar.NET/releases/tag/v1.0.0
+[1.0.0]: https://github.com/Logitar/Logitar.NET/releases/tag/v1.0.0
