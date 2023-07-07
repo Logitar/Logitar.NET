@@ -14,11 +14,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar", "src\Logitar\Logitar.csproj", "{3358F8D0-E18F-46F2-A677-5F3CC980E227}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar", "src\Logitar\Logitar.csproj", "{3358F8D0-E18F-46F2-A677-5F3CC980E227}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{EA009B2F-F574-4312-BBA0-912BEF093B95}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.UnitTests", "tests\Logitar.UnitTests\Logitar.UnitTests.csproj", "{3F2323E5-20A0-437A-B54A-E5F8778B76E1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.UnitTests", "tests\Logitar.UnitTests\Logitar.UnitTests.csproj", "{3F2323E5-20A0-437A-B54A-E5F8778B76E1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.EventSourcing", "src\Logitar.EventSourcing\Logitar.EventSourcing.csproj", "{C12A40A4-BEF0-4D0F-8091-395E4CC3058F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.EventSourcing.UnitTests", "tests\Logitar.EventSourcing.UnitTests\Logitar.EventSourcing.UnitTests.csproj", "{89C79DBD-BEA2-46EA-B163-1F3E5FB26105}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,12 +38,21 @@ Global
 		{3F2323E5-20A0-437A-B54A-E5F8778B76E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3F2323E5-20A0-437A-B54A-E5F8778B76E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3F2323E5-20A0-437A-B54A-E5F8778B76E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C12A40A4-BEF0-4D0F-8091-395E4CC3058F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C12A40A4-BEF0-4D0F-8091-395E4CC3058F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C12A40A4-BEF0-4D0F-8091-395E4CC3058F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C12A40A4-BEF0-4D0F-8091-395E4CC3058F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89C79DBD-BEA2-46EA-B163-1F3E5FB26105}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89C79DBD-BEA2-46EA-B163-1F3E5FB26105}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89C79DBD-BEA2-46EA-B163-1F3E5FB26105}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89C79DBD-BEA2-46EA-B163-1F3E5FB26105}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{3F2323E5-20A0-437A-B54A-E5F8778B76E1} = {EA009B2F-F574-4312-BBA0-912BEF093B95}
+		{89C79DBD-BEA2-46EA-B163-1F3E5FB26105} = {EA009B2F-F574-4312-BBA0-912BEF093B95}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B0AA9E53-02AD-4000-8ED5-53AFF5D1B32D}
