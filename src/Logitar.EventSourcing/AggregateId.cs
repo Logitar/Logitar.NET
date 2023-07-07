@@ -3,7 +3,7 @@
 namespace Logitar.EventSourcing;
 
 /// <summary>
-/// TODO(fpion): document
+/// Represents the identifier of an <see cref="AggregateRoot"/>.
 /// </summary>
 public readonly struct AggregateId
 {
@@ -67,14 +67,14 @@ public readonly struct AggregateId
   public static bool operator !=(AggregateId left, AggregateId right) => !left.Equals(right);
 
   /// <summary>
-  /// TODO(fpion): document
+  /// Creates a new instance of the <see cref="AggregateId"/> struct from a random <see cref="Guid"/>.
   /// </summary>
-  /// <returns></returns>
+  /// <returns>The created instance.</returns>
   public static AggregateId NewId() => new(Guid.NewGuid());
   /// <summary>
-  /// TODO(fpion): document
+  /// Converts the identifier to a <see cref="Guid"/>. The conversion will fail if the identifier has not been created from a <see cref="Guid"/>.
   /// </summary>
-  /// <returns></returns>
+  /// <returns>The resulting Guid.</returns>
   public Guid ToGuid() => new(Convert.FromBase64String(Value.FromUriSafeBase64()));
 
   /// <summary>
