@@ -88,11 +88,14 @@ public abstract class AggregateRoot
     change.Id ??= Guid.NewGuid();
     change.AggregateId ??= Id;
     change.ActorId ??= actorId;
-    change.OccurredOn ??= (occurredOn ?? DateTime.Now);
 
     if (change.Version == default)
     {
       change.Version = Version + 1;
+    }
+    if (change.OccurredOn == default)
+    {
+      change.OccurredOn = occurredOn ?? DateTime.Now;
     }
 
     Dispatch(change);

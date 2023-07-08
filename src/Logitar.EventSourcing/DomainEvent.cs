@@ -26,7 +26,7 @@ public record DomainEvent
   /// <summary>
   /// Gets or sets the date and time when the event occurred.
   /// </summary>
-  public DateTime? OccurredOn { get; set; }
+  public DateTime OccurredOn { get; set; }
 
   /// <summary>
   /// Gets or sets the delete action performed by the event.
