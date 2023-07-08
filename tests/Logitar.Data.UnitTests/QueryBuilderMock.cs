@@ -11,5 +11,8 @@ internal class QueryBuilderMock : QueryBuilder
   protected override string? IdentifierSuffix => "»";
   protected override string IdentifierSeparator => "·";
 
+  protected override string SelectClause => "SÉLECTIONNER";
+  protected override string AllColumnsClause => "Ω";
+
   protected override string FromClause => "DEPUIS";
 }

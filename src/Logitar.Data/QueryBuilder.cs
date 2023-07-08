@@ -6,6 +6,7 @@
 public class QueryBuilder : IQueryBuilder
 {
   private readonly TableId _source;
+  private readonly List<ColumnId> _selections = new();
 
   public QueryBuilder(TableId source)
   {
@@ -17,19 +18,46 @@ public class QueryBuilder : IQueryBuilder
   protected virtual string? IdentifierSuffix => null;
   protected virtual string IdentifierSeparator => ".";
 
+  protected virtual string SelectClause => "SELECT";
+  protected virtual string AllColumnsClause => "*";
+
   protected virtual string FromClause => "FROM";
 
   public static QueryBuilder From(TableId source) => new(source);
 
+  public IQueryBuilder Select(params ColumnId[] columns)
+  {
+    _selections.AddRange(columns);
+    return this;
+  }
+
   public IQuery Build()
   {
     StringBuilder text = new();
+
+    if (_selections.Any())
+    {
+      text.Append(SelectClause).Append(' ').AppendLine(string.Join(", ", _selections.Select(Format)));
+    }
 
     text.Append(FromClause).Append(' ').AppendLine(Format(_source, fullName: true));
 
     return new Query(text.ToString());
   }
 
+  protected virtual string Format(ColumnId column)
+  {
+    StringBuilder formatted = new();
+
+    if (column.Table != null)
+    {
+      formatted.Append(Format(column.Table)).Append(IdentifierSeparator);
+    }
+
+    formatted.Append(column.Name == null ? AllColumnsClause : Format(column.Name));
+
+    return formatted.ToString();
+  }
   protected virtual string Format(TableId table, bool fullName = false)
   {
     if (!fullName && table.Alias != null)
