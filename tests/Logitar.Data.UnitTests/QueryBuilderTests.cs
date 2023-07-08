@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-
-namespace Logitar.Data.UnitTests;
+﻿namespace Logitar.Data.UnitTests;
 
 [Trait(Traits.Category, Categories.Unit)]
 public class QueryBuilderTests
@@ -21,10 +19,15 @@ public class QueryBuilderTests
 
     IQuery query = builder
       .Select(ColumnId.All(), new ColumnId($"{_table.Table}Id", _table))
+      .OrderBy(
+        new OrderBy(new ColumnId("DisplayName", _table)),
+        new OrderBy(new ColumnId("UpdatedOn"), isDescending: true)
+      )
       .Build();
     string text = string.Join(Environment.NewLine,
       "SÉLECTIONNER Ω, «x»·«MaTableId»",
       "DEPUIS «défaut»·«MaTable» «x»",
+      "ORDONNER PAR «x»·«DisplayName» ↑ PUIS PAR «UpdatedOn» ↓",
       string.Empty);
     Assert.Equal(text, query.Text);
   }
@@ -50,6 +53,30 @@ public class QueryBuilderTests
     FieldInfo? _source = _builder.GetType().GetField("_source", BindingFlags.NonPublic | BindingFlags.Instance);
     Assert.NotNull(_source);
     Assert.Equal(_source.GetValue(_builder), _table);
+  }
+
+  [Fact(DisplayName = "OrderBy: it replaces the order by list.")]
+  public void OrderBy_it_replaces_the_order_by_list()
+  {
+    FieldInfo? _orderBy = _builder.GetType().GetField("_orderBy", BindingFlags.NonPublic | BindingFlags.Instance);
+    Assert.NotNull(_orderBy);
+    List<OrderBy> orderByList;
+
+    OrderBy oldOrderBy = new(new ColumnId("MyColumn", _table));
+    _builder.OrderBy(oldOrderBy);
+    orderByList = (List<OrderBy>)_orderBy.GetValue(_builder)!;
+    Assert.NotNull(orderByList);
+    Assert.Same(oldOrderBy, orderByList.Single());
+
+    OrderBy[] newOrderBy = new[]
+    {
+      new OrderBy(new ColumnId("DisplayName")),
+      new OrderBy(new ColumnId("UpdatedOn"), isDescending: true)
+    };
+    _builder.OrderBy(newOrderBy);
+    orderByList = (List<OrderBy>)_orderBy.GetValue(_builder)!;
+    Assert.NotNull(orderByList);
+    Assert.True(newOrderBy.SequenceEqual(orderByList));
   }
 
   [Fact(DisplayName = "Select: it adds column to selection.")]

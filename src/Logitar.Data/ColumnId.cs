@@ -12,7 +12,7 @@ public class ColumnId
       throw new ArgumentException("The column name is required.", nameof(name));
     }
 
-    Name = name;
+    Name = name.Trim();
   }
   private ColumnId(TableId? table = null)
   {

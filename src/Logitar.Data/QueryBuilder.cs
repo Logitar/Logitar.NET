@@ -7,6 +7,7 @@ public class QueryBuilder : IQueryBuilder
 {
   private readonly TableId _source;
   private readonly List<ColumnId> _selections = new();
+  private readonly List<OrderBy> _orderBy = new();
 
   public QueryBuilder(TableId source)
   {
@@ -28,11 +29,23 @@ public class QueryBuilder : IQueryBuilder
 
   protected virtual string FromClause => "FROM";
 
+  protected virtual string OrderByClause => "ORDER BY";
+  protected virtual string ThenByClause => "THEN BY";
+  protected virtual string AscendingClause => "ASC";
+  protected virtual string DescendingClause => "DESC";
+
   public static QueryBuilder From(TableId source) => new(source);
 
   public IQueryBuilder Select(params ColumnId[] columns)
   {
     _selections.AddRange(columns);
+    return this;
+  }
+
+  public IQueryBuilder OrderBy(params OrderBy[] orderBy)
+  {
+    _orderBy.Clear();
+    _orderBy.AddRange(orderBy);
     return this;
   }
 
@@ -47,7 +60,17 @@ public class QueryBuilder : IQueryBuilder
 
     text.Append(FromClause).Append(' ').AppendLine(Format(_source, fullName: true));
 
+    if (_orderBy.Any())
+    {
+      text.Append(OrderByClause).Append(' ').AppendLine(string.Join($" {ThenByClause} ", _orderBy.Select(Format)));
+    }
+
     return new Query(text.ToString());
+  }
+
+  protected virtual string Format(OrderBy orderBy)
+  {
+    return string.Join(' ', Format(orderBy.Column), orderBy.IsDescending ? DescendingClause : AscendingClause);
   }
 
   protected virtual string Format(ColumnId column)

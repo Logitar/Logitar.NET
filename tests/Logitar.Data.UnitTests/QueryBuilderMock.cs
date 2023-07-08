@@ -15,4 +15,9 @@ internal class QueryBuilderMock : QueryBuilder
   protected override string AllColumnsClause => "Ω";
 
   protected override string FromClause => "DEPUIS";
+
+  protected override string OrderByClause => "ORDONNER PAR";
+  protected override string ThenByClause => "PUIS PAR";
+  protected override string AscendingClause => "↑";
+  protected override string DescendingClause => "↓";
 }

@@ -7,5 +7,7 @@ public interface IQueryBuilder
 {
   IQueryBuilder Select(params ColumnId[] columns);
 
+  IQueryBuilder OrderBy(params OrderBy[] orderBy);
+
   IQuery Build();
 }
