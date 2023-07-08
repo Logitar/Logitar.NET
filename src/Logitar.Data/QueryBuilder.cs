@@ -10,6 +10,11 @@ public class QueryBuilder : IQueryBuilder
 
   public QueryBuilder(TableId source)
   {
+    if (source.Table == null)
+    {
+      throw new ArgumentException("The table name is required.", nameof(source));
+    }
+
     _source = source;
   }
 
@@ -73,7 +78,7 @@ public class QueryBuilder : IQueryBuilder
       formatted.Append(Format(schema)).Append(IdentifierSeparator);
     }
 
-    formatted.Append(Format(table.Table));
+    formatted.Append(Format(table.Table ?? string.Empty));
 
     if (fullName && table.Alias != null)
     {

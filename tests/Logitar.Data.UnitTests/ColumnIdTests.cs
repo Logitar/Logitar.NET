@@ -8,7 +8,7 @@ public class ColumnIdTests
   [InlineData("MyTable")]
   public void All_it_builds_the_correct_column_identifier(string? tableName)
   {
-    TableId? table = tableName == null ? null : new(schema: null, tableName);
+    TableId? table = tableName == null ? null : new(tableName);
     ColumnId column = ColumnId.All(table);
     Assert.Null(column.Name);
     Assert.Same(table, column.Table);
@@ -19,7 +19,7 @@ public class ColumnIdTests
   [InlineData("MyColumn", "MyTable")]
   public void Ctor_it_builds_the_correct_column_identifier(string columnName, string? tableName)
   {
-    TableId? table = tableName == null ? null : new(schema: null, tableName);
+    TableId? table = tableName == null ? null : new(tableName);
     ColumnId column = new(columnName, table);
     Assert.Equal(columnName, column.Name);
     Assert.Same(table, column.Table);

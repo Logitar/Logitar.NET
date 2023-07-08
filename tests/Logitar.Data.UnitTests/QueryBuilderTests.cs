@@ -5,7 +5,7 @@ namespace Logitar.Data.UnitTests;
 [Trait(Traits.Category, Categories.Unit)]
 public class QueryBuilderTests
 {
-  private readonly TableId _table = new(schema: null, "MaTable", "x");
+  private readonly TableId _table = new("MaTable", "x");
 
   private readonly QueryBuilder _builder;
 
@@ -35,6 +35,13 @@ public class QueryBuilderTests
     FieldInfo? _source = _builder.GetType().GetField("_source", BindingFlags.NonPublic | BindingFlags.Instance);
     Assert.NotNull(_source);
     Assert.Equal(_source.GetValue(_builder), _table);
+  }
+
+  [Fact(DisplayName = "Ctor: it throws ArgumentException when table name is null.")]
+  public void Ctor_it_throws_ArgumentException_when_table_name_is_null()
+  {
+    var exception = Assert.Throws<ArgumentException>(() => new QueryBuilder(TableId.FromAlias("alias")));
+    Assert.Equal("source", exception.ParamName);
   }
 
   [Fact(DisplayName = "From: it constructs the correct query builder.")]
