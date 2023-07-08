@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace Logitar.EventSourcing;
+﻿namespace Logitar.EventSourcing;
 
 /// <summary>
 /// The exception thrown when the construction of an aggregate failed, or returned null.

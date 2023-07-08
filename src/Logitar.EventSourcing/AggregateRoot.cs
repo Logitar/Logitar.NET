@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-
-namespace Logitar.EventSourcing;
+﻿namespace Logitar.EventSourcing;
 
 /// <summary>
 /// Represents a domain aggregate, which should be a tangible concept in a domain model.

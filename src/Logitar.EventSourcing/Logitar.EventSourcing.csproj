@@ -11,4 +11,10 @@
     <ProjectReference Include="..\Logitar\Logitar.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Using Include="System.Diagnostics.CodeAnalysis" />
+    <Using Include="System.Reflection" />
+    <Using Include="System.Text" />
+  </ItemGroup>
+
 </Project>

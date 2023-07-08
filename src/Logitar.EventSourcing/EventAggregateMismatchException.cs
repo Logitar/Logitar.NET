@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace Logitar.EventSourcing;
+﻿namespace Logitar.EventSourcing;
 
 /// <summary>
 /// The exception thrown when an event is applied to the wrong aggregate.

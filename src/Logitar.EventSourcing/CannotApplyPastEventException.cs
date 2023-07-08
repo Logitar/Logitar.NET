@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace Logitar.EventSourcing;
+﻿namespace Logitar.EventSourcing;
 
 /// <summary>
 /// The exception thrown when a past event is applied to an aggregate of a future state.

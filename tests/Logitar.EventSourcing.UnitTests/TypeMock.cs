@@ -1,8 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
-using System.Reflection;
-
-namespace Logitar.EventSourcing;
+﻿namespace Logitar.EventSourcing;
 
 internal class TypeMock : Type
 {

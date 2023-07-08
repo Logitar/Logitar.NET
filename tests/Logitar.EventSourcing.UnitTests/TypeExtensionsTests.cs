@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-
-namespace Logitar.EventSourcing;
+﻿namespace Logitar.EventSourcing;
 
 [Trait(Traits.Category, Categories.Unit)]
 public class TypeExtensionsTests

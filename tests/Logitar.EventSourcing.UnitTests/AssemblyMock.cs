@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-
-namespace Logitar.EventSourcing;
+﻿namespace Logitar.EventSourcing;
 
 internal class AssemblyMock : Assembly
 {
