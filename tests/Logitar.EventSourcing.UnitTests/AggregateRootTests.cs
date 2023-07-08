@@ -102,24 +102,6 @@ public class AggregateRootTests
     Assert.Equal(e.Version, exception.EventVersion);
   }
 
-  [Fact(DisplayName = "Dispatch: it throws CannotApplyPastEventException when event version is null.")]
-  public void Dispatch_it_throws_CannotApplyPastEventException_when_event_version_is_null()
-  {
-    PersonCreatedEvent e = new(_person.FullName)
-    {
-      AggregateId = _person.Id,
-      Version = null
-    };
-
-    var exception = Assert.Throws<CannotApplyPastEventException>(() => _person.Dispatch(e));
-    Assert.Equal(_person.ToString(), exception.Aggregate);
-    Assert.Equal(_person.Id.ToString(), exception.AggregateId);
-    Assert.Equal(_person.Version, exception.AggregateVersion);
-    Assert.Equal(e.ToString(), exception.Event);
-    Assert.Equal(e.Id, exception.EventId);
-    Assert.Equal(e.Version, exception.EventVersion);
-  }
-
   [Fact(DisplayName = "Dispatch: it throws EventAggregateMismatchException when event does not belong to the aggregate.")]
   public void Dispatch_it_throws_EventAggregateMismatchException_when_event_does_not_belong_to_the_aggregate()
   {

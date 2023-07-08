@@ -17,7 +17,7 @@ public record DomainEvent
   /// <summary>
   /// Gets or sets the version of the event.
   /// </summary>
-  public long? Version { get; set; }
+  public long Version { get; set; }
 
   /// <summary>
   /// Gets or sets the identifier of the actor who triggered the event.

@@ -87,9 +87,13 @@ public abstract class AggregateRoot
   {
     change.Id ??= Guid.NewGuid();
     change.AggregateId ??= Id;
-    change.Version ??= (Version + 1);
     change.ActorId ??= actorId;
     change.OccurredOn ??= (occurredOn ?? DateTime.Now);
+
+    if (change.Version == default)
+    {
+      change.Version = Version + 1;
+    }
 
     Dispatch(change);
 
@@ -108,7 +112,7 @@ public abstract class AggregateRoot
       throw new EventAggregateMismatchException(this, change);
     }
 
-    if (!change.Version.HasValue || change.Version.Value < Version)
+    if (change.Version < Version)
     {
       throw new CannotApplyPastEventException(this, change);
     }
@@ -116,7 +120,7 @@ public abstract class AggregateRoot
     MethodInfo? apply = GetType().GetMethod("Apply", BindingFlags.Instance | BindingFlags.NonPublic, new[] { change.GetType() });
     apply?.Invoke(this, new[] { change });
 
-    Version = change.Version.Value;
+    Version = change.Version;
 
     switch (change.DeleteAction)
     {
