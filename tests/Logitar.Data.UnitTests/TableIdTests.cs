@@ -20,7 +20,7 @@ public class TableIdTests
     Assert.Equal(alias?.CleanTrim(), id.Alias);
   }
 
-  [Theory(DisplayName = "Ctor: it throws ArgumentException when table is null empty or only white space.")]
+  [Theory(DisplayName = "Ctor: it throws ArgumentException when table is null, empty, or only white space.")]
   [InlineData(null)]
   [InlineData("")]
   [InlineData("  ")]
