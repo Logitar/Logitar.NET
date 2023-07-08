@@ -20,9 +20,23 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{EA009B2F
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.UnitTests", "tests\Logitar.UnitTests\Logitar.UnitTests.csproj", "{3F2323E5-20A0-437A-B54A-E5F8778B76E1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.EventSourcing", "src\Logitar.EventSourcing\Logitar.EventSourcing.csproj", "{C12A40A4-BEF0-4D0F-8091-395E4CC3058F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.EventSourcing", "src\Logitar.EventSourcing\Logitar.EventSourcing.csproj", "{C12A40A4-BEF0-4D0F-8091-395E4CC3058F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.EventSourcing.UnitTests", "tests\Logitar.EventSourcing.UnitTests\Logitar.EventSourcing.UnitTests.csproj", "{89C79DBD-BEA2-46EA-B163-1F3E5FB26105}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.EventSourcing.UnitTests", "tests\Logitar.EventSourcing.UnitTests\Logitar.EventSourcing.UnitTests.csproj", "{89C79DBD-BEA2-46EA-B163-1F3E5FB26105}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.EventSourcing.EntityFrameworkCore.SqlServer", "src\Logitar.EventSourcing.EntityFrameworkCore.SqlServer\Logitar.EventSourcing.EntityFrameworkCore.SqlServer.csproj", "{2E4C6064-2195-41CE-A1B4-92C9139D13D2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.EventSourcing.EntityFrameworkCore.PostgreSQL", "src\Logitar.EventSourcing.EntityFrameworkCore.PostgreSQL\Logitar.EventSourcing.EntityFrameworkCore.PostgreSQL.csproj", "{7E000EC7-BCD5-417C-87EA-8DAC90E0B46F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.EventSourcing.PostgreSQL", "src\Logitar.EventSourcing.PostgreSQL\Logitar.EventSourcing.PostgreSQL.csproj", "{BA8402C3-FF02-4B90-9E06-413E753C0667}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.EventSourcing.SqlServer", "src\Logitar.EventSourcing.SqlServer\Logitar.EventSourcing.SqlServer.csproj", "{DDADA3F9-8917-4F80-B5EC-98B03A760F26}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EventSourcing", "EventSourcing", "{87F552C3-F6FC-4201-BC9E-3118CE217898}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.EventSourcing.MongoDB", "src\Logitar.EventSourcing.MongoDB\Logitar.EventSourcing.MongoDB.csproj", "{841312D3-4C44-4EE4-A47F-C6397C5942D4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.EventSourcing.InMemory", "src\Logitar.EventSourcing.InMemory\Logitar.EventSourcing.InMemory.csproj", "{F34E3684-59C3-4E5A-A1B9-4726BCBFA2BD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -46,13 +60,44 @@ Global
 		{89C79DBD-BEA2-46EA-B163-1F3E5FB26105}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{89C79DBD-BEA2-46EA-B163-1F3E5FB26105}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{89C79DBD-BEA2-46EA-B163-1F3E5FB26105}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E4C6064-2195-41CE-A1B4-92C9139D13D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E4C6064-2195-41CE-A1B4-92C9139D13D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E4C6064-2195-41CE-A1B4-92C9139D13D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E4C6064-2195-41CE-A1B4-92C9139D13D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E000EC7-BCD5-417C-87EA-8DAC90E0B46F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E000EC7-BCD5-417C-87EA-8DAC90E0B46F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E000EC7-BCD5-417C-87EA-8DAC90E0B46F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E000EC7-BCD5-417C-87EA-8DAC90E0B46F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA8402C3-FF02-4B90-9E06-413E753C0667}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA8402C3-FF02-4B90-9E06-413E753C0667}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA8402C3-FF02-4B90-9E06-413E753C0667}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA8402C3-FF02-4B90-9E06-413E753C0667}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DDADA3F9-8917-4F80-B5EC-98B03A760F26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DDADA3F9-8917-4F80-B5EC-98B03A760F26}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DDADA3F9-8917-4F80-B5EC-98B03A760F26}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DDADA3F9-8917-4F80-B5EC-98B03A760F26}.Release|Any CPU.Build.0 = Release|Any CPU
+		{841312D3-4C44-4EE4-A47F-C6397C5942D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{841312D3-4C44-4EE4-A47F-C6397C5942D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{841312D3-4C44-4EE4-A47F-C6397C5942D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{841312D3-4C44-4EE4-A47F-C6397C5942D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F34E3684-59C3-4E5A-A1B9-4726BCBFA2BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F34E3684-59C3-4E5A-A1B9-4726BCBFA2BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F34E3684-59C3-4E5A-A1B9-4726BCBFA2BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F34E3684-59C3-4E5A-A1B9-4726BCBFA2BD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{3F2323E5-20A0-437A-B54A-E5F8778B76E1} = {EA009B2F-F574-4312-BBA0-912BEF093B95}
+		{C12A40A4-BEF0-4D0F-8091-395E4CC3058F} = {87F552C3-F6FC-4201-BC9E-3118CE217898}
 		{89C79DBD-BEA2-46EA-B163-1F3E5FB26105} = {EA009B2F-F574-4312-BBA0-912BEF093B95}
+		{2E4C6064-2195-41CE-A1B4-92C9139D13D2} = {87F552C3-F6FC-4201-BC9E-3118CE217898}
+		{7E000EC7-BCD5-417C-87EA-8DAC90E0B46F} = {87F552C3-F6FC-4201-BC9E-3118CE217898}
+		{BA8402C3-FF02-4B90-9E06-413E753C0667} = {87F552C3-F6FC-4201-BC9E-3118CE217898}
+		{DDADA3F9-8917-4F80-B5EC-98B03A760F26} = {87F552C3-F6FC-4201-BC9E-3118CE217898}
+		{841312D3-4C44-4EE4-A47F-C6397C5942D4} = {87F552C3-F6FC-4201-BC9E-3118CE217898}
+		{F34E3684-59C3-4E5A-A1B9-4726BCBFA2BD} = {87F552C3-F6FC-4201-BC9E-3118CE217898}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B0AA9E53-02AD-4000-8ED5-53AFF5D1B32D}
