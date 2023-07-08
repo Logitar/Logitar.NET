@@ -28,21 +28,23 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.EventSourcing.Entit
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.EventSourcing.EntityFrameworkCore.PostgreSQL", "src\Logitar.EventSourcing.EntityFrameworkCore.PostgreSQL\Logitar.EventSourcing.EntityFrameworkCore.PostgreSQL.csproj", "{7E000EC7-BCD5-417C-87EA-8DAC90E0B46F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.EventSourcing.PostgreSQL", "src\Logitar.EventSourcing.PostgreSQL\Logitar.EventSourcing.PostgreSQL.csproj", "{BA8402C3-FF02-4B90-9E06-413E753C0667}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.EventSourcing.PostgreSQL", "src\Logitar.EventSourcing.PostgreSQL\Logitar.EventSourcing.PostgreSQL.csproj", "{BA8402C3-FF02-4B90-9E06-413E753C0667}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.EventSourcing.SqlServer", "src\Logitar.EventSourcing.SqlServer\Logitar.EventSourcing.SqlServer.csproj", "{DDADA3F9-8917-4F80-B5EC-98B03A760F26}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.EventSourcing.SqlServer", "src\Logitar.EventSourcing.SqlServer\Logitar.EventSourcing.SqlServer.csproj", "{DDADA3F9-8917-4F80-B5EC-98B03A760F26}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EventSourcing", "EventSourcing", "{87F552C3-F6FC-4201-BC9E-3118CE217898}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.EventSourcing.MongoDB", "src\Logitar.EventSourcing.MongoDB\Logitar.EventSourcing.MongoDB.csproj", "{841312D3-4C44-4EE4-A47F-C6397C5942D4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.EventSourcing.MongoDB", "src\Logitar.EventSourcing.MongoDB\Logitar.EventSourcing.MongoDB.csproj", "{841312D3-4C44-4EE4-A47F-C6397C5942D4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.EventSourcing.InMemory", "src\Logitar.EventSourcing.InMemory\Logitar.EventSourcing.InMemory.csproj", "{F34E3684-59C3-4E5A-A1B9-4726BCBFA2BD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.EventSourcing.InMemory", "src\Logitar.EventSourcing.InMemory\Logitar.EventSourcing.InMemory.csproj", "{F34E3684-59C3-4E5A-A1B9-4726BCBFA2BD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Data", "src\Logitar.Data\Logitar.Data.csproj", "{D8035DFB-30E4-4C1F-8D8A-9E55D59F7FE3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Data", "src\Logitar.Data\Logitar.Data.csproj", "{D8035DFB-30E4-4C1F-8D8A-9E55D59F7FE3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Data.Npgsql", "src\Logitar.Data.Npgsql\Logitar.Data.Npgsql.csproj", "{40E49C85-7CA8-4F65-AF39-126E387F4C8A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Data.Npgsql", "src\Logitar.Data.Npgsql\Logitar.Data.Npgsql.csproj", "{40E49C85-7CA8-4F65-AF39-126E387F4C8A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Data.SqlServer", "src\Logitar.Data.SqlServer\Logitar.Data.SqlServer.csproj", "{8D478C7D-B186-4700-8E9C-8E510B06695E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Data.SqlServer", "src\Logitar.Data.SqlServer\Logitar.Data.SqlServer.csproj", "{8D478C7D-B186-4700-8E9C-8E510B06695E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.EventSourcing.EntityFrameworkCore.Relational", "src\Logitar.EventSourcing.EntityFrameworkCore.Relational\Logitar.EventSourcing.EntityFrameworkCore.Relational.csproj", "{976DCA25-1E72-42E7-9F13-998631F8B0E2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -102,6 +104,10 @@ Global
 		{8D478C7D-B186-4700-8E9C-8E510B06695E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8D478C7D-B186-4700-8E9C-8E510B06695E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8D478C7D-B186-4700-8E9C-8E510B06695E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{976DCA25-1E72-42E7-9F13-998631F8B0E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{976DCA25-1E72-42E7-9F13-998631F8B0E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{976DCA25-1E72-42E7-9F13-998631F8B0E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{976DCA25-1E72-42E7-9F13-998631F8B0E2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -116,6 +122,7 @@ Global
 		{DDADA3F9-8917-4F80-B5EC-98B03A760F26} = {87F552C3-F6FC-4201-BC9E-3118CE217898}
 		{841312D3-4C44-4EE4-A47F-C6397C5942D4} = {87F552C3-F6FC-4201-BC9E-3118CE217898}
 		{F34E3684-59C3-4E5A-A1B9-4726BCBFA2BD} = {87F552C3-F6FC-4201-BC9E-3118CE217898}
+		{976DCA25-1E72-42E7-9F13-998631F8B0E2} = {87F552C3-F6FC-4201-BC9E-3118CE217898}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B0AA9E53-02AD-4000-8ED5-53AFF5D1B32D}
