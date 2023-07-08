@@ -7,4 +7,16 @@
     <WarningsAsErrors>Nullable</WarningsAsErrors>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Logitar\Logitar.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="System.Text" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Logitar.Data.UnitTests" />
+  </ItemGroup>
+
 </Project>
