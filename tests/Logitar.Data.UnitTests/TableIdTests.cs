@@ -3,7 +3,7 @@
 [Trait(Traits.Category, Categories.Unit)]
 public class TableIdTests
 {
-  [Theory(DisplayName = "Ctor: it builds correctly.")]
+  [Theory(DisplayName = "Ctor: it constructs the correct table identifier.")]
   [InlineData(null, "  MyTable  ", null)]
   [InlineData("", "MyTable", null)]
   [InlineData("  ", "MyTable", null)]
@@ -12,7 +12,7 @@ public class TableIdTests
   [InlineData("MySchema", "MyTable", "  ")]
   [InlineData(null, "MyTable", "x")]
   [InlineData("MySchema", "MyTable", "x")]
-  public void Ctor_it_builds_correctly(string? schema, string table, string? alias)
+  public void Ctor_it_constructs_the_correct_table_identifier(string? schema, string table, string? alias)
   {
     TableId id = new(schema, table, alias);
     Assert.Equal(schema?.CleanTrim(), id.Schema);
