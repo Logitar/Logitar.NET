@@ -97,7 +97,10 @@ public abstract class AggregateRoot
     {
       change.Version = Version + 1;
     }
-    change.ActorId ??= actorId;
+    if (string.IsNullOrWhiteSpace(change.ActorId))
+    {
+      change.ActorId = actorId;
+    }
     if (change.OccurredOn == default)
     {
       change.OccurredOn = occurredOn ?? DateTime.Now;
