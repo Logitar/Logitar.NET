@@ -16,7 +16,7 @@ public class EventAggregateMismatchException : Exception
     Data[nameof(AggregateId)] = aggregate.Id.ToString();
     Data[nameof(Event)] = change.ToString();
     Data[nameof(EventId)] = change.Id;
-    Data[nameof(EventAggregateId)] = change.AggregateId?.ToString();
+    Data[nameof(EventAggregateId)] = change.AggregateId.ToString();
   }
 
   /// <summary>

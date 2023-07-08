@@ -13,7 +13,7 @@ public record DomainEvent
   /// <summary>
   /// Gets or sets the identifier of the aggregate to which the event belongs to.
   /// </summary>
-  public AggregateId? AggregateId { get; set; }
+  public AggregateId AggregateId { get; set; }
   /// <summary>
   /// Gets or sets the version of the event.
   /// </summary>

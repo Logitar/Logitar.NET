@@ -89,7 +89,10 @@ public abstract class AggregateRoot
     {
       change.Id = Guid.NewGuid();
     }
-    change.AggregateId ??= Id;
+    if (change.AggregateId == default)
+    {
+      change.AggregateId = Id;
+    }
     if (change.Version == default)
     {
       change.Version = Version + 1;

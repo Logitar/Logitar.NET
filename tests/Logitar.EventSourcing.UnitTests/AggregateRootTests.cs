@@ -32,7 +32,7 @@ public class AggregateRootTests
     Assert.NotNull(changes);
 
     DomainEvent e = changes.Single();
-    Assert.NotNull(e.Id);
+    Assert.NotEqual(Guid.Empty, e.Id);
     Assert.Equal(person.Id, e.AggregateId);
     Assert.Equal(person.Version, e.Version);
     Assert.Equal(actorId, e.ActorId);
@@ -114,7 +114,7 @@ public class AggregateRootTests
     Assert.Equal(_person.Id.ToString(), exception.AggregateId);
     Assert.Equal(e.ToString(), exception.Event);
     Assert.Equal(e.Id, exception.EventId);
-    Assert.Equal(e.AggregateId?.ToString(), exception.EventAggregateId);
+    Assert.Equal(e.AggregateId.ToString(), exception.EventAggregateId);
   }
 
   [Fact(DisplayName = "Dispatch: it undeletes the aggregate.")]
