@@ -38,6 +38,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.EventSourcing.Mongo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.EventSourcing.InMemory", "src\Logitar.EventSourcing.InMemory\Logitar.EventSourcing.InMemory.csproj", "{F34E3684-59C3-4E5A-A1B9-4726BCBFA2BD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Data", "src\Logitar.Data\Logitar.Data.csproj", "{D8035DFB-30E4-4C1F-8D8A-9E55D59F7FE3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Data.Npgsql", "src\Logitar.Data.Npgsql\Logitar.Data.Npgsql.csproj", "{40E49C85-7CA8-4F65-AF39-126E387F4C8A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -84,6 +88,14 @@ Global
 		{F34E3684-59C3-4E5A-A1B9-4726BCBFA2BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F34E3684-59C3-4E5A-A1B9-4726BCBFA2BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F34E3684-59C3-4E5A-A1B9-4726BCBFA2BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D8035DFB-30E4-4C1F-8D8A-9E55D59F7FE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8035DFB-30E4-4C1F-8D8A-9E55D59F7FE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8035DFB-30E4-4C1F-8D8A-9E55D59F7FE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8035DFB-30E4-4C1F-8D8A-9E55D59F7FE3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{40E49C85-7CA8-4F65-AF39-126E387F4C8A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40E49C85-7CA8-4F65-AF39-126E387F4C8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40E49C85-7CA8-4F65-AF39-126E387F4C8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40E49C85-7CA8-4F65-AF39-126E387F4C8A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
