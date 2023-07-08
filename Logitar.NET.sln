@@ -42,6 +42,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Data", "src\Logitar
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Data.Npgsql", "src\Logitar.Data.Npgsql\Logitar.Data.Npgsql.csproj", "{40E49C85-7CA8-4F65-AF39-126E387F4C8A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Data.SqlServer", "src\Logitar.Data.SqlServer\Logitar.Data.SqlServer.csproj", "{8D478C7D-B186-4700-8E9C-8E510B06695E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -96,6 +98,10 @@ Global
 		{40E49C85-7CA8-4F65-AF39-126E387F4C8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{40E49C85-7CA8-4F65-AF39-126E387F4C8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{40E49C85-7CA8-4F65-AF39-126E387F4C8A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D478C7D-B186-4700-8E9C-8E510B06695E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D478C7D-B186-4700-8E9C-8E510B06695E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D478C7D-B186-4700-8E9C-8E510B06695E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D478C7D-B186-4700-8E9C-8E510B06695E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
