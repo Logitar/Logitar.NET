@@ -85,14 +85,16 @@ public abstract class AggregateRoot
   /// <param name="occurredOn">The date and time when the event occurred.</param>
   protected void ApplyChange(DomainEvent change, string? actorId = null, DateTime? occurredOn = null)
   {
-    change.Id ??= Guid.NewGuid();
+    if (change.Id == default)
+    {
+      change.Id = Guid.NewGuid();
+    }
     change.AggregateId ??= Id;
-    change.ActorId ??= actorId;
-
     if (change.Version == default)
     {
       change.Version = Version + 1;
     }
+    change.ActorId ??= actorId;
     if (change.OccurredOn == default)
     {
       change.OccurredOn = occurredOn ?? DateTime.Now;

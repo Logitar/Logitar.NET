@@ -8,7 +8,7 @@ public record DomainEvent
   /// <summary>
   /// Gets or sets the identifier of the event.
   /// </summary>
-  public Guid? Id { get; set; }
+  public Guid Id { get; set; }
 
   /// <summary>
   /// Gets or sets the identifier of the aggregate to which the event belongs to.
