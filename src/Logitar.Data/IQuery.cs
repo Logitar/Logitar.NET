@@ -6,4 +6,5 @@
 public interface IQuery
 {
   string Text { get; }
+  IEnumerable<object> Parameters { get; }
 }

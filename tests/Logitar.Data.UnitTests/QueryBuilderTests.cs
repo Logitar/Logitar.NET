@@ -5,7 +5,7 @@ public class QueryBuilderTests
 {
   private readonly TableId _table = new("MaTable", "x");
 
-  private readonly QueryBuilder _builder;
+  private readonly QueryBuilderMock _builder;
 
   public QueryBuilderTests()
   {
@@ -15,10 +15,18 @@ public class QueryBuilderTests
   [Fact(DisplayName = "Build: it constructs the correct query.")]
   public void Build_it_constructs_the_correct_query()
   {
-    QueryBuilderMock builder = new(_table);
+    ColumnId priority = new("Priority", _table);
+    ColumnId id = new($"{_table.Table}Id", _table);
 
-    IQuery query = builder
-      .Select(ColumnId.All(), new ColumnId($"{_table.Table}Id", _table))
+    IQuery query = _builder
+      .Select(ColumnId.All(), id)
+      .Where(new OrCondition(
+        new OperatorCondition(priority, Operators.IsBetween(2, 4)),
+        new OperatorCondition(priority, Operators.IsNull())
+      ))
+      .Where(new OperatorCondition(new ColumnId("Status"), Operators.IsNotEqualTo("Success")))
+      .Where(new OperatorCondition(id, Operators.IsNotIn(7, 49, 343)))
+      .Where(new OperatorCondition(new ColumnId("Trace"), Operators.IsLike("%fail%")))
       .OrderBy(
         new OrderBy(new ColumnId("DisplayName", _table)),
         new OrderBy(new ColumnId("UpdatedOn"), isDescending: true)
@@ -27,44 +35,76 @@ public class QueryBuilderTests
     string text = string.Join(Environment.NewLine,
       "SÉLECTIONNER Ω, «x»·«MaTableId»",
       "DEPUIS «défaut»·«MaTable» «x»",
-      "ORDONNER PAR «x»·«DisplayName» ↑ PUIS PAR «UpdatedOn» ↓",
-      string.Empty);
+      "OÙ («x»·«Priority» DANS L'INTERVALLE Πp0Θ ET Πp1Θ OU «x»·«Priority» EST NUL) ET «Status» != Πp2Θ ET «x»·«MaTableId» NON DANS (Πp3Θ, Πp4Θ, Πp5Θ) ET «Trace» COMME Πp6Θ",
+      "ORDONNER PAR «x»·«DisplayName» ↑ PUIS PAR «UpdatedOn» ↓");
     Assert.Equal(text, query.Text);
+
+    Dictionary<string, IParameter> parameters = query.Parameters.Select(p => (IParameter)p)
+      .ToDictionary(p => p.Name, p => p);
+    Assert.Equal(7, parameters.Count);
+    Assert.Equal(2, parameters["p0"].Value);
+    Assert.Equal(4, parameters["p1"].Value);
+    Assert.Equal("Success", parameters["p2"].Value);
+    Assert.Equal(7, parameters["p3"].Value);
+    Assert.Equal(49, parameters["p4"].Value);
+    Assert.Equal(343, parameters["p5"].Value);
+    Assert.Equal("%fail%", parameters["p6"].Value);
+  }
+
+  [Fact(DisplayName = "Build: it throws NotSupportedException when condition type is not supported.")]
+  public void Build_it_throws_NotSupportedException_when_condition_type_is_not_supported()
+  {
+    ConditionMock condition = new();
+    _builder.Where(condition);
+    var exception = Assert.Throws<NotSupportedException>(_builder.Build);
+    string message = $"The condition '{condition}' is not supported.";
+    Assert.Equal(message, exception.Message);
+  }
+
+  [Fact(DisplayName = "Build: it throws NotSupportedException when conditional operator is not supported.")]
+  public void Build_it_throws_NotSupportedException_when_conditional_operator_is_not_supported()
+  {
+    ConditionalOperatorMock @operator = new();
+    OperatorCondition condition = new(new ColumnId("Test"), @operator);
+    _builder.Where(condition);
+    var exception = Assert.Throws<NotSupportedException>(_builder.Build);
+    string message = $"The conditional operator '{@operator}' is not supported.";
+    Assert.Equal(message, exception.Message);
   }
 
   [Fact(DisplayName = "Ctor: it constructs the correct query builder.")]
   public void Ctor_it_constructs_the_correct_query_builder()
   {
-    FieldInfo? _source = _builder.GetType().GetField("_source", BindingFlags.NonPublic | BindingFlags.Instance);
-    Assert.NotNull(_source);
-    Assert.Equal(_source.GetValue(_builder), _table);
+    PropertyInfo? source = _builder.GetType().GetProperty("Source", BindingFlags.NonPublic | BindingFlags.Instance);
+    Assert.NotNull(source);
+    Assert.Equal(source.GetValue(_builder), _table);
   }
 
   [Fact(DisplayName = "Ctor: it throws ArgumentException when table name is null.")]
   public void Ctor_it_throws_ArgumentException_when_table_name_is_null()
   {
-    var exception = Assert.Throws<ArgumentException>(() => new QueryBuilder(TableId.FromAlias("alias")));
+    var exception = Assert.Throws<ArgumentException>(() => new QueryBuilderMock(TableId.FromAlias("alias")));
     Assert.Equal("source", exception.ParamName);
   }
 
   [Fact(DisplayName = "From: it constructs the correct query builder.")]
   public void From_it_constructs_the_correct_query_builder()
   {
-    FieldInfo? _source = _builder.GetType().GetField("_source", BindingFlags.NonPublic | BindingFlags.Instance);
-    Assert.NotNull(_source);
-    Assert.Equal(_source.GetValue(_builder), _table);
+    PropertyInfo? source = _builder.GetType().GetProperty("Source", BindingFlags.NonPublic | BindingFlags.Instance);
+    Assert.NotNull(source);
+    Assert.Equal(source.GetValue(_builder), _table);
   }
 
   [Fact(DisplayName = "OrderBy: it replaces the order by list.")]
   public void OrderBy_it_replaces_the_order_by_list()
   {
-    FieldInfo? _orderBy = _builder.GetType().GetField("_orderBy", BindingFlags.NonPublic | BindingFlags.Instance);
-    Assert.NotNull(_orderBy);
+    PropertyInfo? orderBy = _builder.GetType().GetProperty("OrderByList", BindingFlags.NonPublic | BindingFlags.Instance);
+    Assert.NotNull(orderBy);
     List<OrderBy> orderByList;
 
     OrderBy oldOrderBy = new(new ColumnId("MyColumn", _table));
     _builder.OrderBy(oldOrderBy);
-    orderByList = (List<OrderBy>)_orderBy.GetValue(_builder)!;
+    orderByList = (List<OrderBy>)orderBy.GetValue(_builder)!;
     Assert.NotNull(orderByList);
     Assert.Same(oldOrderBy, orderByList.Single());
 
@@ -74,7 +114,7 @@ public class QueryBuilderTests
       new OrderBy(new ColumnId("UpdatedOn"), isDescending: true)
     };
     _builder.OrderBy(newOrderBy);
-    orderByList = (List<OrderBy>)_orderBy.GetValue(_builder)!;
+    orderByList = (List<OrderBy>)orderBy.GetValue(_builder)!;
     Assert.NotNull(orderByList);
     Assert.True(newOrderBy.SequenceEqual(orderByList));
   }
@@ -82,14 +122,38 @@ public class QueryBuilderTests
   [Fact(DisplayName = "Select: it adds column to selection.")]
   public void Select_it_adds_column_to_selection()
   {
-    ColumnId column = ColumnId.All(_table);
-    _builder.Select(column);
+    ColumnId initialColumn = ColumnId.All(_table);
+    _builder.Select(initialColumn);
 
-    FieldInfo? _selections = _builder.GetType().GetField("_selections", BindingFlags.NonPublic | BindingFlags.Instance);
-    Assert.NotNull(_selections);
-
-    List<ColumnId>? selections = (List<ColumnId>?)_selections.GetValue(_builder);
+    PropertyInfo? selections = _builder.GetType().GetProperty("Selections", BindingFlags.NonPublic | BindingFlags.Instance);
     Assert.NotNull(selections);
-    Assert.Contains(column, selections);
+
+    List<ColumnId>? selectionList = (List<ColumnId>?)selections.GetValue(_builder);
+    Assert.NotNull(selectionList);
+    Assert.Contains(initialColumn, selectionList);
+
+    ColumnId otherColumn = new("Test");
+    _builder.Select(otherColumn);
+    Assert.Contains(initialColumn, selectionList);
+    Assert.Contains(otherColumn, selectionList);
+  }
+
+  [Fact(DisplayName = "Where: it adds conditions to condition list.")]
+  public void Where_it_adds_conditions_to_condition_list()
+  {
+    OperatorCondition initialCondition = new(new ColumnId("Status"), Operators.IsNotNull());
+    _builder.Where(initialCondition);
+
+    PropertyInfo? conditions = _builder.GetType().GetProperty("Conditions", BindingFlags.NonPublic | BindingFlags.Instance);
+    Assert.NotNull(conditions);
+
+    List<Condition>? conditionList = (List<Condition>?)conditions.GetValue(_builder);
+    Assert.NotNull(conditionList);
+    Assert.Contains(initialCondition, conditionList);
+
+    OperatorCondition otherCondition = new(new ColumnId("Test"), Operators.IsNotLike("%fail%"));
+    _builder.Where(otherCondition);
+    Assert.Contains(initialCondition, conditionList);
+    Assert.Contains(otherCondition, conditionList);
   }
 }

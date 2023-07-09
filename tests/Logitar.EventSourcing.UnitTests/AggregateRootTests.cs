@@ -217,7 +217,7 @@ public class AggregateRootTests
   [Fact(DisplayName = "ToString: it returns the correct string representation.")]
   public void ToString_it_returns_the_correct_string_representation()
   {
-    string expected = string.Concat(_person.GetType(), " (", _person.Id, ')');
-    Assert.Equal(expected, _person.ToString());
+    string s = string.Concat(_person.GetType(), " (", _person.Id, ')');
+    Assert.Equal(s, _person.ToString());
   }
 }

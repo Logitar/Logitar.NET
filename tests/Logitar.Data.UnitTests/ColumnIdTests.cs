@@ -14,10 +14,10 @@ public class ColumnIdTests
     Assert.Same(table, column.Table);
   }
 
-  [Theory(DisplayName = "Ctor: it builds the correct column identifier.")]
+  [Theory(DisplayName = "Ctor: it constructs the correct column identifier.")]
   [InlineData("MyColumn", null)]
   [InlineData("  MyColumn  ", "MyTable")]
-  public void Ctor_it_builds_the_correct_column_identifier(string columnName, string? tableName)
+  public void Ctor_it_constructs_the_correct_column_identifier(string columnName, string? tableName)
   {
     TableId? table = tableName == null ? null : new(tableName);
     ColumnId column = new(columnName, table);

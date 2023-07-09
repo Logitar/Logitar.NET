@@ -16,8 +16,8 @@ public class AggregateIdTests
   {
     Guid guid = Guid.Parse(value);
     AggregateId id = new(guid);
-    string expected = Convert.ToBase64String(guid.ToByteArray()).ToUriSafeBase64();
-    Assert.Equal(expected, id.Value);
+    string idValue = Convert.ToBase64String(guid.ToByteArray()).ToUriSafeBase64();
+    Assert.Equal(idValue, id.Value);
   }
 
   [Theory(DisplayName = "Ctor: it constructs the correct string identifier.")]
@@ -121,8 +121,8 @@ public class AggregateIdTests
   [Fact(DisplayName = "ToGuid: it returns the correct Guid.")]
   public void ToGuid_it_returns_the_correct_Guid()
   {
-    Guid expected = new(Convert.FromBase64String(_id.Value.FromUriSafeBase64()));
-    Assert.Equal(expected, _id.ToGuid());
+    Guid guid = new(Convert.FromBase64String(_id.Value.FromUriSafeBase64()));
+    Assert.Equal(guid, _id.ToGuid());
   }
 
   [Fact(DisplayName = "ToString: it returns the correct string.")]

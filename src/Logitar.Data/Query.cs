@@ -5,10 +5,17 @@
 /// </summary>
 internal record Query : IQuery
 {
-  public Query(string text)
+  public Query(string text, IEnumerable<object> parameters)
   {
-    Text = text;
+    if (string.IsNullOrWhiteSpace(text))
+    {
+      throw new ArgumentException("The query text is required.", nameof(text));
+    }
+
+    Text = text.Trim();
+    Parameters = parameters;
   }
 
   public string Text { get; }
+  public IEnumerable<object> Parameters { get; }
 }
