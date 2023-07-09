@@ -24,43 +24,62 @@ public abstract class AggregateRepository : IAggregateRepository
   {
     return await LoadAsync<T>(id, version: null, includeDeleted, cancellationToken);
   }
-  public abstract Task<T?> LoadAsync<T>(AggregateId id, long? version, bool includeDeleted, CancellationToken cancellationToken)
-    where T : AggregateRoot;
+  public virtual async Task<T?> LoadAsync<T>(AggregateId id, long? version, bool includeDeleted, CancellationToken cancellationToken)
+    where T : AggregateRoot
+  {
+    IEnumerable<DomainEvent> changes = await LoadChangesAsync<T>(id, version, includeDeleted, cancellationToken);
+    return Load<T>(changes, includeDeleted).SingleOrDefault();
+  }
+  protected abstract Task<IEnumerable<DomainEvent>> LoadChangesAsync<T>(AggregateId id, long? version, bool includeDeleted,
+    CancellationToken cancellationToken);
 
   public virtual async Task<IEnumerable<T>> LoadAsync<T>(CancellationToken cancellationToken)
     where T : AggregateRoot
   {
     return await LoadAsync<T>(includeDeleted: false, cancellationToken);
   }
-  public abstract Task<IEnumerable<T>> LoadAsync<T>(bool includeDeleted, CancellationToken cancellationToken)
-    where T : AggregateRoot;
+  public virtual async Task<IEnumerable<T>> LoadAsync<T>(bool includeDeleted, CancellationToken cancellationToken)
+    where T : AggregateRoot
+  {
+    IEnumerable<DomainEvent> changes = await LoadChangesAsync<T>(includeDeleted, cancellationToken);
+    return Load<T>(changes, includeDeleted);
+  }
+  protected abstract Task<IEnumerable<DomainEvent>> LoadChangesAsync<T>(bool includeDeleted, CancellationToken cancellationToken);
 
   public virtual async Task<IEnumerable<T>> LoadAsync<T>(IEnumerable<AggregateId> ids, CancellationToken cancellationToken)
     where T : AggregateRoot
   {
     return await LoadAsync<T>(ids, includeDeleted: false, cancellationToken);
   }
-  public abstract Task<IEnumerable<T>> LoadAsync<T>(IEnumerable<AggregateId> ids, bool includeDeleted, CancellationToken cancellationToken)
-    where T : AggregateRoot;
+  public virtual async Task<IEnumerable<T>> LoadAsync<T>(IEnumerable<AggregateId> ids, bool includeDeleted, CancellationToken cancellationToken)
+    where T : AggregateRoot
+  {
+    IEnumerable<DomainEvent> changes = await LoadChangesAsync<T>(ids, includeDeleted, cancellationToken);
+    return Load<T>(changes, includeDeleted);
+  }
+  protected abstract Task<IEnumerable<DomainEvent>> LoadChangesAsync<T>(IEnumerable<AggregateId> ids, bool includeDeleted, CancellationToken cancellationToken);
 
   public virtual async Task SaveAsync(AggregateRoot aggregate, CancellationToken cancellationToken)
   {
     await SaveAsync(new[] { aggregate }, cancellationToken);
   }
-  public abstract Task SaveAsync(IEnumerable<AggregateRoot> aggregates, CancellationToken cancellationToken);
+  public virtual async Task SaveAsync(IEnumerable<AggregateRoot> aggregates, CancellationToken cancellationToken)
+  {
+    await SaveChangesAsync(aggregates, cancellationToken);
 
-  protected virtual IEnumerable<T> Load<T>(IEnumerable<EventEntity> events, bool includeDeleted = false)
+    await PublishAndClearChangesAsync(aggregates, cancellationToken);
+  }
+  protected abstract Task SaveChangesAsync(IEnumerable<AggregateRoot> aggregates, CancellationToken cancellationToken);
+
+  protected virtual IEnumerable<T> Load<T>(IEnumerable<DomainEvent> events, bool includeDeleted = false)
     where T : AggregateRoot
   {
     List<T> aggregates = new(events.Count());
 
-    IEnumerable<IGrouping<string, EventEntity>> groups = events.GroupBy(e => e.AggregateId);
-    foreach (IGrouping<string, EventEntity> group in groups)
+    IEnumerable<IGrouping<AggregateId, DomainEvent>> groups = events.GroupBy(e => e.AggregateId);
+    foreach (IGrouping<AggregateId, DomainEvent> group in groups)
     {
-      AggregateId id = new(group.Key);
-      IEnumerable<DomainEvent> changes = group.Select(EventSerializer.Instance.Deserialize);
-
-      T aggregate = AggregateRoot.LoadFromChanges<T>(id, changes);
+      T aggregate = AggregateRoot.LoadFromChanges<T>(group.Key, group);
       if (!aggregate.IsDeleted || includeDeleted)
       {
         aggregates.Add(aggregate);
