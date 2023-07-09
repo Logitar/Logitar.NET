@@ -1,5 +1,4 @@
 ﻿using Microsoft.Data.SqlClient;
-using System.Reflection;
 
 namespace Logitar.Data.SqlServer;
 

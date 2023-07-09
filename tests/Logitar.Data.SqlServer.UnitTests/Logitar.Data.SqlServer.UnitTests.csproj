@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
@@ -27,6 +27,10 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Logitar.Data.SqlServer\Logitar.Data.SqlServer.csproj" />
     <ProjectReference Include="..\Logitar.UnitTests\Logitar.UnitTests.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="System.Reflection" />
   </ItemGroup>
 
 </Project>
