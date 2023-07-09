@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Logitar.Data.SqlServer\Logitar.Data.SqlServer.csproj" />
     <ProjectReference Include="..\Logitar.EventSourcing\Logitar.EventSourcing.csproj" />
   </ItemGroup>
 
