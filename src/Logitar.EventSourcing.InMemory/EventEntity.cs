@@ -8,13 +8,9 @@ public class EventEntity : IEventEntity
   {
   }
 
-  public long EventId { get; private set; }
   public Guid Id { get; private set; }
 
-  public string? ActorId { get; private set; }
-  public DateTime OccurredOn { get; private set; }
   public long Version { get; private set; }
-  public DeleteAction DeleteAction { get; private set; }
 
   public string AggregateType { get; private set; } = string.Empty;
   public string AggregateId { get; private set; } = string.Empty;
@@ -30,10 +26,7 @@ public class EventEntity : IEventEntity
     return aggregate.Changes.Select(change => new EventEntity
     {
       Id = change.Id,
-      ActorId = change.ActorId,
-      OccurredOn = change.OccurredOn.ToUniversalTime(),
       Version = change.Version,
-      DeleteAction = change.DeleteAction,
       AggregateType = aggregateType,
       AggregateId = aggregateId,
       EventType = change.GetType().GetName(),
