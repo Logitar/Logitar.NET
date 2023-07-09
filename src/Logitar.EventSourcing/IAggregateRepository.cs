@@ -1,8 +1,5 @@
 ﻿namespace Logitar.EventSourcing;
 
-/// <summary>
-/// TODO(fpion): document
-/// </summary>
 public interface IAggregateRepository
 {
   Task<T?> LoadAsync<T>(AggregateId id, CancellationToken cancellationToken = default) where T : AggregateRoot;

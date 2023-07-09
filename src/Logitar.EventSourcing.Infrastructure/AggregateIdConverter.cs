@@ -1,11 +1,8 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Logitar.EventSourcing.EntityFrameworkCore.Relational;
+namespace Logitar.EventSourcing.Infrastructure;
 
-/// <summary>
-/// TODO(fpion): document
-/// </summary>
 public class AggregateIdConverter : JsonConverter<AggregateId>
 {
   public override AggregateId Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

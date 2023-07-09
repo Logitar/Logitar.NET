@@ -1,11 +1,8 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Logitar.EventSourcing.EntityFrameworkCore.Relational;
+namespace Logitar.EventSourcing.Infrastructure;
 
-/// <summary>
-/// TODO(fpion): document
-/// </summary>
 public class EventSerializer
 {
   private static readonly object _lock = new();

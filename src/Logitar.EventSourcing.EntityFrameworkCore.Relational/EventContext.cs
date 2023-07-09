@@ -1,10 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Logitar.EventSourcing.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 
 namespace Logitar.EventSourcing.EntityFrameworkCore.Relational;
 
-/// <summary>
-/// TODO(fpion): document
-/// </summary>
 public class EventContext : DbContext
 {
   public EventContext(DbContextOptions<EventContext> options) : base(options)

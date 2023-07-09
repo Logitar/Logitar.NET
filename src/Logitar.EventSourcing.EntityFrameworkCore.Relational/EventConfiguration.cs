@@ -1,11 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Logitar.EventSourcing.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Logitar.EventSourcing.EntityFrameworkCore.Relational;
 
-/// <summary>
-/// TODO(fpion): document
-/// </summary>
 public class EventConfiguration : IEntityTypeConfiguration<EventEntity>
 {
   public void Configure(EntityTypeBuilder<EventEntity> builder)

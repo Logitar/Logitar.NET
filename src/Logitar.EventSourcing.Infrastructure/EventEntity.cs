@@ -1,8 +1,5 @@
-﻿namespace Logitar.EventSourcing.EntityFrameworkCore.Relational;
+﻿namespace Logitar.EventSourcing.Infrastructure;
 
-/// <summary>
-/// TODO(fpion): document
-/// </summary>
 public class EventEntity
 {
   private EventEntity()
