@@ -1,6 +1,6 @@
 ﻿namespace Logitar.Data;
 
 /// <summary>
-/// TODO(fpion): document
+/// Represents an operator of a condition.
 /// </summary>
 public abstract record ConditionalOperator;

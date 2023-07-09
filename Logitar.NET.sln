@@ -48,6 +48,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Data.UnitTests", "t
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Data.SqlServer.UnitTests", "tests\Logitar.Data.SqlServer.UnitTests\Logitar.Data.SqlServer.UnitTests.csproj", "{434DF049-A9B4-4C9A-A64E-A1EA1694522D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Data.PostgreSQL", "src\Logitar.Data.PostgreSQL\Logitar.Data.PostgreSQL.csproj", "{E05699DC-D24E-480E-A83B-BB4AD1C1FD4A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Data.PostgreSQL.UnitTests", "tests\Logitar.Data.PostgreSQL.UnitTests\Logitar.Data.PostgreSQL.UnitTests.csproj", "{1BC5A4B1-06DE-45CF-8D74-0BB79EA03B4F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -114,6 +118,14 @@ Global
 		{434DF049-A9B4-4C9A-A64E-A1EA1694522D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{434DF049-A9B4-4C9A-A64E-A1EA1694522D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{434DF049-A9B4-4C9A-A64E-A1EA1694522D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E05699DC-D24E-480E-A83B-BB4AD1C1FD4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E05699DC-D24E-480E-A83B-BB4AD1C1FD4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E05699DC-D24E-480E-A83B-BB4AD1C1FD4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E05699DC-D24E-480E-A83B-BB4AD1C1FD4A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1BC5A4B1-06DE-45CF-8D74-0BB79EA03B4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1BC5A4B1-06DE-45CF-8D74-0BB79EA03B4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1BC5A4B1-06DE-45CF-8D74-0BB79EA03B4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1BC5A4B1-06DE-45CF-8D74-0BB79EA03B4F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -131,6 +143,7 @@ Global
 		{976DCA25-1E72-42E7-9F13-998631F8B0E2} = {87F552C3-F6FC-4201-BC9E-3118CE217898}
 		{1F28D7F0-29DE-4E0A-A387-6AC3C6F3D3B1} = {EA009B2F-F574-4312-BBA0-912BEF093B95}
 		{434DF049-A9B4-4C9A-A64E-A1EA1694522D} = {EA009B2F-F574-4312-BBA0-912BEF093B95}
+		{1BC5A4B1-06DE-45CF-8D74-0BB79EA03B4F} = {EA009B2F-F574-4312-BBA0-912BEF093B95}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B0AA9E53-02AD-4000-8ED5-53AFF5D1B32D}

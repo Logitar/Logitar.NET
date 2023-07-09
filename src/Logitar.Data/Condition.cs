@@ -1,6 +1,6 @@
 ﻿namespace Logitar.Data;
 
 /// <summary>
-/// TODO(fpion): document
+/// Represents a condition in a data query.
 /// </summary>
 public abstract record Condition;
