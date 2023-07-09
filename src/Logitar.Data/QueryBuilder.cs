@@ -209,19 +209,17 @@ public abstract class QueryBuilder : IQueryBuilder
   /// <exception cref="NotSupportedException">The condition type is not supported.</exception>
   protected virtual string Format(Condition condition)
   {
-    if (condition is OperatorCondition @operator)
+    switch (condition)
     {
-      return string.Join(' ', Format(@operator.Column), Format(@operator.Operator));
+      case OperatorCondition @operator:
+        return string.Join(' ', Format(@operator.Column), Format(@operator.Operator));
+      case ConditionGroup group:
+        _ = GroupOperators.TryGetValue(group.Operator, out string? groupOperator);
+        groupOperator ??= group.Operator;
+        return string.Concat('(', string.Join($" {groupOperator} ", group.Conditions.Select(Format)), ')');
+      default:
+        throw new NotSupportedException($"The condition '{condition}' is not supported.");
     }
-    else if (condition is ConditionGroup group)
-    {
-      _ = GroupOperators.TryGetValue(group.Operator, out string? groupOperator);
-      groupOperator ??= group.Operator;
-
-      return string.Concat('(', string.Join($" {groupOperator} ", group.Conditions.Select(Format)), ')');
-    }
-
-    throw new NotSupportedException($"The condition '{condition}' is not supported.");
   }
   /// <summary>
   /// Formats the specified conditional operator to SQL.
@@ -231,30 +229,15 @@ public abstract class QueryBuilder : IQueryBuilder
   /// <exception cref="NotSupportedException">The conditional operator type is not supported.</exception>
   protected virtual string Format(ConditionalOperator @operator)
   {
-    if (@operator is BetweenOperator between)
+    return @operator switch
     {
-      return Format(between);
-    }
-    else if (@operator is ComparisonOperator comparison)
-    {
-      return Format(comparison);
-    }
-    else if (@operator is InOperator @in)
-    {
-      return Format(@in);
-    }
-    else if (@operator is LikeOperator like)
-    {
-      return Format(like);
-    }
-    else if (@operator is NullOperator @null)
-    {
-      return Format(@null);
-    }
-    else
-    {
-      throw new NotSupportedException($"The conditional operator '{@operator}' is not supported.");
-    }
+      BetweenOperator between => Format(between),
+      ComparisonOperator comparison => Format(comparison),
+      InOperator @in => Format(@in),
+      LikeOperator like => Format(like),
+      NullOperator @null => Format(@null),
+      _ => throw new NotSupportedException($"The conditional operator '{@operator}' is not supported."),
+    };
   }
   /// <summary>
   /// Formats the specified BETWEEN operator to SQL.
