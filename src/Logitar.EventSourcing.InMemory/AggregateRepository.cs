@@ -2,15 +2,15 @@
 
 namespace Logitar.EventSourcing.InMemory;
 
-public class InMemoryAggregateRepository : AggregateRepository
+public class AggregateRepository : Infrastructure.AggregateRepository
 {
   private readonly List<EventEntity> _events = new();
 
-  public InMemoryAggregateRepository(IEventBus eventBus) : base(eventBus)
+  public AggregateRepository(IEventBus eventBus) : base(eventBus)
   {
   }
 
-  protected override Task<IEnumerable<DomainEvent>> LoadChangesAsync<T>(AggregateId id, long? version, bool includeDeleted, CancellationToken cancellationToken)
+  protected override Task<IEnumerable<DomainEvent>> LoadChangesAsync<T>(AggregateId id, long? version, CancellationToken cancellationToken)
   {
     string aggregateType = typeof(T).GetName();
     string aggregateId = id.Value;
@@ -23,7 +23,7 @@ public class InMemoryAggregateRepository : AggregateRepository
     return Task.FromResult(changes);
   }
 
-  protected override Task<IEnumerable<DomainEvent>> LoadChangesAsync<T>(bool includeDeleted, CancellationToken cancellationToken)
+  protected override Task<IEnumerable<DomainEvent>> LoadChangesAsync<T>(CancellationToken cancellationToken)
   {
     string aggregateType = typeof(T).GetName();
 
@@ -34,7 +34,7 @@ public class InMemoryAggregateRepository : AggregateRepository
     return Task.FromResult(changes);
   }
 
-  protected override Task<IEnumerable<DomainEvent>> LoadChangesAsync<T>(IEnumerable<AggregateId> ids, bool includeDeleted, CancellationToken cancellationToken)
+  protected override Task<IEnumerable<DomainEvent>> LoadChangesAsync<T>(IEnumerable<AggregateId> ids, CancellationToken cancellationToken)
   {
     string aggregateType = typeof(T).GetName();
     HashSet<string> aggregateIds = ids.Select(id => id.Value).ToHashSet();

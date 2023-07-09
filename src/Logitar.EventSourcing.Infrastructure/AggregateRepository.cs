@@ -27,11 +27,10 @@ public abstract class AggregateRepository : IAggregateRepository
   public virtual async Task<T?> LoadAsync<T>(AggregateId id, long? version, bool includeDeleted, CancellationToken cancellationToken)
     where T : AggregateRoot
   {
-    IEnumerable<DomainEvent> changes = await LoadChangesAsync<T>(id, version, includeDeleted, cancellationToken);
+    IEnumerable<DomainEvent> changes = await LoadChangesAsync<T>(id, version, cancellationToken);
     return Load<T>(changes, includeDeleted).SingleOrDefault();
   }
-  protected abstract Task<IEnumerable<DomainEvent>> LoadChangesAsync<T>(AggregateId id, long? version, bool includeDeleted,
-    CancellationToken cancellationToken);
+  protected abstract Task<IEnumerable<DomainEvent>> LoadChangesAsync<T>(AggregateId id, long? version, CancellationToken cancellationToken);
 
   public virtual async Task<IEnumerable<T>> LoadAsync<T>(CancellationToken cancellationToken)
     where T : AggregateRoot
@@ -41,10 +40,10 @@ public abstract class AggregateRepository : IAggregateRepository
   public virtual async Task<IEnumerable<T>> LoadAsync<T>(bool includeDeleted, CancellationToken cancellationToken)
     where T : AggregateRoot
   {
-    IEnumerable<DomainEvent> changes = await LoadChangesAsync<T>(includeDeleted, cancellationToken);
+    IEnumerable<DomainEvent> changes = await LoadChangesAsync<T>(cancellationToken);
     return Load<T>(changes, includeDeleted);
   }
-  protected abstract Task<IEnumerable<DomainEvent>> LoadChangesAsync<T>(bool includeDeleted, CancellationToken cancellationToken);
+  protected abstract Task<IEnumerable<DomainEvent>> LoadChangesAsync<T>(CancellationToken cancellationToken);
 
   public virtual async Task<IEnumerable<T>> LoadAsync<T>(IEnumerable<AggregateId> ids, CancellationToken cancellationToken)
     where T : AggregateRoot
@@ -54,10 +53,10 @@ public abstract class AggregateRepository : IAggregateRepository
   public virtual async Task<IEnumerable<T>> LoadAsync<T>(IEnumerable<AggregateId> ids, bool includeDeleted, CancellationToken cancellationToken)
     where T : AggregateRoot
   {
-    IEnumerable<DomainEvent> changes = await LoadChangesAsync<T>(ids, includeDeleted, cancellationToken);
+    IEnumerable<DomainEvent> changes = await LoadChangesAsync<T>(ids, cancellationToken);
     return Load<T>(changes, includeDeleted);
   }
-  protected abstract Task<IEnumerable<DomainEvent>> LoadChangesAsync<T>(IEnumerable<AggregateId> ids, bool includeDeleted, CancellationToken cancellationToken);
+  protected abstract Task<IEnumerable<DomainEvent>> LoadChangesAsync<T>(IEnumerable<AggregateId> ids, CancellationToken cancellationToken);
 
   public virtual async Task SaveAsync(AggregateRoot aggregate, CancellationToken cancellationToken)
   {

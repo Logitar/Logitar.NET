@@ -3,17 +3,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Logitar.EventSourcing.EntityFrameworkCore.Relational;
 
-public class RelationalAggregateRepository : AggregateRepository
+public class AggregateRepository : Infrastructure.AggregateRepository
 {
-  public RelationalAggregateRepository(IEventBus eventBus, EventContext eventContext) : base(eventBus)
+  public AggregateRepository(IEventBus eventBus, EventContext eventContext) : base(eventBus)
   {
     EventContext = eventContext;
   }
 
   protected EventContext EventContext { get; }
 
-  protected override async Task<IEnumerable<DomainEvent>> LoadChangesAsync<T>(AggregateId id, long? version, bool includeDeleted,
-    CancellationToken cancellationToken)
+  protected override async Task<IEnumerable<DomainEvent>> LoadChangesAsync<T>(AggregateId id, long? version, CancellationToken cancellationToken)
   {
     string aggregateId = id.Value;
     string aggregateType = typeof(T).GetName();
@@ -26,7 +25,7 @@ public class RelationalAggregateRepository : AggregateRepository
     return events.Select(EventSerializer.Instance.Deserialize);
   }
 
-  protected override async Task<IEnumerable<DomainEvent>> LoadChangesAsync<T>(bool includeDeleted, CancellationToken cancellationToken)
+  protected override async Task<IEnumerable<DomainEvent>> LoadChangesAsync<T>(CancellationToken cancellationToken)
   {
     string aggregateType = typeof(T).GetName();
 
@@ -38,8 +37,7 @@ public class RelationalAggregateRepository : AggregateRepository
     return events.Select(EventSerializer.Instance.Deserialize);
   }
 
-  protected override async Task<IEnumerable<DomainEvent>> LoadChangesAsync<T>(IEnumerable<AggregateId> ids, bool includeDeleted,
-    CancellationToken cancellationToken)
+  protected override async Task<IEnumerable<DomainEvent>> LoadChangesAsync<T>(IEnumerable<AggregateId> ids, CancellationToken cancellationToken)
   {
     string aggregateType = typeof(T).GetName();
     HashSet<string> aggregateIds = ids.Select(id => id.Value).ToHashSet();
