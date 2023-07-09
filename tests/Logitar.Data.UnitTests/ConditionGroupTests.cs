@@ -1,4 +1,4 @@
-﻿namespace Logitar.Data.UnitTests;
+﻿namespace Logitar.Data;
 
 [Trait(Traits.Category, Categories.Unit)]
 public class ConditionGroupTests
@@ -24,7 +24,7 @@ public class ConditionGroupTests
     Assert.Equal("conditions", exception.ParamName);
   }
 
-  [Theory()]
+  [Theory(DisplayName = "Ctor: it throws ArgumentException when operator is null, empty, or only white space.")]
   [InlineData(null)]
   [InlineData("")]
   [InlineData("  ")]

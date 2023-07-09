@@ -8,13 +8,11 @@
 
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
-    <RootNamespace>Logitar</RootNamespace>
+    <RootNamespace>Logitar.Data.SqlServer</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Bogus" Version="34.0.2" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.3" />
-    <PackageReference Include="Moq" Version="4.18.4" />
     <PackageReference Include="xunit" Version="2.5.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.5.0">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -27,7 +25,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Logitar\Logitar.csproj" />
+    <ProjectReference Include="..\..\src\Logitar.Data.SqlServer\Logitar.Data.SqlServer.csproj" />
+    <ProjectReference Include="..\Logitar.UnitTests\Logitar.UnitTests.csproj" />
   </ItemGroup>
 
 </Project>

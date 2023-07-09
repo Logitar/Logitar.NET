@@ -1,3 +1,3 @@
-﻿namespace Logitar.Data.UnitTests;
+﻿namespace Logitar.Data;
 
 internal record ConditionMock : Condition;

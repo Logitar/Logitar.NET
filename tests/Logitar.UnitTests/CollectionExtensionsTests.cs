@@ -1,4 +1,4 @@
-﻿namespace Logitar.UnitTests;
+﻿namespace Logitar;
 
 [Trait(Traits.Category, Categories.Unit)]
 public class CollectionExtensionsTests

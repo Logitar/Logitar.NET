@@ -1,4 +1,4 @@
-﻿namespace Logitar.Data.UnitTests;
+﻿namespace Logitar.Data;
 
 [Trait(Traits.Category, Categories.Unit)]
 public class QueryTests

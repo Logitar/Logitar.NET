@@ -1,4 +1,4 @@
-﻿namespace Logitar.Data.UnitTests;
+﻿namespace Logitar.Data;
 
 internal record ConditionGroupMock : ConditionGroup
 {
