@@ -6,6 +6,6 @@ public interface IEventSerializer
 {
   void RegisterConverter(JsonConverter converter);
 
-  DomainEvent Deserialize(EventEntity entity);
+  DomainEvent Deserialize(IEventEntity entity);
   string Serialize(DomainEvent change);
 }

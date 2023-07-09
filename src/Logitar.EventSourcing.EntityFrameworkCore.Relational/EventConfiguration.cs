@@ -1,5 +1,4 @@
-﻿using Logitar.EventSourcing.Infrastructure;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Logitar.EventSourcing.EntityFrameworkCore.Relational;

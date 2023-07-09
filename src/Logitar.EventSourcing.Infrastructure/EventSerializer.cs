@@ -39,7 +39,7 @@ public class EventSerializer : IEventSerializer
     _options.Converters.Add(converter);
   }
 
-  public DomainEvent Deserialize(EventEntity entity)
+  public DomainEvent Deserialize(IEventEntity entity)
   {
     Type eventType = Type.GetType(entity.EventType) ?? throw new EventTypeNotFoundException(entity);
 

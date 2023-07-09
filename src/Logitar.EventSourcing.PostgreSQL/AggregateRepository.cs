@@ -1,9 +1,9 @@
 ﻿using Logitar.Data;
-using Logitar.Data.SqlServer;
+using Logitar.Data.PostgreSQL;
 using Logitar.EventSourcing.Infrastructure;
 using System.Data.Common;
 
-namespace Logitar.EventSourcing.SqlServer;
+namespace Logitar.EventSourcing.PostgreSQL;
 
 public class AggregateRepository : Relational.AggregateRepository
 {
@@ -12,5 +12,5 @@ public class AggregateRepository : Relational.AggregateRepository
   {
   }
 
-  protected override IQueryBuilder From(TableId source) => new SqlServerQueryBuilder(source);
+  protected override IQueryBuilder From(TableId source) => new PostgresQueryBuilder(source);
 }

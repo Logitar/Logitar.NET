@@ -4,16 +4,16 @@ namespace Logitar.EventSourcing.Infrastructure;
 
 public class EventTypeNotFoundException : Exception
 {
-  internal EventTypeNotFoundException(EventEntity e) : base(BuildMessage(e))
+  internal EventTypeNotFoundException(IEventEntity entity) : base(BuildMessage(entity))
   {
-    Data[nameof(EventId)] = e.Id;
-    Data[nameof(TypeName)] = e.EventType;
+    Data[nameof(EventId)] = entity.Id;
+    Data[nameof(TypeName)] = entity.EventType;
   }
 
   public Guid EventId => (Guid)Data[nameof(EventId)]!;
   public string TypeName => (string)Data[nameof(TypeName)]!;
 
-  private static string BuildMessage(EventEntity e)
+  private static string BuildMessage(IEventEntity e)
   {
     StringBuilder message = new();
 

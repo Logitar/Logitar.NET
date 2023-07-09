@@ -52,7 +52,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Data.PostgreSQL", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Data.PostgreSQL.UnitTests", "tests\Logitar.Data.PostgreSQL.UnitTests\Logitar.Data.PostgreSQL.UnitTests.csproj", "{1BC5A4B1-06DE-45CF-8D74-0BB79EA03B4F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.EventSourcing.Infrastructure", "src\Logitar.EventSourcing.Infrastructure\Logitar.EventSourcing.Infrastructure.csproj", "{0EF61FA4-0A79-46B8-B3A0-628EE1E80922}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.EventSourcing.Infrastructure", "src\Logitar.EventSourcing.Infrastructure\Logitar.EventSourcing.Infrastructure.csproj", "{0EF61FA4-0A79-46B8-B3A0-628EE1E80922}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.EventSourcing.Relational", "src\Logitar.EventSourcing.Relational\Logitar.EventSourcing.Relational.csproj", "{019D7112-CD41-4B02-ABA3-5FDE65A21384}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -132,6 +134,10 @@ Global
 		{0EF61FA4-0A79-46B8-B3A0-628EE1E80922}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0EF61FA4-0A79-46B8-B3A0-628EE1E80922}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0EF61FA4-0A79-46B8-B3A0-628EE1E80922}.Release|Any CPU.Build.0 = Release|Any CPU
+		{019D7112-CD41-4B02-ABA3-5FDE65A21384}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{019D7112-CD41-4B02-ABA3-5FDE65A21384}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{019D7112-CD41-4B02-ABA3-5FDE65A21384}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{019D7112-CD41-4B02-ABA3-5FDE65A21384}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -151,6 +157,7 @@ Global
 		{434DF049-A9B4-4C9A-A64E-A1EA1694522D} = {EA009B2F-F574-4312-BBA0-912BEF093B95}
 		{1BC5A4B1-06DE-45CF-8D74-0BB79EA03B4F} = {EA009B2F-F574-4312-BBA0-912BEF093B95}
 		{0EF61FA4-0A79-46B8-B3A0-628EE1E80922} = {87F552C3-F6FC-4201-BC9E-3118CE217898}
+		{019D7112-CD41-4B02-ABA3-5FDE65A21384} = {87F552C3-F6FC-4201-BC9E-3118CE217898}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B0AA9E53-02AD-4000-8ED5-53AFF5D1B32D}

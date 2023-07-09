@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Logitar.Data.SqlServer\Logitar.Data.SqlServer.csproj" />
-    <ProjectReference Include="..\Logitar.EventSourcing\Logitar.EventSourcing.csproj" />
+    <ProjectReference Include="..\Logitar.EventSourcing.Relational\Logitar.EventSourcing.Relational.csproj" />
   </ItemGroup>
 
 </Project>

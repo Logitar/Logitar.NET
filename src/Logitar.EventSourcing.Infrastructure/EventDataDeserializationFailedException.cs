@@ -4,18 +4,18 @@ namespace Logitar.EventSourcing.Infrastructure;
 
 public class EventDataDeserializationFailedException : Exception
 {
-  internal EventDataDeserializationFailedException(EventEntity e) : base(BuildMessage(e))
+  internal EventDataDeserializationFailedException(IEventEntity entity) : base(BuildMessage(entity))
   {
-    Data[nameof(EventId)] = e.Id;
-    Data[nameof(EventType)] = e.EventType;
-    Data[nameof(EventData)] = e.EventData;
+    Data[nameof(EventId)] = entity.Id;
+    Data[nameof(EventType)] = entity.EventType;
+    Data[nameof(EventData)] = entity.EventData;
   }
 
   public Guid EventId => (Guid)Data[nameof(EventId)]!;
   public string EventType => (string)Data[nameof(EventType)]!;
   public string EventData => (string)Data[nameof(EventData)]!;
 
-  private static string BuildMessage(EventEntity e)
+  private static string BuildMessage(IEventEntity e)
   {
     StringBuilder message = new();
 

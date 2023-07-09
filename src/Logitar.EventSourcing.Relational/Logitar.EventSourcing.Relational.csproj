@@ -8,8 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Logitar.Data.PostgreSQL\Logitar.Data.PostgreSQL.csproj" />
-    <ProjectReference Include="..\Logitar.EventSourcing.Relational\Logitar.EventSourcing.Relational.csproj" />
+    <ProjectReference Include="..\Logitar.Data\Logitar.Data.csproj" />
+    <ProjectReference Include="..\Logitar.EventSourcing.Infrastructure\Logitar.EventSourcing.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

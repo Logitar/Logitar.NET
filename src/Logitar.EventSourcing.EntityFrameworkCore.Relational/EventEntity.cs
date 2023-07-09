@@ -1,6 +1,8 @@
-﻿namespace Logitar.EventSourcing.Infrastructure;
+﻿using Logitar.EventSourcing.Infrastructure;
 
-public class EventEntity
+namespace Logitar.EventSourcing.EntityFrameworkCore.Relational;
+
+public class EventEntity : IEventEntity
 {
   private EventEntity()
   {
