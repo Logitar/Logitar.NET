@@ -41,8 +41,8 @@ public class RelationalAggregateRepository : AggregateRepository
   protected override async Task<IEnumerable<DomainEvent>> LoadChangesAsync<T>(IEnumerable<AggregateId> ids, bool includeDeleted,
     CancellationToken cancellationToken)
   {
-    HashSet<string> aggregateIds = ids.Select(id => id.Value).ToHashSet();
     string aggregateType = typeof(T).GetName();
+    HashSet<string> aggregateIds = ids.Select(id => id.Value).ToHashSet();
 
     EventEntity[] events = await EventContext.Events.AsNoTracking()
       .Where(e => e.AggregateType == aggregateType && aggregateIds.Contains(e.AggregateId))

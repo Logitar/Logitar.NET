@@ -25,17 +25,17 @@ public class EventEntity
     string aggregateId = aggregate.Id.Value;
     string aggregateType = aggregate.GetType().GetName();
 
-    return aggregate.Changes.Select(e => new EventEntity
+    return aggregate.Changes.Select(change => new EventEntity
     {
-      Id = e.Id,
-      ActorId = e.ActorId,
-      OccurredOn = e.OccurredOn.ToUniversalTime(),
-      Version = e.Version,
-      DeleteAction = e.DeleteAction,
+      Id = change.Id,
+      ActorId = change.ActorId,
+      OccurredOn = change.OccurredOn.ToUniversalTime(),
+      Version = change.Version,
+      DeleteAction = change.DeleteAction,
       AggregateType = aggregateType,
       AggregateId = aggregateId,
-      EventType = e.GetType().GetName(),
-      EventData = EventSerializer.Instance.Serialize(e)
+      EventType = change.GetType().GetName(),
+      EventData = EventSerializer.Instance.Serialize(change)
     });
   }
 }
