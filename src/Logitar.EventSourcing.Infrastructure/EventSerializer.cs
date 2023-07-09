@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Logitar.EventSourcing.Infrastructure;
 
-public class EventSerializer
+public class EventSerializer : IEventSerializer
 {
   private static readonly object _lock = new();
   private static EventSerializer? _instance = null;
@@ -21,10 +21,17 @@ public class EventSerializer
 
   private readonly JsonSerializerOptions _options = new();
 
-  private EventSerializer()
+  public EventSerializer()
   {
     RegisterConverter(new AggregateIdConverter());
     RegisterConverter(new JsonStringEnumConverter());
+  }
+  public EventSerializer(IEnumerable<JsonConverter> converters) : this()
+  {
+    foreach (JsonConverter converter in converters)
+    {
+      RegisterConverter(converter);
+    }
   }
 
   public void RegisterConverter(JsonConverter converter)
