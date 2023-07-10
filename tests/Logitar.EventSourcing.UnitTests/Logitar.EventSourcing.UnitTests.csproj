@@ -35,4 +35,8 @@
     <Using Include="System.Reflection" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Logitar.EventSourcing.Infrastructure.UnitTests" />
+  </ItemGroup>
+
 </Project>

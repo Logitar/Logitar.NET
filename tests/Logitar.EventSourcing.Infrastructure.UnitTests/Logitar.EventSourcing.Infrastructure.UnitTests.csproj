@@ -26,7 +26,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Logitar.EventSourcing.Infrastructure\Logitar.EventSourcing.Infrastructure.csproj" />
-    <ProjectReference Include="..\Logitar.UnitTests\Logitar.UnitTests.csproj" />
+    <ProjectReference Include="..\Logitar.EventSourcing.UnitTests\Logitar.EventSourcing.UnitTests.csproj" />
   </ItemGroup>
 
 </Project>
