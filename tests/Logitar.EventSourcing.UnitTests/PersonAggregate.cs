@@ -1,6 +1,6 @@
 ﻿namespace Logitar.EventSourcing;
 
-internal class PersonAggregate : AggregateRoot
+public class PersonAggregate : AggregateRoot
 {
   public PersonAggregate(AggregateId id) : base(id)
   {

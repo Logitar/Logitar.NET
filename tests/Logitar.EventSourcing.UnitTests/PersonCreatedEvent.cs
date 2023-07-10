@@ -1,3 +1,3 @@
 ﻿namespace Logitar.EventSourcing;
 
-internal record PersonCreatedEvent(string FullName) : DomainEvent;
+public record PersonCreatedEvent(string FullName) : DomainEvent;

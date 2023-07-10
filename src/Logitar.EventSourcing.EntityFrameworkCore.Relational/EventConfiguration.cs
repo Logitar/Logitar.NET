@@ -3,8 +3,15 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Logitar.EventSourcing.EntityFrameworkCore.Relational;
 
+/// <summary>
+/// The configuration for the entity of type <see cref="EventEntity"/>.
+/// </summary>
 public class EventConfiguration : IEntityTypeConfiguration<EventEntity>
 {
+  /// <summary>
+  /// Configures the entity of type <see cref="EventEntity" />.
+  /// </summary>
+  /// <param name="builder">The builder to be used to configure the entity type.</param>
   public void Configure(EntityTypeBuilder<EventEntity> builder)
   {
     builder.ToTable(nameof(EventContext.Events));

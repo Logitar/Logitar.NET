@@ -62,6 +62,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.EventSourcing.Postg
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.EventSourcing.SqlServer.UnitTests", "tests\Logitar.EventSourcing.SqlServer.UnitTests\Logitar.EventSourcing.SqlServer.UnitTests.csproj", "{FDE97B22-D5DA-4F8D-B7D2-1D23947E9905}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.EventSourcing.EntityFrameworkCore.Relational.UnitTests", "tests\Logitar.EventSourcing.EntityFrameworkCore.Relational.UnitTests\Logitar.EventSourcing.EntityFrameworkCore.Relational.UnitTests.csproj", "{E36674AA-06C2-429A-A3CC-F411FA87326B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -156,6 +158,10 @@ Global
 		{FDE97B22-D5DA-4F8D-B7D2-1D23947E9905}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FDE97B22-D5DA-4F8D-B7D2-1D23947E9905}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FDE97B22-D5DA-4F8D-B7D2-1D23947E9905}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E36674AA-06C2-429A-A3CC-F411FA87326B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E36674AA-06C2-429A-A3CC-F411FA87326B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E36674AA-06C2-429A-A3CC-F411FA87326B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E36674AA-06C2-429A-A3CC-F411FA87326B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -179,6 +185,7 @@ Global
 		{CBB36442-F8A9-4228-A164-C7C7740FF4EC} = {EA009B2F-F574-4312-BBA0-912BEF093B95}
 		{B961AD6C-2F60-438C-AEE6-BEA0DDCEC9ED} = {EA009B2F-F574-4312-BBA0-912BEF093B95}
 		{FDE97B22-D5DA-4F8D-B7D2-1D23947E9905} = {EA009B2F-F574-4312-BBA0-912BEF093B95}
+		{E36674AA-06C2-429A-A3CC-F411FA87326B} = {EA009B2F-F574-4312-BBA0-912BEF093B95}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B0AA9E53-02AD-4000-8ED5-53AFF5D1B32D}

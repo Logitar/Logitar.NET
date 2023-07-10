@@ -1,6 +1,6 @@
 ﻿namespace Logitar.EventSourcing;
 
-internal record PersonDeletedChangedEvent : DomainEvent
+public record PersonDeletedChangedEvent : DomainEvent
 {
   public PersonDeletedChangedEvent(DeleteAction deleteAction)
   {
