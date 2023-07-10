@@ -6,12 +6,9 @@ public class AggregateRepository : Infrastructure.AggregateRepository
 {
   private readonly List<EventEntity> _events = new();
 
-  public AggregateRepository(IEventBus eventBus, IEventSerializer eventSerializer) : base(eventBus)
+  public AggregateRepository(IEventBus eventBus) : base(eventBus)
   {
-    EventSerializer = eventSerializer;
   }
-
-  protected IEventSerializer EventSerializer { get; }
 
   protected override Task<IEnumerable<DomainEvent>> LoadChangesAsync<T>(AggregateId id, long? version, CancellationToken cancellationToken)
   {
@@ -21,7 +18,7 @@ public class AggregateRepository : Infrastructure.AggregateRepository
     IEnumerable<DomainEvent> changes = _events.Where(e => e.AggregateType == aggregateType && e.AggregateId == aggregateId
         && (!version.HasValue || version.Value <= e.Version))
       .OrderBy(e => e.Version)
-      .Select(EventSerializer.Deserialize);
+      .Select(EventSerializer.Instance.Deserialize);
 
     return Task.FromResult(changes);
   }
@@ -32,7 +29,7 @@ public class AggregateRepository : Infrastructure.AggregateRepository
 
     IEnumerable<DomainEvent> changes = _events.Where(e => e.AggregateType == aggregateType)
       .OrderBy(e => e.Version)
-      .Select(EventSerializer.Deserialize);
+      .Select(EventSerializer.Instance.Deserialize);
 
     return Task.FromResult(changes);
   }
@@ -44,7 +41,7 @@ public class AggregateRepository : Infrastructure.AggregateRepository
 
     IEnumerable<DomainEvent> changes = _events.Where(e => e.AggregateType == aggregateType && aggregateIds.Contains(e.AggregateId))
       .OrderBy(e => e.Version)
-      .Select(EventSerializer.Deserialize);
+      .Select(EventSerializer.Instance.Deserialize);
 
     return Task.FromResult(changes);
   }

@@ -7,16 +7,12 @@ namespace Logitar.EventSourcing.Relational;
 
 public abstract class AggregateRepository : Infrastructure.AggregateRepository
 {
-  public AggregateRepository(DbConnection connection,
-    IEventBus eventBus,
-    IEventSerializer eventSerializer) : base(eventBus)
+  public AggregateRepository(DbConnection connection, IEventBus eventBus) : base(eventBus)
   {
     Connection = connection;
-    EventSerializer = eventSerializer;
   }
 
   protected DbConnection Connection { get; }
-  protected IEventSerializer EventSerializer { get; }
 
   protected override async Task<IEnumerable<DomainEvent>> LoadChangesAsync<T>(AggregateId id, long? version, CancellationToken cancellationToken)
   {
@@ -93,7 +89,7 @@ public abstract class AggregateRepository : Infrastructure.AggregateRepository
           EventData = reader.GetString(2)
         };
 
-        changes.Add(EventSerializer.Deserialize(entity));
+        changes.Add(EventSerializer.Instance.Deserialize(entity));
       }
     }
 

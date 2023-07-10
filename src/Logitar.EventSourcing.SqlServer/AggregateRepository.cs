@@ -7,8 +7,7 @@ namespace Logitar.EventSourcing.SqlServer;
 
 public class AggregateRepository : Relational.AggregateRepository
 {
-  public AggregateRepository(DbConnection connection, IEventBus eventBus, IEventSerializer eventSerializer)
-    : base(connection, eventBus, eventSerializer)
+  public AggregateRepository(DbConnection connection, IEventBus eventBus) : base(connection, eventBus)
   {
   }
 

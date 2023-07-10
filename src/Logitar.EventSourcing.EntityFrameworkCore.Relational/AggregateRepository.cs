@@ -5,16 +5,12 @@ namespace Logitar.EventSourcing.EntityFrameworkCore.Relational;
 
 public class AggregateRepository : Infrastructure.AggregateRepository
 {
-  public AggregateRepository(IEventBus eventBus,
-    EventContext eventContext,
-    IEventSerializer eventSerializer) : base(eventBus)
+  public AggregateRepository(IEventBus eventBus, EventContext eventContext) : base(eventBus)
   {
     EventContext = eventContext;
-    EventSerializer = eventSerializer;
   }
 
   protected EventContext EventContext { get; }
-  protected IEventSerializer EventSerializer { get; }
 
   protected override async Task<IEnumerable<DomainEvent>> LoadChangesAsync<T>(AggregateId id, long? version, CancellationToken cancellationToken)
   {
@@ -26,7 +22,7 @@ public class AggregateRepository : Infrastructure.AggregateRepository
       .OrderBy(e => e.Version)
       .ToArrayAsync(cancellationToken);
 
-    return events.Select(EventSerializer.Deserialize);
+    return events.Select(EventSerializer.Instance.Deserialize);
   }
 
   protected override async Task<IEnumerable<DomainEvent>> LoadChangesAsync<T>(CancellationToken cancellationToken)
@@ -38,7 +34,7 @@ public class AggregateRepository : Infrastructure.AggregateRepository
       .OrderBy(e => e.Version)
       .ToArrayAsync(cancellationToken);
 
-    return events.Select(EventSerializer.Deserialize);
+    return events.Select(EventSerializer.Instance.Deserialize);
   }
 
   protected override async Task<IEnumerable<DomainEvent>> LoadChangesAsync<T>(IEnumerable<AggregateId> ids, CancellationToken cancellationToken)
@@ -51,7 +47,7 @@ public class AggregateRepository : Infrastructure.AggregateRepository
       .OrderBy(e => e.Version)
       .ToArrayAsync(cancellationToken);
 
-    return events.Select(EventSerializer.Deserialize);
+    return events.Select(EventSerializer.Instance.Deserialize);
   }
 
   protected override async Task SaveChangesAsync(IEnumerable<AggregateRoot> aggregates, CancellationToken cancellationToken)
