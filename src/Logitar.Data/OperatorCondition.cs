@@ -10,7 +10,7 @@ public record OperatorCondition : Condition
   /// </summary>
   /// <param name="column">The column against which the operator will be tested.</param>
   /// <param name="operator">The operator that will be tested against the column.</param>
-  /// <exception cref="ArgumentException"></exception>
+  /// <exception cref="ArgumentException">The column name was missing.</exception>
   public OperatorCondition(ColumnId column, ConditionalOperator @operator)
   {
     if (string.IsNullOrWhiteSpace(column.Name))

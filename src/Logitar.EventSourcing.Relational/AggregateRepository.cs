@@ -5,15 +5,34 @@ using System.Data.Common;
 
 namespace Logitar.EventSourcing.Relational;
 
+/// <summary>
+/// Represents an interface that allows retrieving and storing events in a relational event store.
+/// </summary>
 public abstract class AggregateRepository : Infrastructure.AggregateRepository
 {
+  /// <summary>
+  /// Initializes a new instance of the <see cref="AggregateRepository"/> class.
+  /// </summary>
+  /// <param name="connection">The database connection.</param>
+  /// <param name="eventBus">The event bus.</param>
   public AggregateRepository(DbConnection connection, IEventBus eventBus) : base(eventBus)
   {
     Connection = connection;
   }
 
+  /// <summary>
+  /// Gets the database connection.
+  /// </summary>
   protected DbConnection Connection { get; }
 
+  /// <summary>
+  /// Loads the events of an aggregate from the event store.
+  /// </summary>
+  /// <typeparam name="T">The type of the aggregate.</typeparam>
+  /// <param name="id">The identifier of the aggregate.</param>
+  /// <param name="version">The version at which the aggregate shall be retrieved.</param>
+  /// <param name="cancellationToken">The cancellation token.</param>
+  /// <returns>The loaded events.</returns>
   protected override async Task<IEnumerable<DomainEvent>> LoadChangesAsync<T>(AggregateId id, long? version, CancellationToken cancellationToken)
   {
     string aggregateType = typeof(T).GetName();
@@ -38,6 +57,12 @@ public abstract class AggregateRepository : Infrastructure.AggregateRepository
     return await ReadChangesAsync(query, cancellationToken);
   }
 
+  /// <summary>
+  /// Loads the events of all aggregates of the specified type from the event store.
+  /// </summary>
+  /// <typeparam name="T">The type of the aggregates.</typeparam>
+  /// <param name="cancellationToken">The cancellation token.</param>
+  /// <returns>The list of loaded events.</returns>
   protected override async Task<IEnumerable<DomainEvent>> LoadChangesAsync<T>(CancellationToken cancellationToken)
   {
     string aggregateType = typeof(T).GetName();
@@ -51,6 +76,13 @@ public abstract class AggregateRepository : Infrastructure.AggregateRepository
     return await ReadChangesAsync(query, cancellationToken);
   }
 
+  /// <summary>
+  /// Loads the events of the specified aggregates from the event store.
+  /// </summary>
+  /// <typeparam name="T">The type of the aggregates.</typeparam>
+  /// <param name="ids">The identifier of the aggregates.</param>
+  /// <param name="cancellationToken">The cancellation token.</param>
+  /// <returns>The list of loaded events.</returns>
   protected override async Task<IEnumerable<DomainEvent>> LoadChangesAsync<T>(IEnumerable<AggregateId> ids, CancellationToken cancellationToken)
   {
     string aggregateType = typeof(T).GetName();
@@ -66,6 +98,12 @@ public abstract class AggregateRepository : Infrastructure.AggregateRepository
     return await ReadChangesAsync(query, cancellationToken);
   }
 
+  /// <summary>
+  /// Reads changes from the specified data query.
+  /// </summary>
+  /// <param name="query">The data query.</param>
+  /// <param name="cancellationToken">The cancellation token.</param>
+  /// <returns>The loaded changes.</returns>
   protected virtual async Task<IEnumerable<DomainEvent>> ReadChangesAsync(IQuery query, CancellationToken cancellationToken)
   {
     using DbCommand command = Connection.CreateCommand();
@@ -96,10 +134,21 @@ public abstract class AggregateRepository : Infrastructure.AggregateRepository
     return changes.AsReadOnly();
   }
 
+  /// <summary>
+  /// Saves the changes of the specified aggregates to the event store.
+  /// </summary>
+  /// <param name="aggregates">The aggregates to save the changes.</param>
+  /// <param name="cancellationToken">The cancellation token.</param>
+  /// <returns>The asynchronous operation.</returns>
   protected override Task SaveChangesAsync(IEnumerable<AggregateRoot> aggregates, CancellationToken cancellationToken)
   {
     throw new NotImplementedException(); // TODO(fpion): implement
   }
 
+  /// <summary>
+  /// Returns a specific implementation of a query builder.
+  /// </summary>
+  /// <param name="source">The source table.</param>
+  /// <returns>The query builder.</returns>
   protected abstract IQueryBuilder From(TableId source);
 }
