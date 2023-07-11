@@ -140,9 +140,33 @@ public abstract class AggregateRepository : Infrastructure.AggregateRepository
   /// <param name="aggregates">The aggregates to save the changes.</param>
   /// <param name="cancellationToken">The cancellation token.</param>
   /// <returns>The asynchronous operation.</returns>
-  protected override Task SaveChangesAsync(IEnumerable<AggregateRoot> aggregates, CancellationToken cancellationToken)
+  protected override async Task SaveChangesAsync(IEnumerable<AggregateRoot> aggregates, CancellationToken cancellationToken)
   {
-    throw new NotImplementedException(); // TODO(fpion): implement
+    IInsertBuilder builder = InsertInto(Events.Id, Events.ActorId, Events.OccurredOn, Events.Version,
+      Events.DeleteAction, Events.AggregateType, Events.AggregateId, Events.EventType, Events.EventData);
+
+    foreach (AggregateRoot aggregate in aggregates)
+    {
+      if (aggregate.HasChanges)
+      {
+        string aggregateType = aggregate.GetType().GetName();
+        string aggregateId = aggregate.Id.Value;
+
+        foreach (DomainEvent change in aggregate.Changes)
+        {
+          builder = builder.Value(change.Id, change.ActorId, change.OccurredOn.ToUniversalTime(),
+            change.Version, change.DeleteAction.ToString(), aggregateType, aggregateId,
+            change.GetType().GetName(), EventSerializer.Instance.Serialize(change));
+        }
+      }
+    }
+
+    ICommand insert = builder.Build();
+
+    using DbCommand command = Connection.CreateCommand();
+    command.CommandText = insert.Text;
+    command.Parameters.AddRange(insert.Parameters.ToArray());
+    await command.ExecuteNonQueryAsync(cancellationToken);
   }
 
   /// <summary>
@@ -151,4 +175,10 @@ public abstract class AggregateRepository : Infrastructure.AggregateRepository
   /// <param name="source">The source table.</param>
   /// <returns>The query builder.</returns>
   protected abstract IQueryBuilder From(TableId source);
+  /// <summary>
+  /// Returns a specific implementation of an insert command builder.
+  /// </summary>
+  /// <param name="columns">The columns to insert into.</param>
+  /// <returns>The insert command builder.</returns>
+  protected abstract IInsertBuilder InsertInto(params ColumnId[] columns);
 }
