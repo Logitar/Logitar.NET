@@ -116,7 +116,7 @@ public class QueryBuilderTests
     _builder.OrderBy(newOrderBy);
     orderByList = (List<OrderBy>)orderBy.GetValue(_builder)!;
     Assert.NotNull(orderByList);
-    Assert.True(newOrderBy.SequenceEqual(orderByList));
+    Assert.Equal(newOrderBy, orderByList);
   }
 
   [Fact(DisplayName = "Select: it adds column to selection.")]

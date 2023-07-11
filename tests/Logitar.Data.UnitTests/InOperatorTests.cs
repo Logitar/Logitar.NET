@@ -10,7 +10,7 @@ public class InOperatorTests
   {
     InOperator @operator = new(notIn, values);
     Assert.Equal(notIn, @operator.NotIn);
-    Assert.True(values.SequenceEqual(@operator.Values));
+    Assert.Equal(values, @operator.Values);
   }
 
   [Fact(DisplayName = "Ctor: it throws ArgumentException when there are no value.")]

@@ -45,7 +45,7 @@ public class OperatorsTests
   public void IsIn_it_constructs_the_correct_operator(params object[] values)
   {
     InOperator @in = Operators.IsIn(values);
-    Assert.True(values.SequenceEqual(@in.Values));
+    Assert.Equal(values, @in.Values);
     Assert.False(@in.NotIn);
   }
 
@@ -100,7 +100,7 @@ public class OperatorsTests
   public void IsNotIn_it_constructs_the_correct_operator(params object[] values)
   {
     InOperator @in = Operators.IsNotIn(values);
-    Assert.True(values.SequenceEqual(@in.Values));
+    Assert.Equal(values, @in.Values);
     Assert.True(@in.NotIn);
   }
 

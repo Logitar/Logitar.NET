@@ -32,7 +32,7 @@ public class AggregateRepositoryTests
     AggregateId[] ids = new[] { person1.Id, person2.Id, deleted.Id };
 
     IEnumerable<PersonAggregate> people = await _repository.LoadAsync<PersonAggregate>(ids, includeDeleted: false, _cancellationToken);
-    Assert.True(new[] { person1, person2 }.SequenceEqual(people));
+    Assert.Equal(new[] { person1, person2 }, people);
   }
 
   [Fact(DisplayName = "SaveAsync: it should publish and clear aggregates changes.")]
