@@ -22,7 +22,7 @@
     <Version>5.1.0</Version>
     <NeutralLanguage>en-CA</NeutralLanguage>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <PackageReleaseNotes>Added CollectionExtensions.</PackageReleaseNotes>
+    <PackageReleaseNotes>Implemented CollectionExtensions.</PackageReleaseNotes>
     <PackageTags>logitar net framework</PackageTags>
     <PackageProjectUrl>https://github.com/Logitar/Logitar.NET/tree/dev/src/Logitar</PackageProjectUrl>
   </PropertyGroup>

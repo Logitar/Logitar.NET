@@ -11,6 +11,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="secrets.example.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="secrets.example.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.8">
       <PrivateAssets>all</PrivateAssets>

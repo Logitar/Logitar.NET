@@ -1,4 +1,5 @@
 ﻿using Logitar.EventSourcing.EntityFrameworkCore.PostgreSQL;
+using Logitar.EventSourcing.EntityFrameworkCore.SqlServer;
 using Logitar.EventSourcing.Infrastructure;
 
 namespace Logitar.Demo.Ui;
@@ -28,10 +29,22 @@ internal class Startup : StartupBase
       services.AddSwaggerGen();
     }
 
-    string connectionString = _configuration.GetValue<string>("POSTGRESQLCONNSTR_Demo") ?? string.Empty;
-    services.AddLogitarEventSourcingWithEntityFrameworkCorePostgreSQL(connectionString);
-    //string connectionString = _configuration.GetValue<string>("SQLCONNSTR_Demo") ?? string.Empty;
-    //services.AddLogitarEventSourcingWithEntityFrameworkCoreSqlServer(connectionString);
+    DatabaseProvider provider = _configuration.GetValue<DatabaseProvider?>("DatabaseProvider")
+      ?? DatabaseProvider.EntityFrameworkCoreSqlServer;
+    string connectionString;
+    switch (provider)
+    {
+      case DatabaseProvider.EntityFrameworkCorePostgreSQL:
+        connectionString = _configuration.GetValue<string>("POSTGRESQLCONNSTR_Demo") ?? string.Empty;
+        services.AddLogitarEventSourcingWithEntityFrameworkCorePostgreSQL(connectionString);
+        break;
+      case DatabaseProvider.EntityFrameworkCoreSqlServer:
+        connectionString = _configuration.GetValue<string>("SQLCONNSTR_Demo") ?? string.Empty;
+        services.AddLogitarEventSourcingWithEntityFrameworkCoreSqlServer(connectionString);
+        break;
+      default:
+        throw new NotSupportedException($"The database provider '{provider}' is not supported.");
+    }
 
     services.AddSingleton<IEventBus, EventBus>();
   }
