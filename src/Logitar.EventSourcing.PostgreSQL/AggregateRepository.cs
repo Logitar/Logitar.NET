@@ -25,4 +25,10 @@ public class AggregateRepository : Relational.AggregateRepository
   /// <param name="source">The source table.</param>
   /// <returns>The query builder.</returns>
   protected override IQueryBuilder From(TableId source) => new PostgresQueryBuilder(source);
+  /// <summary>
+  /// Returns the PostgreSQL implementation of an insert command builder.
+  /// </summary>
+  /// <param name="columns">The columns to insert into.</param>
+  /// <returns>The insert command builder.</returns>
+  protected override IInsertBuilder InsertInto(params ColumnId[] columns) => new PostgresInsertBuilder(columns);
 }

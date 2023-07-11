@@ -25,4 +25,10 @@ public class AggregateRepository : Relational.AggregateRepository
   /// <param name="source">The source table.</param>
   /// <returns>The query builder.</returns>
   protected override IQueryBuilder From(TableId source) => new SqlServerQueryBuilder(source);
+  /// <summary>
+  /// Returns the SQL Server implementation of an insert command builder.
+  /// </summary>
+  /// <param name="columns">The columns to insert into.</param>
+  /// <returns>The insert command builder.</returns>
+  protected override IInsertBuilder InsertInto(params ColumnId[] columns) => new SqlServerInsertBuilder(columns);
 }

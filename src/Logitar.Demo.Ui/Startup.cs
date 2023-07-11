@@ -1,4 +1,4 @@
-﻿using Logitar.EventSourcing.EntityFrameworkCore.SqlServer;
+﻿using Logitar.EventSourcing.EntityFrameworkCore.PostgreSQL;
 using Logitar.EventSourcing.Infrastructure;
 
 namespace Logitar.Demo.Ui;
@@ -28,10 +28,10 @@ internal class Startup : StartupBase
       services.AddSwaggerGen();
     }
 
-    //string connectionString = _configuration.GetValue<string>("POSTGRESQLCONNSTR_Demo") ?? string.Empty;
-    //services.AddLogitarEventSourcingWithEntityFrameworkCorePostgreSQL(connectionString);
-    string connectionString = _configuration.GetValue<string>("SQLCONNSTR_Demo") ?? string.Empty;
-    services.AddLogitarEventSourcingWithEntityFrameworkCoreSqlServer(connectionString);
+    string connectionString = _configuration.GetValue<string>("POSTGRESQLCONNSTR_Demo") ?? string.Empty;
+    services.AddLogitarEventSourcingWithEntityFrameworkCorePostgreSQL(connectionString);
+    //string connectionString = _configuration.GetValue<string>("SQLCONNSTR_Demo") ?? string.Empty;
+    //services.AddLogitarEventSourcingWithEntityFrameworkCoreSqlServer(connectionString);
 
     services.AddSingleton<IEventBus, EventBus>();
   }

@@ -1,6 +1,6 @@
 ﻿using Npgsql;
 
-namespace Logitar.Data.Postgres;
+namespace Logitar.Data.PostgreSQL;
 
 /// <summary>
 /// Represents the implementation of the SQL insert command builder for PostgreSQL.

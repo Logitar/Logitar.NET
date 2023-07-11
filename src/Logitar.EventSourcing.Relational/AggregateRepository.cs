@@ -68,7 +68,7 @@ public abstract class AggregateRepository : Infrastructure.AggregateRepository
     string aggregateType = typeof(T).GetName();
 
     IQuery query = From(Events.Table)
-      .Where(Events.AggregateId, Operators.IsEqualTo(aggregateType))
+      .Where(Events.AggregateType, Operators.IsEqualTo(aggregateType))
       .OrderBy(Events.Version)
       .Select(Events.Id, Events.EventType, Events.EventData)
       .Build();
