@@ -14,4 +14,8 @@
     <ProjectReference Include="..\Logitar.EventSourcing.Relational\Logitar.EventSourcing.Relational.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Using Include="System.Data.Common" />
+  </ItemGroup>
+
 </Project>

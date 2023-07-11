@@ -3,7 +3,6 @@ using Logitar.Data.PostgreSQL;
 using Logitar.EventSourcing.Infrastructure;
 using Moq;
 using Npgsql;
-using System.Reflection;
 
 namespace Logitar.EventSourcing.PostgreSQL;
 

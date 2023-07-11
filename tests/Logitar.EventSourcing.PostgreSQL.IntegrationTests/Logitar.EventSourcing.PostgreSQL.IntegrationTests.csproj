@@ -43,4 +43,9 @@
     <ProjectReference Include="..\Logitar.EventSourcing.Relational.IntegrationTests\Logitar.EventSourcing.Relational.IntegrationTests.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Using Include="System.Data.Common" />
+    <Using Include="System.Text" />
+  </ItemGroup>
+
 </Project>

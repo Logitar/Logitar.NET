@@ -1,7 +1,4 @@
-﻿using System.Text.Json;
-using System.Text.Json.Serialization;
-
-namespace Logitar.EventSourcing.Infrastructure;
+﻿namespace Logitar.EventSourcing.Infrastructure;
 
 /// <summary>
 /// Represents a JSON serializer for events.

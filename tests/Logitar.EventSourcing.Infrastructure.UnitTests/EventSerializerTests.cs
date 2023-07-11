@@ -1,9 +1,4 @@
-﻿using System.Globalization;
-using System.Reflection;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-
-namespace Logitar.EventSourcing.Infrastructure;
+﻿namespace Logitar.EventSourcing.Infrastructure;
 
 [Trait(Traits.Category, Categories.Unit)]
 public class EventSerializerTests

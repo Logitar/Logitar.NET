@@ -1,7 +1,6 @@
 ﻿using Logitar.Data;
 using Logitar.Data.SqlServer;
 using Logitar.EventSourcing.Infrastructure;
-using System.Data.Common;
 
 namespace Logitar.EventSourcing.SqlServer;
 

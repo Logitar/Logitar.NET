@@ -3,7 +3,6 @@ using Logitar.Data.SqlServer;
 using Logitar.EventSourcing.Infrastructure;
 using Microsoft.Data.SqlClient;
 using Moq;
-using System.Reflection;
 
 namespace Logitar.EventSourcing.SqlServer;
 

@@ -29,4 +29,8 @@
     <ProjectReference Include="..\Logitar.EventSourcing.Infrastructure.IntegrationTests\Logitar.EventSourcing.Infrastructure.IntegrationTests.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Using Include="System.Data.Common" />
+  </ItemGroup>
+
 </Project>

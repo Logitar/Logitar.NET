@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace Logitar.EventSourcing.Infrastructure;
+﻿namespace Logitar.EventSourcing.Infrastructure;
 
 /// <summary>
 /// The exception thrown when the type of an event could not be found.

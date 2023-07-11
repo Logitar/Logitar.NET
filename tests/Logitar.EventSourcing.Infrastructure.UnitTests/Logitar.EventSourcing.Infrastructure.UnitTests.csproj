@@ -29,4 +29,11 @@
     <ProjectReference Include="..\Logitar.EventSourcing.UnitTests\Logitar.EventSourcing.UnitTests.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Using Include="System.Globalization" />
+    <Using Include="System.Reflection" />
+    <Using Include="System.Text.Json" />
+    <Using Include="System.Text.Json.Serialization" />
+  </ItemGroup>
+
 </Project>

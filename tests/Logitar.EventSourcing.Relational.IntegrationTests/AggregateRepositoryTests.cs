@@ -1,6 +1,5 @@
 ﻿using Logitar.Data;
 using Logitar.EventSourcing.Infrastructure;
-using System.Data.Common;
 
 namespace Logitar.EventSourcing.Relational;
 

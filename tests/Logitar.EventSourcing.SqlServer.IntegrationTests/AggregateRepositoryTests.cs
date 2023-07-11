@@ -3,8 +3,6 @@ using Logitar.Data.SqlServer;
 using Logitar.EventSourcing.Infrastructure;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
-using System.Data.Common;
-using System.Text;
 
 namespace Logitar.EventSourcing.SqlServer;
 
