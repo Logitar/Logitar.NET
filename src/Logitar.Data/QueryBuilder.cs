@@ -424,7 +424,7 @@ public abstract class QueryBuilder : IQueryBuilder
   }
 
   /// <summary>
-  /// Creates a new implementation-specific query parameters.
+  /// Creates a new implementation-specific query parameter.
   /// </summary>
   /// <param name="parameter">The parameter information.</param>
   /// <returns>The implementation-specific parameter.</returns>

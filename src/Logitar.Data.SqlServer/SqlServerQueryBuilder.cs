@@ -37,7 +37,7 @@ public class SqlServerQueryBuilder : QueryBuilder
   public static SqlServerQueryBuilder From(TableId source) => new(source);
 
   /// <summary>
-  /// Creates a new SQL Server query parameters.
+  /// Creates a new SQL Server query parameter.
   /// </summary>
   /// <param name="parameter">The parameter information.</param>
   /// <returns>The SQL Server parameter.</returns>

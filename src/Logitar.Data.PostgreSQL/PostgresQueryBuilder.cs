@@ -75,7 +75,7 @@ public class PostgresQueryBuilder : QueryBuilder
   }
 
   /// <summary>
-  /// Creates a new Postgres query parameters.
+  /// Creates a new Postgres query parameter.
   /// </summary>
   /// <param name="parameter">The parameter information.</param>
   /// <returns>The Postgres parameter.</returns>
