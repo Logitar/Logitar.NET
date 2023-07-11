@@ -6,18 +6,20 @@ namespace Logitar.EventSourcing.Relational;
 
 public abstract class AggregateRepositoryTests : Infrastructure.AggregateRepositoryTests, IDisposable
 {
-  protected AggregateRepositoryTests()
+  protected AggregateRepositoryTests() : base()
   {
-    Connection = InitializeDbConnection();
+    Assert.NotNull(Connection);
+    Connection.Open();
+    RecreateDatabaseAsync().Wait();
   }
 
   public void Dispose()
   {
-    Connection.Dispose();
+    Connection?.Dispose();
     GC.SuppressFinalize(this);
   }
 
-  protected DbConnection Connection { get; }
+  protected DbConnection? Connection { get; set; }
 
   protected override void AssertEqual(IEventEntity expected, IEventEntity actual)
   {
@@ -47,6 +49,8 @@ public abstract class AggregateRepositoryTests : Infrastructure.AggregateReposit
 
   protected override async Task<IEnumerable<IEventEntity>> LoadEventsAsync(CancellationToken cancellationToken)
   {
+    Assert.NotNull(Connection);
+
     IQuery query = CreateQueryBuilder(Events.Table)
       .Select(Events.Id, Events.EventType, Events.EventData)
       .Build();
@@ -74,14 +78,42 @@ public abstract class AggregateRepositoryTests : Infrastructure.AggregateReposit
     return entities;
   }
 
-  protected override Task SeedDatabaseAsync(IEnumerable<AggregateRoot> aggregates, CancellationToken cancellationToken)
+  protected override async Task SeedDatabaseAsync(IEnumerable<AggregateRoot> aggregates, CancellationToken cancellationToken)
   {
-    throw new NotImplementedException(); // TODO(fpion): implement
+    Assert.NotNull(Connection);
+
+    ColumnId[] columns = new[] { Events.Id, Events.ActorId, Events.OccurredOn, Events.Version,
+      Events.DeleteAction, Events.AggregateType, Events.AggregateId, Events.EventType, Events.EventData };
+    IInsertBuilder builder = CreateInsertBuilder(columns);
+
+    foreach (AggregateRoot aggregate in aggregates)
+    {
+      if (aggregate.HasChanges)
+      {
+        string aggregateType = aggregate.GetType().GetName();
+        string aggregateId = aggregate.Id.Value;
+
+        foreach (DomainEvent change in aggregate.Changes)
+        {
+          builder = builder.Value(change.Id, change.ActorId, change.OccurredOn.ToUniversalTime(),
+            change.Version, change.DeleteAction.ToString(), aggregateType, aggregateId,
+            change.GetType().GetName(), EventSerializer.Instance.Serialize(change));
+        }
+      }
+    }
+
+    ICommand insert = builder.Build();
+
+    using DbCommand command = Connection.CreateCommand();
+    command.CommandText = insert.Text;
+    command.Parameters.AddRange(insert.Parameters.ToArray());
+    await command.ExecuteNonQueryAsync(cancellationToken);
   }
 
+  protected abstract IInsertBuilder CreateInsertBuilder(params ColumnId[] columns);
   protected abstract IQueryBuilder CreateQueryBuilder(TableId source);
 
   protected abstract override AggregateRepository CreateRepository(IEventBus eventBus);
 
-  protected abstract DbConnection InitializeDbConnection();
+  protected abstract Task RecreateDatabaseAsync(CancellationToken cancellationToken = default);
 }

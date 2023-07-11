@@ -1,5 +1,4 @@
-﻿using Logitar.Data.Postgres;
-using Npgsql;
+﻿using Npgsql;
 
 namespace Logitar.Data.PostgreSQL;
 
