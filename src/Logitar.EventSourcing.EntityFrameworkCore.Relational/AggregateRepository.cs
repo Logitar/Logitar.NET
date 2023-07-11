@@ -37,7 +37,7 @@ public class AggregateRepository : Infrastructure.AggregateRepository
     string aggregateType = typeof(T).GetName();
 
     EventEntity[] events = await EventContext.Events.AsNoTracking()
-      .Where(e => e.AggregateType == aggregateType && e.AggregateId == aggregateId)
+      .Where(e => e.AggregateType == aggregateType && e.AggregateId == aggregateId && (!version.HasValue || e.Version <= version.Value))
       .OrderBy(e => e.Version)
       .ToArrayAsync(cancellationToken);
 
