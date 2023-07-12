@@ -5,7 +5,7 @@ namespace Logitar.Identity.Core.Validators;
 /// <summary>
 /// The validator used to validate custom attributes.
 /// </summary>
-public class CustomAttributesValidator
+public class CustomAttributeValidator
 {
   /// <summary>
   /// The lock to the singleton instance of the validator.
@@ -14,11 +14,11 @@ public class CustomAttributesValidator
   /// <summary>
   /// The singleton instance of the validator.
   /// </summary>
-  private static CustomAttributesValidator? _instance = null;
+  private static CustomAttributeValidator? _instance = null;
   /// <summary>
   /// Gets the singleton instance of the validator.
   /// </summary>
-  public static CustomAttributesValidator Instance
+  public static CustomAttributeValidator Instance
   {
     get
     {
@@ -31,11 +31,11 @@ public class CustomAttributesValidator
   }
 
   /// <summary>
-  /// Initializes a new instance of the <see cref="CustomAttributesValidator"/> class.
+  /// Initializes a new instance of the <see cref="CustomAttributeValidator"/> class.
   /// </summary>
   /// <param name="key">The validator for custom attribute keys.</param>
   /// <param name="value">The validator for custom attribute values.</param>
-  public CustomAttributesValidator(IValidator<string>? key = null, IValidator<string>? value = null)
+  public CustomAttributeValidator(IValidator<string>? key = null, IValidator<string>? value = null)
   {
     Key = key ?? new CustomAttributeKeyValidator(nameof(Key));
     Value = value ?? new CustomAttributeValueValidator(nameof(Value));

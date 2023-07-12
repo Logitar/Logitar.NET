@@ -152,7 +152,7 @@ public class RoleAggregate : AggregateRoot
   {
     key = key.Trim();
     value = value.Trim();
-    CustomAttributesValidator.Instance.ValidateAndThrow(key, value);
+    CustomAttributeValidator.Instance.ValidateAndThrow(key, value);
 
     RoleModifiedEvent e = GetLatestModifiedEvent();
     e.CustomAttributes[key] = value;
