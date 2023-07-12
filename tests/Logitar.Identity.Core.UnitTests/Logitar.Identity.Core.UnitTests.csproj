@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Logitar.Identity.Core\Logitar.Identity.Core.csproj" />
+    <ProjectReference Include="..\Logitar.UnitTests\Logitar.UnitTests.csproj" />
   </ItemGroup>
 
 </Project>

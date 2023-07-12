@@ -19,7 +19,7 @@ public static class FluentValidationExtensions
   public static IRuleBuilderOptions<T, string?> AllowedCharacters<T>(this IRuleBuilder<T, string?> ruleBuilder, string? allowedCharacters)
   {
     return ruleBuilder.Must(s => ContainOnlyAllowedCharacters(s, allowedCharacters))
-      .WithErrorCode(nameof(AllowedCharacters))
+      .WithErrorCode(GetErrorCode(nameof(AllowedCharacters)))
       .WithMessage($"'{{PropertyName}}' may only contain the following characters: {allowedCharacters}");
   }
   /// <summary>
@@ -44,7 +44,7 @@ public static class FluentValidationExtensions
   public static IRuleBuilderOptions<T, string?> Identifier<T>(this IRuleBuilder<T, string?> ruleBuilder)
   {
     return ruleBuilder.Must(BeAValidIdentifier)
-      .WithErrorCode(nameof(Identifier))
+      .WithErrorCode(GetErrorCode(nameof(Identifier)))
       .WithMessage("'{PropertyName}' may only contains letters, digits, and underscores (_), and may not start with a digit.");
   }
   /// <summary>
@@ -67,7 +67,7 @@ public static class FluentValidationExtensions
   public static IRuleBuilderOptions<T, string?> NullOrNotEmpty<T>(this IRuleBuilder<T, string?> ruleBuilder)
   {
     return ruleBuilder.Must(BeNullOrNotEmpty)
-      .WithErrorCode(nameof(NullOrNotEmpty))
+      .WithErrorCode(GetErrorCode(nameof(NullOrNotEmpty)))
       .WithMessage("'{PropertyName}' must be a null string, or it must be not empty nor only white space.");
   }
   /// <summary>
