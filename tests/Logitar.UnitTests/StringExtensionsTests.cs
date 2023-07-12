@@ -1,4 +1,4 @@
-﻿namespace Logitar.UnitTests;
+﻿namespace Logitar;
 
 [Trait("Category", "Unit")]
 public class StringExtensionsTests

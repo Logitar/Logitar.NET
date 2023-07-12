@@ -7,7 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-Nothing yet.
+### Added
+
+- Implemented CollectionExtensions.
+- Implemented InsertBuilders and QueryBuilders for PostgreSQL and Microsoft SQL Server.
+- Implemented a Demo API with Swagger.
+- Implemented Event Sourcing with multiple data stores.
 
 ## [1.0.0] - 2023-07-07
 
