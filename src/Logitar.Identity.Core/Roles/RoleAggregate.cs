@@ -185,10 +185,7 @@ public class RoleAggregate : AggregateRoot
   /// Applies the specified event to the aggregate.
   /// </summary>
   /// <param name="e">The event to apply.</param>
-  protected virtual void Apply(RoleUniqueNameChangedEvent e)
-  {
-    UniqueName = e.UniqueName;
-  }
+  protected virtual void Apply(RoleUniqueNameChangedEvent e) => UniqueName = e.UniqueName;
 
   /// <summary>
   /// Applies the specified event to the aggregate.

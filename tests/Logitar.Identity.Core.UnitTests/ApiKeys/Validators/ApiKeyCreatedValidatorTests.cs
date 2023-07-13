@@ -1,6 +1,5 @@
 ﻿using FluentValidation.Results;
 using Logitar.Identity.Core.ApiKeys.Events;
-using System.Security.Cryptography;
 
 namespace Logitar.Identity.Core.ApiKeys.Validators;
 
