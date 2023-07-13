@@ -46,4 +46,8 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Using Include="System.Security.Cryptography" />
+  </ItemGroup>
+
 </Project>
