@@ -68,11 +68,10 @@ public class RoleAggregateTests
   [Fact(DisplayName = "It should be deleted correctly.")]
   public void It_should_be_deleted_correctly()
   {
-    RoleAggregate role = new(_uniqueNameSettings, UniqueName);
-    Assert.False(role.IsDeleted);
+    Assert.False(_role.IsDeleted);
 
-    role.Delete();
-    Assert.True(role.IsDeleted);
+    _role.Delete();
+    Assert.True(_role.IsDeleted);
   }
 
   [Fact(DisplayName = "It should not remove custom attribute if it is not found.")]
@@ -106,12 +105,9 @@ public class RoleAggregateTests
   [InlineData(UniqueName, DisplayName)]
   public void It_should_return_the_correct_string_representation(string uniqueName, string? displayName = null)
   {
-    RoleAggregate role = new(_uniqueNameSettings, uniqueName)
-    {
-      DisplayName = displayName
-    };
-    string expected = string.Format("{0} | {1} ({2})", displayName ?? uniqueName, typeof(RoleAggregate), role.Id);
-    Assert.Equal(expected, role.ToString());
+    _role.DisplayName = displayName;
+    string expected = string.Format("{0} | {1} ({2})", displayName ?? uniqueName, typeof(RoleAggregate), _role.Id);
+    Assert.Equal(expected, _role.ToString());
   }
 
   [Theory(DisplayName = "It should set the correct custom attribute.")]
