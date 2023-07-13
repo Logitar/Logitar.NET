@@ -86,9 +86,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Identity.Core", "sr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Identity.Core.UnitTests", "tests\Logitar.Identity.Core.UnitTests\Logitar.Identity.Core.UnitTests.csproj", "{C00718CC-E424-440E-8485-A1F5F2DAFC6D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Security", "tests\Logitar.Security\Logitar.Security.csproj", "{823DDA3E-A040-49AC-8F5C-BEBE53A2466F}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Security.UnitTests", "tests\Logitar.Security.UnitTests\Logitar.Security.UnitTests.csproj", "{B2AD9585-CDAB-415E-A7CC-EB242B93093F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Security", "src\Logitar.Security\Logitar.Security.csproj", "{2F244766-99D6-4119-93AB-00834A3ACCBA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -224,14 +224,14 @@ Global
 		{C00718CC-E424-440E-8485-A1F5F2DAFC6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C00718CC-E424-440E-8485-A1F5F2DAFC6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C00718CC-E424-440E-8485-A1F5F2DAFC6D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{823DDA3E-A040-49AC-8F5C-BEBE53A2466F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{823DDA3E-A040-49AC-8F5C-BEBE53A2466F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{823DDA3E-A040-49AC-8F5C-BEBE53A2466F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{823DDA3E-A040-49AC-8F5C-BEBE53A2466F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B2AD9585-CDAB-415E-A7CC-EB242B93093F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B2AD9585-CDAB-415E-A7CC-EB242B93093F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B2AD9585-CDAB-415E-A7CC-EB242B93093F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B2AD9585-CDAB-415E-A7CC-EB242B93093F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F244766-99D6-4119-93AB-00834A3ACCBA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F244766-99D6-4119-93AB-00834A3ACCBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F244766-99D6-4119-93AB-00834A3ACCBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F244766-99D6-4119-93AB-00834A3ACCBA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

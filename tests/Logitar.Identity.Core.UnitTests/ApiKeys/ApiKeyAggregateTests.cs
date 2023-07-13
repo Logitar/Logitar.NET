@@ -47,6 +47,33 @@ public class ApiKeyAggregateTests
     Assert.True(e.Roles[role.Id.Value]);
   }
 
+  [Fact(DisplayName = "Authenticate: it should throw ApiKeyIsExpiredException when it is expired.")]
+  public void Authenticate_it_should_throw_ApiKeyIsExpiredException_when_it_is_expired()
+  {
+    _apiKey.ExpiresOn = DateTime.Now.AddDays(1);
+    DateTime moment = DateTime.Now.AddDays(10);
+
+    var exception = Assert.Throws<ApiKeyIsExpiredException>(() => _apiKey.Authenticate(_apiKey.Secret!, moment));
+    Assert.Equal(_apiKey.ToString(), exception.ApiKey);
+    Assert.Equal(moment, exception.Moment);
+  }
+  [Fact(DisplayName = "Authenticate: it should throw InvalidCredentialsException when secret is not valid.")]
+  public void Authenticate_it_should_throw_InvalidCredentialsException_when_secret_is_not_valid()
+  {
+    Assert.Throws<InvalidCredentialsException>(() => _apiKey.Authenticate(_apiKey.Secret!.Skip(1).ToArray()));
+  }
+
+  [Fact(DisplayName = "Authentication should succeed when secret is valid and api key is not expired.")]
+  public void Authentication_should_succeed_when_secret_is_valid_and_api_key_is_not_expired()
+  {
+    _apiKey.ExpiresOn = DateTime.Now.AddYears(1);
+
+    DateTime moment = DateTime.Now.AddMonths(3);
+    _apiKey.Authenticate(_apiKey.Secret!, moment);
+    Assert.Equal(moment, _apiKey.AuthenticatedOn);
+    Assert.Contains(_apiKey.Changes, e => e is ApiKeyAuthenticatedEvent);
+  }
+
   [Fact(DisplayName = "Constructor should throw ValidationException when validation fails.")]
   public void Constructor_should_throw_ValidationException_when_validation_fails()
   {
@@ -68,7 +95,7 @@ public class ApiKeyAggregateTests
     DateTime expiresOn = DateTime.Now.AddDays(10);
     _apiKey.ExpiresOn = expiresOn;
 
-    Assert.False(_apiKey.IsExpired(expiresOn.AddDays(1)));
+    Assert.False(_apiKey.IsExpired(expiresOn.AddDays(-1)));
   }
   [Fact(DisplayName = "IsExpired: it should return true when it is expired.")]
   public void IsExpired_it_should_return_true_when_it_is_expired()
@@ -76,7 +103,18 @@ public class ApiKeyAggregateTests
     DateTime expiresOn = DateTime.Now.AddDays(10);
     _apiKey.ExpiresOn = expiresOn;
 
-    Assert.True(_apiKey.IsExpired(expiresOn.AddDays(-1)));
+    Assert.True(_apiKey.IsExpired(expiresOn.AddDays(1)));
+  }
+
+  [Fact(DisplayName = "IsMatch: it should return false when the API key secret is not a match.")]
+  public void IsMatch_it_should_return_false_when_the_API_key_secret_is_not_a_match()
+  {
+    Assert.False(_apiKey.IsMatch(_apiKey.Secret!.Skip(1).ToArray()));
+  }
+  [Fact(DisplayName = "IsMatch: it should return true when the API key secret is a match.")]
+  public void IsMatch_it_should_return_true_when_the_API_key_secret_is_a_match()
+  {
+    Assert.True(_apiKey.IsMatch(_apiKey.Secret!));
   }
 
   [Theory(DisplayName = "It should be constructed correctly with_arguments.")]
@@ -98,6 +136,9 @@ public class ApiKeyAggregateTests
     {
       Assert.Equal(apiKeyId, apiKey.Id);
     }
+
+    Assert.NotNull(apiKey.Secret);
+    Assert.Equal(32, apiKey.Secret.Length);
   }
 
   [Theory(DisplayName = "It should be constructed correctly with identifier.")]

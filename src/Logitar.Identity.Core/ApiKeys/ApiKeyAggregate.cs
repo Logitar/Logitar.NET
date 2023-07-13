@@ -4,7 +4,7 @@ using Logitar.Identity.Core.ApiKeys.Events;
 using Logitar.Identity.Core.ApiKeys.Validators;
 using Logitar.Identity.Core.Roles;
 using Logitar.Identity.Core.Validators;
-using System.Collections.Immutable;
+using Logitar.Security.Cryptography;
 
 namespace Logitar.Identity.Core.ApiKeys;
 
@@ -14,7 +14,10 @@ namespace Logitar.Identity.Core.ApiKeys;
 /// </summary>
 public class ApiKeyAggregate : AggregateRoot
 {
-  // TODO(fpion): Secret (PBKDF2)
+  /// <summary>
+  /// The length of API key secrets (256 bits).
+  /// </summary>
+  private const int SecretLength = 256 / 8;
 
   /// <summary>
   /// The custom attributes of the API key.
@@ -24,6 +27,11 @@ public class ApiKeyAggregate : AggregateRoot
   /// The roles of the API key.
   /// </summary>
   private readonly HashSet<AggregateId> _roles = new();
+
+  /// <summary>
+  /// The secret of the API key.
+  /// </summary>
+  private Pbkdf2 _secret = new(string.Empty);
 
   /// <summary>
   /// The title of the API key.
@@ -55,9 +63,12 @@ public class ApiKeyAggregate : AggregateRoot
   /// <exception cref="ValidationException">The validation failed.</exception>
   public ApiKeyAggregate(string title, string? tenantId = null, AggregateId? id = null) : base(id)
   {
+    Secret = RandomNumberGenerator.GetBytes(SecretLength);
+
     ApiKeyCreatedEvent e = new()
     {
       TenantId = tenantId?.CleanTrim(),
+      Secret = new Pbkdf2(Secret),
       Title = title.Trim()
     };
 
@@ -73,6 +84,8 @@ public class ApiKeyAggregate : AggregateRoot
   protected virtual void Apply(ApiKeyCreatedEvent e)
   {
     TenantId = e.TenantId;
+
+    _secret = e.Secret;
 
     _title = e.Title;
   }
@@ -149,6 +162,11 @@ public class ApiKeyAggregate : AggregateRoot
   }
 
   /// <summary>
+  /// Gets or sets the last authentication date an time of the API key.
+  /// </summary>
+  public DateTime? AuthenticatedOn { get; private set; }
+
+  /// <summary>
   /// Gets the custom attributes of the API key.
   /// </summary>
   public IReadOnlyDictionary<string, string> CustomAttributes => _customAttributes.AsReadOnly();
@@ -156,6 +174,11 @@ public class ApiKeyAggregate : AggregateRoot
   /// Gets the roles of the API key.
   /// </summary>
   public IReadOnlySet<AggregateId> Roles => _roles.ToImmutableHashSet();
+
+  /// <summary>
+  /// Gets or sets the secret bytes of the API key.
+  /// </summary>
+  public byte[]? Secret { get; private set; }
 
   /// <summary>
   /// Deletes the API key.
@@ -241,11 +264,47 @@ public class ApiKeyAggregate : AggregateRoot
   }
 
   /// <summary>
+  /// Authenticates the API key.
+  /// </summary>
+  /// <param name="secret">The secret to match against.</param>
+  /// <param name="moment">The expiration date and time to validate against.</param>
+  /// <exception cref="NotImplementedException"></exception>
+  public void Authenticate(byte[] secret, DateTime? moment = null)
+  {
+    if (!IsMatch(secret))
+    {
+      StringBuilder message = new();
+      message.AppendLine("The API key secret was not a match.");
+      message.Append("ApiKey: ").Append(this).AppendLine();
+      message.Append("Secret: ").Append(Convert.ToBase64String(secret)).AppendLine();
+      throw new InvalidCredentialsException(message.ToString());
+    }
+    else if (IsExpired(moment))
+    {
+      throw new ApiKeyIsExpiredException(this, moment);
+    }
+
+    ApplyChange(new ApiKeyAuthenticatedEvent(), occurredOn: moment);
+  }
+  /// <summary>
+  /// Applies the specified event to the aggregate.
+  /// </summary>
+  /// <param name="e">The event to apply.</param>
+  protected virtual void Apply(ApiKeyAuthenticatedEvent e) => AuthenticatedOn = e.OccurredOn;
+
+  /// <summary>
   /// Returns a value indicating whether or not the API key is expired.
   /// </summary>
   /// <param name="moment">The date and time to validate against. Defaults to now.</param>
   /// <returns>The expiration status.</returns>
-  public bool IsExpired(DateTime? moment = null) => _expiresOn >= (moment ?? DateTime.Now);
+  public bool IsExpired(DateTime? moment = null) => _expiresOn <= (moment ?? DateTime.Now);
+
+  /// <summary>
+  /// Returns a value indicating whether or not the specified secret is a match to the API key.
+  /// </summary>
+  /// <param name="secret">The secret to match against.</param>
+  /// <returns>The match result.</returns>
+  public bool IsMatch(byte[] secret) => _secret.IsMatch(secret);
 
   /// <summary>
   /// Applies the specified event to the aggregate.

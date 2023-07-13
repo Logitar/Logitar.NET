@@ -17,6 +17,8 @@ public class ApiKeyCreatedValidator : AbstractValidator<ApiKeyCreatedEvent>
     RuleFor(x => x.TenantId).NullOrNotEmpty()
       .MaximumLength(byte.MaxValue);
 
+    RuleFor(x => x.Secret).NotNull();
+
     RuleFor(x => x.Title).SetValidator(titleValidator);
   }
 }

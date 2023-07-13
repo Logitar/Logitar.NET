@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Logitar.EventSourcing\Logitar.EventSourcing.csproj" />
+    <ProjectReference Include="..\Logitar.Security\Logitar.Security.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -19,6 +20,12 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Logitar.Identity.Core.UnitTests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="System.Collections.Immutable" />
+    <Using Include="System.Security.Cryptography" />
+    <Using Include="System.Text" />
   </ItemGroup>
 
 </Project>

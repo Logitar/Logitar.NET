@@ -3,7 +3,7 @@
 namespace Logitar.Identity.Core.ApiKeys.Events;
 
 /// <summary>
-/// The event raised when a <see cref="ApiKeyAggregate"/> is deleted.
+/// The event raised when an <see cref="ApiKeyAggregate"/> is deleted.
 /// </summary>
 public record ApiKeyDeletedEvent : DomainEvent
 {

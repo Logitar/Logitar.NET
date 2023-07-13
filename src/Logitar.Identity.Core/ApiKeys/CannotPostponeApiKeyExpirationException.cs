@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace Logitar.Identity.Core.ApiKeys;
+﻿namespace Logitar.Identity.Core.ApiKeys;
 
 /// <summary>
 /// The exception thrown when an <see cref="ApiKeyAggregate"/> expiration could be postponed.
