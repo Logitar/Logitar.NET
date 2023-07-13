@@ -3,7 +3,6 @@ using Logitar.EventSourcing;
 using Logitar.Identity.Core.ApiKeys.Events;
 using Logitar.Identity.Core.ApiKeys.Validators;
 using Logitar.Identity.Core.Roles;
-using Logitar.Identity.Core.Roles.Validators;
 using Logitar.Identity.Core.Validators;
 using System.Collections.Immutable;
 
@@ -15,6 +14,8 @@ namespace Logitar.Identity.Core.ApiKeys;
 /// </summary>
 public class ApiKeyAggregate : AggregateRoot
 {
+  // TODO(fpion): Secret (PBKDF2)
+
   /// <summary>
   /// The custom attributes of the API key.
   /// </summary>
