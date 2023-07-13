@@ -20,6 +20,21 @@ public class FluentValidationExtensionsTests
     Assert.True(FluentValidationExtensions.BeAValidIdentifier(s));
   }
 
+  [Fact(DisplayName = "BeInTheFuture: validation should fail when it is not in the future.")]
+  public void BeInTheFuture_validation_should_fail_when_it_is_not_in_the_future()
+  {
+    DateTime past = DateTime.Now.AddDays(-1);
+    DateTime future = DateTime.Now.AddHours(15);
+    Assert.False(FluentValidationExtensions.BeInTheFuture(past, future));
+  }
+
+  [Fact(DisplayName = "BeInTheFuture: validation should succeed when it is in the future.")]
+  public void BeInTheFuture_validation_should_succeed_when_it_is_in_the_future()
+  {
+    DateTime future = DateTime.Now.AddMinutes(4);
+    Assert.True(FluentValidationExtensions.BeInTheFuture(future));
+  }
+
   [Theory(DisplayName = "BeNullOrNotEmpty: validation should fail when it is empty or only white space.")]
   [InlineData("")]
   [InlineData("  ")]

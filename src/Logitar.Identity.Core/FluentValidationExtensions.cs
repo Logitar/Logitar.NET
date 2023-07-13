@@ -34,6 +34,29 @@ public static class FluentValidationExtensions
   }
 
   /// <summary>
+  /// Defines a future validator to the specified rule builder.
+  /// <br />Validation will fail if the input date and time are prior to the validation moment.
+  /// <br />Validation will succeed if the input date and time are future to the validation moment.
+  /// </summary>
+  /// <typeparam name="T">The type of the validated instance.</typeparam>
+  /// <param name="ruleBuilder">The rule builder.</param>
+  /// <param name="moment">The date and time to validate against. Defaults to now.</param>
+  /// <returns>The rule builder.</returns>
+  public static IRuleBuilderOptions<T, DateTime> Future<T>(this IRuleBuilder<T, DateTime> ruleBuilder, DateTime? moment = null)
+  {
+    return ruleBuilder.Must(d => BeInTheFuture(d, moment))
+      .WithErrorCode(GetErrorCode(nameof(Future)))
+      .WithMessage("'{PropertyName}' must be in the future.");
+  }
+  /// <summary>
+  /// Returns a value indicating whether or not the specified date and time are in the future.
+  /// </summary>
+  /// <param name="value">The date and time to validate.</param>
+  /// <param name="moment">The date and time to validate against. Defaults to now.</param>
+  /// <returns>The validation result.</returns>
+  internal static bool BeInTheFuture(DateTime value, DateTime? moment = null) => value > (moment ?? DateTime.Now);
+
+  /// <summary>
   /// Defines an identifier validator to the specified rule builder.
   /// <br />Validation will fail if the input string starts with a digit, or contains a character that is not a letter, nor a digit, nor an underscore(_).
   /// <br />Validation will succeed if the input sting only contains letters, digits, or underscores (_), and do not start with a digit.

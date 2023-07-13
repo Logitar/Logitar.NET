@@ -124,7 +124,7 @@ public class RoleAggregate : AggregateRoot
   public IReadOnlyDictionary<string, string> CustomAttributes => _customAttributes.AsReadOnly();
 
   /// <summary>
-  /// Deletes the aggregate.
+  /// Deletes the role.
   /// </summary>
   public void Delete() => ApplyChange(new RoleDeletedEvent());
 
