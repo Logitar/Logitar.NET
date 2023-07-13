@@ -5,8 +5,6 @@ namespace Logitar.Identity.Core.Validators;
 [Trait(Traits.Category, Categories.Unit)]
 public class CustomAttributeValueValidatorTests
 {
-  private readonly Bogus.Faker _faker = new();
-
   private readonly CustomAttributeValueValidator _validator = new();
 
   [Theory(DisplayName = "It should use the specified property name.")]

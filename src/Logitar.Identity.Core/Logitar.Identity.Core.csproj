@@ -17,4 +17,8 @@
     <PackageReference Include="FluentValidation" Version="11.6.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Logitar.Identity.Core.UnitTests" />
+  </ItemGroup>
+
 </Project>

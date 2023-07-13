@@ -28,7 +28,7 @@ public static class FluentValidationExtensions
   /// <param name="s">The input string to validate.</param>
   /// <param name="allowedCharacters">A string containing the list of allowed characters.</param>
   /// <returns>The validation result.</returns>
-  private static bool ContainOnlyAllowedCharacters(string? s, string? allowedCharacters)
+  internal static bool ContainOnlyAllowedCharacters(string? s, string? allowedCharacters)
   {
     return s == null || allowedCharacters == null || s.All(allowedCharacters.Contains);
   }
@@ -53,7 +53,7 @@ public static class FluentValidationExtensions
   /// </summary>
   /// <param name="s">The input string to validate.</param>
   /// <returns>The validation result.</returns>
-  private static bool BeAValidIdentifier(string? s) => (s == null)
+  internal static bool BeAValidIdentifier(string? s) => (s == null)
     || (!string.IsNullOrWhiteSpace(s) && !char.IsDigit(s.First()) && s.All(c => char.IsLetterOrDigit(c) || c == '_'));
 
   /// <summary>
@@ -75,7 +75,7 @@ public static class FluentValidationExtensions
   /// </summary>
   /// <param name="s">The input string to validate.</param>
   /// <returns>The validation result.</returns>
-  private static bool BeNullOrNotEmpty(string? s) => s == null || !string.IsNullOrWhiteSpace(s);
+  internal static bool BeNullOrNotEmpty(string? s) => s == null || !string.IsNullOrWhiteSpace(s);
 
   /// <summary>
   /// Constructs an error code from the specified method name.

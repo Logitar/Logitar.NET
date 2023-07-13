@@ -154,9 +154,40 @@ public class RoleAggregate : AggregateRoot
     value = value.Trim();
     CustomAttributeValidator.Instance.ValidateAndThrow(key, value);
 
-    RoleModifiedEvent e = GetLatestModifiedEvent();
-    e.CustomAttributes[key] = value;
-    Apply(e);
+    if (!_customAttributes.TryGetValue(key, out string? existingValue) || value != existingValue)
+    {
+      RoleModifiedEvent e = GetLatestModifiedEvent();
+      e.CustomAttributes[key] = value;
+      Apply(e);
+    }
+  }
+
+  /// <summary>
+  /// Changes the unique name of the role.
+  /// </summary>
+  /// <param name="uniqueNameSettings">The settings used to validate the unique name.</param>
+  /// <param name="uniqueName">The unique name of the role.</param>
+  /// <exception cref="ValidationException">The validation failed.</exception>
+  public void SetUniqueName(IUniqueNameSettings uniqueNameSettings, string uniqueName)
+  {
+    uniqueName = uniqueName.Trim();
+    new UniqueNameValidator(uniqueNameSettings, nameof(UniqueName)).ValidateAndThrow(uniqueName);
+
+    if (uniqueName != UniqueName)
+    {
+      ApplyChange(new RoleUniqueNameChangedEvent
+      {
+        UniqueName = uniqueName
+      });
+    }
+  }
+  /// <summary>
+  /// Applies the specified event to the aggregate.
+  /// </summary>
+  /// <param name="e">The event to apply.</param>
+  protected virtual void Apply(RoleUniqueNameChangedEvent e)
+  {
+    UniqueName = e.UniqueName;
   }
 
   /// <summary>
