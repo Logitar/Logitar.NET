@@ -29,6 +29,36 @@ public record UserModifiedEvent : DomainEvent
   public Modification<string> Nickname { get; set; }
 
   /// <summary>
+  /// Gets or sets the birthdate of the user.
+  /// </summary>
+  public Modification<DateTime?> Birthdate { get; set; }
+  /// <summary>
+  /// Gets or sets the gender of the user.
+  /// </summary>
+  public Modification<Gender> Gender { get; set; }
+  /// <summary>
+  /// Gets or sets the locale of the user.
+  /// </summary>
+  public Modification<CultureInfo> Locale { get; set; }
+  /// <summary>
+  /// Gets or sets the time zone of the user.
+  /// </summary>
+  public Modification<TimeZone> TimeZone { get; set; }
+
+  /// <summary>
+  /// Gets or sets the URL to the picture of the user.
+  /// </summary>
+  public Modification<Uri> Picture { get; set; }
+  /// <summary>
+  /// Gets or sets the URL to the profile of the user.
+  /// </summary>
+  public Modification<Uri> Profile { get; set; }
+  /// <summary>
+  /// Gets or sets the URL to the website of the user.
+  /// </summary>
+  public Modification<Uri> Website { get; set; }
+
+  /// <summary>
   /// Gets or sets the custom attribute modifications of the user.
   /// <br />If the value is null, the custom attribute will be removed.
   /// <br />Otherwise, the custom attribute will be added or replaced.

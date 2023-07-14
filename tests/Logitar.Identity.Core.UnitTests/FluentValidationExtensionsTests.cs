@@ -1,4 +1,6 @@
-﻿namespace Logitar.Identity.Core;
+﻿using System.Globalization;
+
+namespace Logitar.Identity.Core;
 
 [Trait(Traits.Category, Categories.Unit)]
 public class FluentValidationExtensionsTests
@@ -20,6 +22,23 @@ public class FluentValidationExtensionsTests
     Assert.True(FluentValidationExtensions.BeAValidIdentifier(s));
   }
 
+  [Theory(DisplayName = "BeAValidLocale: validation should fail when it is invariant or user-defined culture.")]
+  [InlineData("")]
+  [InlineData("fr-MX")]
+  public void BeAValidLocale_validation_should_fail_when_it_is_invariant_or_user_defined_culture(string name)
+  {
+    CultureInfo culture = new(name);
+    Assert.False(FluentValidationExtensions.BeAValidLocale(culture));
+  }
+
+  [Theory(DisplayName = "BeAValidLocale: validation should succeed when it is not invariant nor user-defined culture.")]
+  [InlineData("es-MX")]
+  public void BeAValidLocale_validation_should_succeed_when_it_is_not_invariant_nor_user_defined_culture(string name)
+  {
+    CultureInfo culture = new(name);
+    Assert.True(FluentValidationExtensions.BeAValidLocale(culture));
+  }
+
   [Fact(DisplayName = "BeInTheFuture: validation should fail when it is not in the future.")]
   public void BeInTheFuture_validation_should_fail_when_it_is_not_in_the_future()
   {
@@ -33,6 +52,21 @@ public class FluentValidationExtensionsTests
   {
     DateTime future = DateTime.Now.AddMinutes(4);
     Assert.True(FluentValidationExtensions.BeInTheFuture(future));
+  }
+
+  [Fact(DisplayName = "BeInThePast: validation should fail when it is not in the past.")]
+  public void BeInThePast_validation_should_fail_when_it_is_not_in_the_past()
+  {
+    DateTime past = DateTime.Now.AddDays(-1);
+    DateTime future = DateTime.Now.AddHours(15);
+    Assert.False(FluentValidationExtensions.BeInThePast(future, past));
+  }
+
+  [Fact(DisplayName = "BeInThePast: validation should succeed when it is in the past.")]
+  public void BeInThePast_validation_should_succeed_when_it_is_in_the_past()
+  {
+    DateTime future = DateTime.Now.AddMinutes(-4);
+    Assert.True(FluentValidationExtensions.BeInThePast(future));
   }
 
   [Theory(DisplayName = "BeNullOrNotEmpty: validation should fail when it is empty or only white space.")]

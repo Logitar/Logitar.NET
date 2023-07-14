@@ -5,6 +5,7 @@ using Logitar.Identity.Core.Roles;
 using Logitar.Identity.Core.Settings;
 using Logitar.Identity.Core.Users.Events;
 using Logitar.Security.Cryptography;
+using System.Globalization;
 
 namespace Logitar.Identity.Core.Users;
 
@@ -240,6 +241,19 @@ public class UserAggregateTests
     Assert.Equal(expected, _user.ToString());
   }
 
+  [Fact(DisplayName = "It should set the correct Birthdate.")]
+  public void It_should_set_the_correct_Birthdate()
+  {
+    DateTime birthdate = _faker.Person.DateOfBirth;
+    _user.Birthdate = birthdate;
+    Assert.Equal(birthdate, _user.Birthdate);
+    Assert.Contains(_user.Changes, e => e is UserModifiedEvent change && change.Birthdate.IsModified);
+
+    _user.ClearChanges();
+    _user.Birthdate = birthdate;
+    Assert.DoesNotContain(_user.Changes, e => e is UserModifiedEvent);
+  }
+
   [Theory(DisplayName = "It should set the correct custom attribute.")]
   [InlineData(" ProfileId ", "   76   ")]
   public void It_should_set_the_correct_custom_attribute(string key, string value)
@@ -295,6 +309,19 @@ public class UserAggregateTests
     Assert.DoesNotContain(_user.Changes, e => e is UserModifiedEvent);
   }
 
+  [Fact(DisplayName = "It should set the correct Gender.")]
+  public void It_should_set_the_correct_Gender()
+  {
+    Gender gender = new("male");
+    _user.Gender = gender;
+    Assert.Equal(gender, _user.Gender);
+    Assert.Contains(_user.Changes, e => e is UserModifiedEvent change && change.Gender.IsModified);
+
+    _user.ClearChanges();
+    _user.Gender = new Gender("  Male  ");
+    Assert.DoesNotContain(_user.Changes, e => e is UserModifiedEvent);
+  }
+
   [Theory(DisplayName = "It should set the correct FullName.")]
   [InlineData("  Braun  ")]
   [InlineData("Gor  Gery", "gory")]
@@ -323,6 +350,20 @@ public class UserAggregateTests
     Assert.DoesNotContain(_user.Changes, e => e is UserModifiedEvent);
   }
 
+  [Theory(DisplayName = "It should set the correct Locale.")]
+  [InlineData("fr-CA")]
+  public void It_should_set_the_correct_Locale(string name)
+  {
+    CultureInfo locale = CultureInfo.GetCultureInfo(name);
+    _user.Locale = locale;
+    Assert.Equal(locale, _user.Locale);
+    Assert.Contains(_user.Changes, e => e is UserModifiedEvent change && change.Locale.IsModified);
+
+    _user.ClearChanges();
+    _user.Locale = locale;
+    Assert.DoesNotContain(_user.Changes, e => e is UserModifiedEvent);
+  }
+
   [Theory(DisplayName = "It should set the correct MiddleName.")]
   [InlineData("Carlos")]
   public void It_should_set_the_correct_MiddleName(string middleName)
@@ -346,6 +387,58 @@ public class UserAggregateTests
 
     _user.ClearChanges();
     _user.Nickname = $"  {nickname}  ";
+    Assert.DoesNotContain(_user.Changes, e => e is UserModifiedEvent);
+  }
+
+  [Fact(DisplayName = "It should set the correct Picture.")]
+  public void It_should_set_the_correct_Picture()
+  {
+    Uri picture = new("https://www.mywebsite.com/assets/img/profile.jpg");
+    _user.Picture = picture;
+    Assert.Equal(picture, _user.Picture);
+    Assert.Contains(_user.Changes, e => e is UserModifiedEvent change && change.Picture.IsModified);
+
+    _user.ClearChanges();
+    _user.Picture = picture;
+    Assert.DoesNotContain(_user.Changes, e => e is UserModifiedEvent);
+  }
+
+  [Fact(DisplayName = "It should set the correct Profile.")]
+  public void It_should_set_the_correct_Profile()
+  {
+    Uri profile = new("https://www.mywebsite.com/my-profile");
+    _user.Profile = profile;
+    Assert.Equal(profile, _user.Profile);
+    Assert.Contains(_user.Changes, e => e is UserModifiedEvent change && change.Profile.IsModified);
+
+    _user.ClearChanges();
+    _user.Profile = profile;
+    Assert.DoesNotContain(_user.Changes, e => e is UserModifiedEvent);
+  }
+
+  [Fact(DisplayName = "It should set the correct Profile.")]
+  public void It_should_set_the_correct_TimeZone()
+  {
+    TimeZone timeZone = new("America/Los_Angeles");
+    _user.TimeZone = timeZone;
+    Assert.Equal(timeZone, _user.TimeZone);
+    Assert.Contains(_user.Changes, e => e is UserModifiedEvent change && change.TimeZone.IsModified);
+
+    _user.ClearChanges();
+    _user.TimeZone = new TimeZone("  America/Los_Angeles  ");
+    Assert.DoesNotContain(_user.Changes, e => e is UserModifiedEvent);
+  }
+
+  [Fact(DisplayName = "It should set the correct Website.")]
+  public void It_should_set_the_correct_Website()
+  {
+    Uri website = new("https://www.mywebsite.com/");
+    _user.Website = website;
+    Assert.Equal(website, _user.Website);
+    Assert.Contains(_user.Changes, e => e is UserModifiedEvent change && change.Website.IsModified);
+
+    _user.ClearChanges();
+    _user.Website = website;
     Assert.DoesNotContain(_user.Changes, e => e is UserModifiedEvent);
   }
 
@@ -376,6 +469,16 @@ public class UserAggregateTests
     Assert.Throws<InvalidCredentialsException>(() => _user.ChangePassword(_passwordSettings, current, current[1..]));
   }
 
+  [Fact(DisplayName = "It should throw ValidationException when birthdate is not valid.")]
+  public void It_should_throw_ValidationException_when_birthdate_is_not_valid()
+  {
+    DateTime birthdate = DateTime.Now.AddYears(20);
+    var exception = Assert.Throws<ValidationException>(() => _user.Birthdate = birthdate);
+    ValidationFailure failure = exception.Errors.Single();
+    Assert.Equal("PastValidator", failure.ErrorCode);
+    Assert.Equal("Birthdate", failure.PropertyName);
+  }
+
   [Fact(DisplayName = "It should throw ValidationException when custom attribute key is not valid.")]
   public void It_should_throw_ValidationException_when_custom_attribute_key_is_not_valid()
   {
@@ -403,6 +506,56 @@ public class UserAggregateTests
     var exception = Assert.Throws<ValidationException>(() => _user.SetExternalIdentifier("ProfileId", value));
     ValidationFailure failure = exception.Errors.Single();
     Assert.Equal("Value", failure.PropertyName);
+  }
+
+  [Fact(DisplayName = "It should throw ValidationException when first name is not valid.")]
+  public void It_should_throw_ValidationException_when_first_name_is_not_valid()
+  {
+    string value = _faker.Random.String(length: 300, minChar: 'a', maxChar: 'z');
+    var exception = Assert.Throws<ValidationException>(() => _user.FirstName = value);
+    ValidationFailure failure = exception.Errors.Single();
+    Assert.Equal("MaximumLengthValidator", failure.ErrorCode);
+    Assert.Equal("FirstName", failure.PropertyName);
+  }
+
+  [Fact(DisplayName = "It should throw ValidationException when last name is not valid.")]
+  public void It_should_throw_ValidationException_when_last_name_is_not_valid()
+  {
+    string value = _faker.Random.String(length: 300, minChar: 'a', maxChar: 'z');
+    var exception = Assert.Throws<ValidationException>(() => _user.LastName = value);
+    ValidationFailure failure = exception.Errors.Single();
+    Assert.Equal("MaximumLengthValidator", failure.ErrorCode);
+    Assert.Equal("LastName", failure.PropertyName);
+  }
+
+  [Fact(DisplayName = "It should throw ValidationException when locale is not valid.")]
+  public void It_should_throw_ValidationException_when_locale_is_not_valid()
+  {
+    CultureInfo locale = CultureInfo.InvariantCulture;
+    var exception = Assert.Throws<ValidationException>(() => _user.Locale = locale);
+    ValidationFailure failure = exception.Errors.Single();
+    Assert.Equal("LocaleValidator", failure.ErrorCode);
+    Assert.Equal("Locale", failure.PropertyName);
+  }
+
+  [Fact(DisplayName = "It should throw ValidationException when middle name is not valid.")]
+  public void It_should_throw_ValidationException_when_middle_name_is_not_valid()
+  {
+    string value = _faker.Random.String(length: 300, minChar: 'a', maxChar: 'z');
+    var exception = Assert.Throws<ValidationException>(() => _user.MiddleName = value);
+    ValidationFailure failure = exception.Errors.Single();
+    Assert.Equal("MaximumLengthValidator", failure.ErrorCode);
+    Assert.Equal("MiddleName", failure.PropertyName);
+  }
+
+  [Fact(DisplayName = "It should throw ValidationException when nickname is not valid.")]
+  public void It_should_throw_ValidationException_when_nickname_is_not_valid()
+  {
+    string value = _faker.Random.String(length: 300, minChar: 'a', maxChar: 'z');
+    var exception = Assert.Throws<ValidationException>(() => _user.Nickname = value);
+    ValidationFailure failure = exception.Errors.Single();
+    Assert.Equal("MaximumLengthValidator", failure.ErrorCode);
+    Assert.Equal("Nickname", failure.PropertyName);
   }
 
   [Fact(DisplayName = "It should throw ValidationException when password is not valid.")]

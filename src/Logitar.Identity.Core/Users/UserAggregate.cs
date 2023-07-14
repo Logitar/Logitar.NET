@@ -50,6 +50,36 @@ public class UserAggregate : AggregateRoot
   private string? _nickname = null;
 
   /// <summary>
+  /// The birthdate of the user.
+  /// </summary>
+  private DateTime? _birthdate = null;
+  /// <summary>
+  /// The gender of the user.
+  /// </summary>
+  private Gender? _gender = null;
+  /// <summary>
+  /// The locale of the user.
+  /// </summary>
+  private CultureInfo? _locale = null;
+  /// <summary>
+  /// The time zone of the user.
+  /// </summary>
+  private TimeZone? _timeZone = null;
+
+  /// <summary>
+  /// The URL to the picture of the user.
+  /// </summary>
+  private Uri? _picture = null;
+  /// <summary>
+  /// The URL to the profile of the user.
+  /// </summary>
+  private Uri? _profile = null;
+  /// <summary>
+  /// The URL to the website of the user.
+  /// </summary>
+  private Uri? _website = null;
+
+  /// <summary>
   /// Initializes a new instance of the <see cref="UserAggregate"/> class.
   /// </summary>
   /// <param name="id">The identifier of the user.</param>
@@ -203,6 +233,132 @@ public class UserAggregate : AggregateRoot
       {
         UserModifiedEvent e = GetLatestModifiedEvent();
         e.Nickname = new Modification<string>(value);
+        Apply(e);
+      }
+    }
+  }
+
+  /// <summary>
+  /// Gets or sets the birthdate of the user.
+  /// </summary>
+  /// <exception cref="ValidationException">The validation failed.</exception>
+  public DateTime? Birthdate
+  {
+    get => _birthdate;
+    set
+    {
+      if (value.HasValue)
+      {
+        new BirthdateValidator(nameof(Birthdate)).ValidateAndThrow(value.Value);
+      }
+
+      if (value != _birthdate)
+      {
+        UserModifiedEvent e = GetLatestModifiedEvent();
+        e.Birthdate = new Modification<DateTime?>(value);
+        Apply(e);
+      }
+    }
+  }
+  /// <summary>
+  /// Gets or sets the gender of the user.
+  /// </summary>
+  public Gender? Gender
+  {
+    get => _gender;
+    set
+    {
+      if (value != _gender)
+      {
+        UserModifiedEvent e = GetLatestModifiedEvent();
+        e.Gender = new Modification<Gender>(value);
+        Apply(e);
+      }
+    }
+  }
+  /// <summary>
+  /// Gets or sets the locale of the user.
+  /// </summary>
+  /// <exception cref="ValidationException">The validation failed.</exception>
+  public CultureInfo? Locale
+  {
+    get => _locale;
+    set
+    {
+      if (value != null)
+      {
+        new LocaleValidator(nameof(Locale)).ValidateAndThrow(value);
+      }
+
+      if (value?.LCID != _locale?.LCID)
+      {
+        UserModifiedEvent e = GetLatestModifiedEvent();
+        e.Locale = new Modification<CultureInfo>(value);
+        Apply(e);
+      }
+    }
+  }
+  /// <summary>
+  /// Gets or sets the time zone of the user.
+  /// </summary>
+  public TimeZone? TimeZone
+  {
+    get => _timeZone;
+    set
+    {
+      if (value != _timeZone)
+      {
+        UserModifiedEvent e = GetLatestModifiedEvent();
+        e.TimeZone = new Modification<TimeZone>(value);
+        Apply(e);
+      }
+    }
+  }
+
+  /// <summary>
+  /// Gets or sets the URL to the picture of the user.
+  /// </summary>
+  public Uri? Picture
+  {
+    get => _picture;
+    set
+    {
+      if (value != _picture)
+      {
+        UserModifiedEvent e = GetLatestModifiedEvent();
+        e.Picture = new Modification<Uri>(value);
+        Apply(e);
+      }
+    }
+  }
+  /// <summary>
+  /// Gets or sets the URL to the profile of the user.
+  /// </summary>
+  public Uri? Profile
+  {
+    get => _profile;
+    set
+    {
+      if (value != _profile)
+      {
+        UserModifiedEvent e = GetLatestModifiedEvent();
+        e.Profile = new Modification<Uri>(value);
+        Apply(e);
+      }
+    }
+  }
+  /// <summary>
+  /// Gets or sets the URL to the website of the user.
+  /// </summary>
+  public Uri? Website
+  {
+    get => _website;
+    set
+    {
+      if (value != _website)
+      {
+        UserModifiedEvent e = GetLatestModifiedEvent();
+        e.Website = new Modification<Uri>(value);
         Apply(e);
       }
     }
@@ -460,6 +616,36 @@ public class UserAggregate : AggregateRoot
     if (e.Nickname.IsModified)
     {
       _nickname = e.Nickname.Value;
+    }
+
+    if (e.Birthdate.IsModified)
+    {
+      _birthdate = e.Birthdate.Value;
+    }
+    if (e.Gender.IsModified)
+    {
+      _gender = e.Gender.Value;
+    }
+    if (e.Locale.IsModified)
+    {
+      _locale = e.Locale.Value;
+    }
+    if (e.TimeZone.IsModified)
+    {
+      _timeZone = e.TimeZone.Value;
+    }
+
+    if (e.Picture.IsModified)
+    {
+      _picture = e.Picture.Value;
+    }
+    if (e.Profile.IsModified)
+    {
+      _profile = e.Profile.Value;
+    }
+    if (e.Website.IsModified)
+    {
+      _website = e.Website.Value;
     }
 
     foreach (KeyValuePair<string, string?> customAttribute in e.CustomAttributes)

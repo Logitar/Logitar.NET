@@ -80,6 +80,29 @@ public static class FluentValidationExtensions
     || (!string.IsNullOrWhiteSpace(s) && !char.IsDigit(s.First()) && s.All(c => char.IsLetterOrDigit(c) || c == '_'));
 
   /// <summary>
+  /// Defines a locale validator to the specified rule builder.
+  /// <br />Validation will fail if the input culture is the invariant culture, or if it is an user-defined culture.
+  /// <br />Validation will succeed if the input culture is not the invariant culture nor an user-defined culture.
+  /// </summary>
+  /// <typeparam name="T">The type of the validated instance.</typeparam>
+  /// <param name="ruleBuilder">The rule builder.</param>
+  /// <returns>The rule builder.</returns>
+  public static IRuleBuilderOptions<T, CultureInfo?> Locale<T>(this IRuleBuilder<T, CultureInfo?> ruleBuilder)
+  {
+    return ruleBuilder.Must(BeAValidLocale)
+      .WithErrorCode(GetErrorCode(nameof(Locale)))
+      .WithMessage("'{PropertyName}' may not be the invariant culture, and it may not be an user-defined culture.");
+  }
+  /// <summary>
+  /// Returns a value indicating whether or not the specified culture is not the invariant culture and has a LCID different from 4096.
+  /// <br />See <see href="https://learn.microsoft.com/en-us/dotnet/api/system.globalization.cultureinfo.lcid?view=net-7.0#remarks"/> for more detail.
+  /// </summary>
+  /// <param name="culture"></param>
+  /// <returns></returns>
+  internal static bool BeAValidLocale(CultureInfo? culture) => (culture == null)
+    || (!string.IsNullOrEmpty(culture.Name) && culture.LCID != 4096);
+
+  /// <summary>
   /// Defines a null or not empty validator to the specified rule builder.
   /// <br />Validation will fail if the input string is empty or only white space.
   /// <br />Validation will succeed if the input string is null, or is not empty nor only white space.
@@ -99,6 +122,29 @@ public static class FluentValidationExtensions
   /// <param name="s">The input string to validate.</param>
   /// <returns>The validation result.</returns>
   internal static bool BeNullOrNotEmpty(string? s) => s == null || !string.IsNullOrWhiteSpace(s);
+
+  /// <summary>
+  /// Defines a past validator to the specified rule builder.
+  /// <br />Validation will fail if the input date and time are future to the validation moment.
+  /// <br />Validation will succeed if the input date and time are prior to the validation moment.
+  /// </summary>
+  /// <typeparam name="T">The type of the validated instance.</typeparam>
+  /// <param name="ruleBuilder">The rule builder.</param>
+  /// <param name="moment">The date and time to validate against. Defaults to now.</param>
+  /// <returns>The rule builder.</returns>
+  public static IRuleBuilderOptions<T, DateTime> Past<T>(this IRuleBuilder<T, DateTime> ruleBuilder, DateTime? moment = null)
+  {
+    return ruleBuilder.Must(d => BeInThePast(d, moment))
+      .WithErrorCode(GetErrorCode(nameof(Past)))
+      .WithMessage("'{PropertyName}' must be in the past.");
+  }
+  /// <summary>
+  /// Returns a value indicating whether or not the specified date and time are in the past.
+  /// </summary>
+  /// <param name="value">The date and time to validate.</param>
+  /// <param name="moment">The date and time to validate against. Defaults to now.</param>
+  /// <returns>The validation result.</returns>
+  internal static bool BeInThePast(DateTime value, DateTime? moment = null) => value < (moment ?? DateTime.Now);
 
   /// <summary>
   /// Constructs an error code from the specified method name.
