@@ -8,6 +8,27 @@ namespace Logitar.Identity.Core.Users.Events;
 public record UserModifiedEvent : DomainEvent
 {
   /// <summary>
+  /// Gets or sets the first name of the user.
+  /// </summary>
+  public Modification<string> FirstName { get; set; }
+  /// <summary>
+  /// Gets or sets the middle name of the user.
+  /// </summary>
+  public Modification<string> MiddleName { get; set; }
+  /// <summary>
+  /// Gets or sets the last name of the user.
+  /// </summary>
+  public Modification<string> LastName { get; set; }
+  /// <summary>
+  /// Gets or sets the full name of the user.
+  /// </summary>
+  public Modification<string> FullName { get; set; }
+  /// <summary>
+  /// Gets or sets the nickname of the user.
+  /// </summary>
+  public Modification<string> Nickname { get; set; }
+
+  /// <summary>
   /// Gets or sets the custom attribute modifications of the user.
   /// <br />If the value is null, the custom attribute will be removed.
   /// <br />Otherwise, the custom attribute will be added or replaced.

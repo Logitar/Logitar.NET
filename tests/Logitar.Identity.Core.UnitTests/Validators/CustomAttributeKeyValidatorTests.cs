@@ -51,9 +51,9 @@ public class CustomAttributeKeyValidatorTests
     Assert.Equal("MaximumLengthValidator", failure.ErrorCode);
   }
 
-  [Theory(DisplayName = "Validation should success when key is valid.")]
+  [Theory(DisplayName = "Validation should succeed when key is valid.")]
   [InlineData("_Test123")]
-  public void Validation_should_success_when_key_is_valid(string value)
+  public void Validation_should_succeed_when_key_is_valid(string value)
   {
     ValidationResult result = _validator.Validate(value);
     Assert.True(result.IsValid);

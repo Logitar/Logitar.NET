@@ -33,6 +33,23 @@ public class UserAggregate : AggregateRoot
   private Pbkdf2? _password = null;
 
   /// <summary>
+  /// The first name of the user.
+  /// </summary>
+  private string? _firstName = null;
+  /// <summary>
+  /// The middle name of the user.
+  /// </summary>
+  private string? _middleName = null;
+  /// <summary>
+  /// The last name of the user.
+  /// </summary>
+  private string? _lastName = null;
+  /// <summary>
+  /// The nickname of the user.
+  /// </summary>
+  private string? _nickname = null;
+
+  /// <summary>
   /// Initializes a new instance of the <see cref="UserAggregate"/> class.
   /// </summary>
   /// <param name="id">The identifier of the user.</param>
@@ -90,6 +107,106 @@ public class UserAggregate : AggregateRoot
   /// Gets or sets a value indicating whether or not the user is disabled.
   /// </summary>
   public bool IsDisabled { get; private set; }
+
+  /// <summary>
+  /// Gets or sets the first name of the user.
+  /// </summary>
+  /// <exception cref="ValidationException">The validation failed.</exception>
+  public string? FirstName
+  {
+    get => _firstName;
+    set
+    {
+      value = value?.CleanTrim();
+      if (value != null)
+      {
+        new PersonNameValidator(nameof(FirstName)).ValidateAndThrow(value);
+      }
+
+      if (value != _firstName)
+      {
+        UserModifiedEvent e = GetLatestModifiedEvent();
+        e.FirstName = new Modification<string>(value);
+        e.FullName = new Modification<string>(BuildFullName(value, _middleName, _lastName));
+        Apply(e);
+      }
+    }
+  }
+  /// <summary>
+  /// Gets or sets the middle name of the user.
+  /// </summary>
+  /// <exception cref="ValidationException">The validation failed.</exception>
+  public string? MiddleName
+  {
+    get => _middleName;
+    set
+    {
+      value = value?.CleanTrim();
+      if (value != null)
+      {
+        new PersonNameValidator(nameof(MiddleName)).ValidateAndThrow(value);
+      }
+
+      if (value != _middleName)
+      {
+        UserModifiedEvent e = GetLatestModifiedEvent();
+        e.MiddleName = new Modification<string>(value);
+        e.FullName = new Modification<string>(BuildFullName(_firstName, value, _lastName));
+        Apply(e);
+      }
+    }
+  }
+  /// <summary>
+  /// Gets or sets the last name of the user.
+  /// </summary>
+  /// <exception cref="ValidationException">The validation failed.</exception>
+  public string? LastName
+  {
+    get => _lastName;
+    set
+    {
+      value = value?.CleanTrim();
+      if (value != null)
+      {
+        new PersonNameValidator(nameof(LastName)).ValidateAndThrow(value);
+      }
+
+      if (value != _lastName)
+      {
+        UserModifiedEvent e = GetLatestModifiedEvent();
+        e.LastName = new Modification<string>(value);
+        e.FullName = new Modification<string>(BuildFullName(_firstName, _middleName, value));
+        Apply(e);
+      }
+    }
+  }
+  /// <summary>
+  /// Gets the full name of the user.
+  /// </summary>
+  public string? FullName { get; private set; }
+  /// <summary>
+  /// Gets or sets the nickname of the user.
+  /// </summary>
+  /// <exception cref="ValidationException">The validation failed.</exception>
+  public string? Nickname
+  {
+    get => _nickname;
+    set
+    {
+      value = value?.CleanTrim();
+      if (value != null)
+      {
+        new PersonNameValidator(nameof(Nickname)).ValidateAndThrow(value);
+      }
+
+      if (value != _nickname)
+      {
+        UserModifiedEvent e = GetLatestModifiedEvent();
+        e.Nickname = new Modification<string>(value);
+        Apply(e);
+      }
+    }
+  }
 
   /// <summary>
   /// Gets the custom attributes of the user.
@@ -324,6 +441,27 @@ public class UserAggregate : AggregateRoot
   /// <param name="e">The event to apply.</param>
   protected virtual void Apply(UserModifiedEvent e)
   {
+    if (e.FirstName.IsModified)
+    {
+      _firstName = e.FirstName.Value;
+    }
+    if (e.MiddleName.IsModified)
+    {
+      _middleName = e.MiddleName.Value;
+    }
+    if (e.LastName.IsModified)
+    {
+      _lastName = e.LastName.Value;
+    }
+    if (e.FullName.IsModified)
+    {
+      FullName = e.FullName.Value;
+    }
+    if (e.Nickname.IsModified)
+    {
+      _nickname = e.Nickname.Value;
+    }
+
     foreach (KeyValuePair<string, string?> customAttribute in e.CustomAttributes)
     {
       if (customAttribute.Value == null)
@@ -365,4 +503,19 @@ public class UserAggregate : AggregateRoot
 
     return e;
   }
+
+  /// <summary>
+  /// Builds the full name of the user.
+  /// </summary>
+  /// <param name="names">The names of the user.</param>
+  /// <returns>The full name of the user.</returns>
+  private static string? BuildFullName(params string?[] names) => string.Join(' ', names
+    .SelectMany(name => name?.Split() ?? Array.Empty<string>())
+    .Where(name => !string.IsNullOrEmpty(name)));
+
+  /// <summary>
+  /// Returns a string representation of the user aggregate.
+  /// </summary>
+  /// <returns>The string representation.</returns>
+  public override string ToString() => string.Join(" | ", FullName ?? UniqueName, base.ToString());
 }

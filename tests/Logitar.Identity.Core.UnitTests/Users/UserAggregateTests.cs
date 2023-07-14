@@ -13,6 +13,7 @@ public class UserAggregateTests
 {
   private const string UniqueName = "fpion";
 
+  private readonly Bogus.Faker _faker = new();
   private readonly PasswordSettings _passwordSettings = new()
   {
     RequiredLength = 8,
@@ -227,6 +228,18 @@ public class UserAggregateTests
       && change.Key == "OtherId" && change.Value == null);
   }
 
+  [Fact(DisplayName = "It should return the correct string representation.")]
+  public void It_should_return_the_correct_string_representation()
+  {
+    string expected = string.Format("{0} | {1} ({2})", UniqueName, typeof(UserAggregate), _user.Id);
+    Assert.Equal(expected, _user.ToString());
+
+    _user.FirstName = _faker.Person.FirstName;
+    _user.LastName = _faker.Person.LastName;
+    expected = string.Format("{0} | {1} ({2})", _user.FullName, typeof(UserAggregate), _user.Id);
+    Assert.Equal(expected, _user.ToString());
+  }
+
   [Theory(DisplayName = "It should set the correct custom attribute.")]
   [InlineData(" ProfileId ", "   76   ")]
   public void It_should_set_the_correct_custom_attribute(string key, string value)
@@ -268,6 +281,72 @@ public class UserAggregateTests
     _user.ClearChanges();
     _user.SetExternalIdentifier("ProfileId", "51");
     Assert.DoesNotContain(_user.Changes, e => e is UserExternalIdentifierChangedEvent);
+  }
+
+  [Fact(DisplayName = "It should set the correct FirstName.")]
+  public void It_should_set_the_correct_FirstName()
+  {
+    _user.FirstName = _faker.Person.FirstName;
+    Assert.Equal(_faker.Person.FirstName, _user.FirstName);
+    Assert.Contains(_user.Changes, e => e is UserModifiedEvent change && change.FirstName.IsModified);
+
+    _user.ClearChanges();
+    _user.FirstName = $"  {_faker.Person.FirstName}  ";
+    Assert.DoesNotContain(_user.Changes, e => e is UserModifiedEvent);
+  }
+
+  [Theory(DisplayName = "It should set the correct FullName.")]
+  [InlineData("  Braun  ")]
+  [InlineData("Gor  Gery", "gory")]
+  public void It_should_set_the_correct_FullName(string? middleName, string? nickname = null)
+  {
+    _user.FirstName = _faker.Person.FirstName;
+    _user.MiddleName = middleName;
+    _user.LastName = _faker.Person.LastName;
+    _user.Nickname = nickname;
+
+    string fullName = string.Join(' ', new[] { _faker.Person.FirstName, middleName, _faker.Person.LastName }
+      .SelectMany(name => name?.Split() ?? Array.Empty<string>())
+      .Where(name => !string.IsNullOrEmpty(name)));
+    Assert.Equal(fullName, _user.FullName);
+  }
+
+  [Fact(DisplayName = "It should set the correct LastName.")]
+  public void It_should_set_the_correct_LastName()
+  {
+    _user.LastName = _faker.Person.LastName;
+    Assert.Equal(_faker.Person.LastName, _user.LastName);
+    Assert.Contains(_user.Changes, e => e is UserModifiedEvent change && change.LastName.IsModified);
+
+    _user.ClearChanges();
+    _user.LastName = $"  {_faker.Person.LastName}  ";
+    Assert.DoesNotContain(_user.Changes, e => e is UserModifiedEvent);
+  }
+
+  [Theory(DisplayName = "It should set the correct MiddleName.")]
+  [InlineData("Carlos")]
+  public void It_should_set_the_correct_MiddleName(string middleName)
+  {
+    _user.MiddleName = middleName;
+    Assert.Equal(middleName, _user.MiddleName);
+    Assert.Contains(_user.Changes, e => e is UserModifiedEvent change && change.MiddleName.IsModified);
+
+    _user.ClearChanges();
+    _user.MiddleName = $"  {middleName}  ";
+    Assert.DoesNotContain(_user.Changes, e => e is UserModifiedEvent);
+  }
+
+  [Theory(DisplayName = "It should set the correct Nickname.")]
+  [InlineData("DaCosta")]
+  public void It_should_set_the_correct_Nickname(string nickname)
+  {
+    _user.Nickname = nickname;
+    Assert.Equal(nickname, _user.Nickname);
+    Assert.Contains(_user.Changes, e => e is UserModifiedEvent change && change.Nickname.IsModified);
+
+    _user.ClearChanges();
+    _user.Nickname = $"  {nickname}  ";
+    Assert.DoesNotContain(_user.Changes, e => e is UserModifiedEvent);
   }
 
   [Theory(DisplayName = "It should set the correct UniqueName.")]
@@ -320,7 +399,7 @@ public class UserAggregateTests
   [Fact(DisplayName = "It should throw ValidationException when external identifier value is not valid.")]
   public void It_should_throw_ValidationException_when_external_identifier_value_is_not_valid()
   {
-    string value = new Bogus.Faker().Random.String(300, minChar: 'a', maxChar: 'z');
+    string value = _faker.Random.String(300, minChar: 'a', maxChar: 'z');
     var exception = Assert.Throws<ValidationException>(() => _user.SetExternalIdentifier("ProfileId", value));
     ValidationFailure failure = exception.Errors.Single();
     Assert.Equal("Value", failure.PropertyName);
