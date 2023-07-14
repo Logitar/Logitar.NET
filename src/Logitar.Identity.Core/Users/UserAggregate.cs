@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Logitar.EventSourcing;
+using Logitar.Identity.Core.Roles;
 using Logitar.Identity.Core.Settings;
 using Logitar.Identity.Core.Users.Events;
 using Logitar.Identity.Core.Users.Validators;
@@ -13,6 +14,19 @@ namespace Logitar.Identity.Core.Users;
 /// </summary>
 public class UserAggregate : AggregateRoot
 {
+  /// <summary>
+  /// The custom attributes of the user.
+  /// </summary>
+  private readonly Dictionary<string, string> _customAttributes = new();
+  /// <summary>
+  /// The external identifiers of the user.
+  /// </summary>
+  private readonly Dictionary<string, string> _externalIdentifiers = new();
+  /// <summary>
+  /// The roles of the user.
+  /// </summary>
+  private readonly HashSet<AggregateId> _roles = new();
+
   /// <summary>
   /// The password of the user.
   /// </summary>
@@ -68,11 +82,61 @@ public class UserAggregate : AggregateRoot
   /// Gets or sets the unique name of the user.
   /// </summary>
   public string UniqueName { get; private set; } = string.Empty;
-
   /// <summary>
   /// Gets a value indicating whether or not the user has a password.
   /// </summary>
   public bool HasPassword => _password != null;
+  /// <summary>
+  /// Gets or sets a value indicating whether or not the user is disabled.
+  /// </summary>
+  public bool IsDisabled { get; private set; }
+
+  /// <summary>
+  /// Gets the custom attributes of the user.
+  /// </summary>
+  public IReadOnlyDictionary<string, string> CustomAttributes => _customAttributes.AsReadOnly();
+  /// <summary>
+  /// Gets the external identifiers of the user.
+  /// </summary>
+  public IReadOnlyDictionary<string, string> ExternalIdentifiers => _externalIdentifiers.AsReadOnly();
+  /// <summary>
+  /// Gets the roles of the user.
+  /// </summary>
+  public IReadOnlySet<AggregateId> Roles => _roles.ToImmutableHashSet();
+
+  /// <summary>
+  /// Adds the specified role to the user.
+  /// </summary>
+  /// <param name="role">The role to add.</param>
+  public void AddRole(RoleAggregate role)
+  {
+    if (!_roles.Contains(role.Id))
+    {
+      SetRole(role, addOrRemove: true);
+    }
+  }
+  /// <summary>
+  /// Removes the specified role from the user.
+  /// </summary>
+  /// <param name="role">The role to remove.</param>
+  public void RemoveRole(RoleAggregate role)
+  {
+    if (_roles.Contains(role.Id))
+    {
+      SetRole(role, addOrRemove: false);
+    }
+  }
+  /// <summary>
+  /// Sets the status of the specified role.
+  /// </summary>
+  /// <param name="role">The role to add or remove.</param>
+  /// <param name="addOrRemove">A value indicating whether the role will be added if true or removed if false.</param>
+  private void SetRole(RoleAggregate role, bool addOrRemove)
+  {
+    UserModifiedEvent e = GetLatestModifiedEvent();
+    e.Roles[role.Id.Value] = addOrRemove;
+    Apply(e);
+  }
 
   /// <summary>
   /// Changes the password of the user.
@@ -111,6 +175,125 @@ public class UserAggregate : AggregateRoot
   public void Delete() => ApplyChange(new UserDeletedEvent());
 
   /// <summary>
+  /// Disables the user.
+  /// </summary>
+  public void Disable()
+  {
+    if (!IsDisabled)
+    {
+      ApplyChange(new UserStatusChangedEvent
+      {
+        IsDisabled = true
+      });
+    }
+  }
+  /// <summary>
+  /// Enables the user.
+  /// </summary>
+  public void Enable()
+  {
+    if (IsDisabled)
+    {
+      ApplyChange(new UserStatusChangedEvent
+      {
+        IsDisabled = false
+      });
+    }
+  }
+  /// <summary>
+  /// Applies the specified event to the aggregate.
+  /// </summary>
+  /// <param name="e">The event to apply.</param>
+  protected virtual void Apply(UserStatusChangedEvent e) => IsDisabled = e.IsDisabled;
+
+  /// <summary>
+  /// Removes a custom attribute on the user.
+  /// </summary>
+  /// <param name="key">The key of the custom attribute.</param>
+  public void RemoveCustomAttribute(string key)
+  {
+    key = key.Trim();
+    if (_customAttributes.ContainsKey(key))
+    {
+      UserModifiedEvent e = GetLatestModifiedEvent();
+      e.CustomAttributes[key] = null;
+      Apply(e);
+    }
+  }
+  /// <summary>
+  /// Sets a custom attribute on the user.
+  /// </summary>
+  /// <param name="key">The key of the custom attribute.</param>
+  /// <param name="value">The value of the custom attribute.</param>
+  /// <exception cref="ValidationException">The validation failed.</exception>
+  public void SetCustomAttribute(string key, string value)
+  {
+    key = key.Trim();
+    value = value.Trim();
+    CustomAttributeValidator.Instance.ValidateAndThrow(key, value);
+
+    if (!_customAttributes.TryGetValue(key, out string? existingValue) || value != existingValue)
+    {
+      UserModifiedEvent e = GetLatestModifiedEvent();
+      e.CustomAttributes[key] = value;
+      Apply(e);
+    }
+  }
+
+  /// <summary>
+  /// Removes an external identifier from the user.
+  /// </summary>
+  /// <param name="key">The key of the external identifier.</param>
+  public void RemoveExternalIdentifier(string key)
+  {
+    key = key.Trim();
+    if (_externalIdentifiers.ContainsKey(key))
+    {
+      ApplyChange(new UserExternalIdentifierChangedEvent
+      {
+        Key = key,
+        Value = null
+      });
+    }
+  }
+  /// <summary>
+  /// Sets an external identifier to the user.
+  /// </summary>
+  /// <param name="key">The key of the external identifier.</param>
+  /// <param name="value">The value of the external identifier.</param>
+  /// <exception cref="ValidationException">The validation failed.</exception>
+  public void SetExternalIdentifier(string key, string value)
+  {
+    key = key.Trim();
+    value = value.Trim();
+    ExternalIdentifierValidator.Instance.ValidateAndThrow(key, value);
+
+    if (!_externalIdentifiers.TryGetValue(key, out string? existingValue) || value != existingValue)
+    {
+      ApplyChange(new UserExternalIdentifierChangedEvent
+      {
+        Key = key,
+        Value = value
+      });
+    }
+  }
+  /// <summary>
+  /// Applies the specified event to the aggregate.
+  /// </summary>
+  /// <param name="e">The event to apply.</param>
+  protected virtual void Apply(UserExternalIdentifierChangedEvent e)
+  {
+    if (e.Value == null)
+    {
+      _externalIdentifiers.Remove(e.Key);
+    }
+    else
+    {
+      _externalIdentifiers[e.Key] = e.Value;
+    }
+  }
+
+  /// <summary>
   /// Changes the unique name of the user.
   /// </summary>
   /// <param name="uniqueNameSettings">The settings used to validate the unique name.</param>
@@ -134,4 +317,52 @@ public class UserAggregate : AggregateRoot
   /// </summary>
   /// <param name="e">The event to apply.</param>
   protected virtual void Apply(UserUniqueNameChangedEvent e) => UniqueName = e.UniqueName;
+
+  /// <summary>
+  /// Applies the specified event to the aggregate.
+  /// </summary>
+  /// <param name="e">The event to apply.</param>
+  protected virtual void Apply(UserModifiedEvent e)
+  {
+    foreach (KeyValuePair<string, string?> customAttribute in e.CustomAttributes)
+    {
+      if (customAttribute.Value == null)
+      {
+        _customAttributes.Remove(customAttribute.Key);
+      }
+      else
+      {
+        _customAttributes[customAttribute.Key] = customAttribute.Value;
+      }
+    }
+
+    foreach (KeyValuePair<string, bool> role in e.Roles)
+    {
+      AggregateId roleId = new(role.Key);
+
+      if (role.Value)
+      {
+        _roles.Add(roleId);
+      }
+      else
+      {
+        _roles.Remove(roleId);
+      }
+    }
+  }
+  /// <summary>
+  /// Finds or applies the latest user modification event.
+  /// </summary>
+  /// <returns>The latest user modification event.</returns>
+  private UserModifiedEvent GetLatestModifiedEvent()
+  {
+    UserModifiedEvent? e = Changes.LastOrDefault(e => e is UserModifiedEvent) as UserModifiedEvent;
+    if (e == null)
+    {
+      e = new();
+      ApplyChange(e);
+    }
+
+    return e;
+  }
 }

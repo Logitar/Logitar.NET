@@ -189,33 +189,23 @@ public class ApiKeyAggregate : AggregateRoot
   /// Adds the specified role to the API key.
   /// </summary>
   /// <param name="role">The role to add.</param>
-  /// <returns>A value indicating whether or not the role was added.</returns>
-  public bool AddRole(RoleAggregate role)
+  public void AddRole(RoleAggregate role)
   {
-    if (_roles.Contains(role.Id))
+    if (!_roles.Contains(role.Id))
     {
-      return false;
+      SetRole(role, addOrRemove: true);
     }
-
-    SetRole(role, addOrRemove: true);
-
-    return true;
   }
   /// <summary>
   /// Removes the specified role from the API key.
   /// </summary>
   /// <param name="role">The role to remove.</param>
-  /// <returns>A value indicating whether or not the role was removed.</returns>
-  public bool RemoveRole(RoleAggregate role)
+  public void RemoveRole(RoleAggregate role)
   {
-    if (!_roles.Contains(role.Id))
+    if (_roles.Contains(role.Id))
     {
-      return false;
+      SetRole(role, addOrRemove: false);
     }
-
-    SetRole(role, addOrRemove: false);
-
-    return true;
   }
   /// <summary>
   /// Sets the status of the specified role.
