@@ -4,7 +4,7 @@ using Logitar.Identity.Core.Users.Events;
 namespace Logitar.Identity.Core.Users.Validators;
 
 /// <summary>
-/// The validator used to validate instance of <see cref="UserCreatedEvent"/>.
+/// The validator used to validate instances of <see cref="UserCreatedEvent"/>.
 /// </summary>
 public class UserCreatedValidator : AbstractValidator<UserCreatedEvent>
 {

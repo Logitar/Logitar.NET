@@ -2,6 +2,7 @@
 using Logitar.EventSourcing;
 using Logitar.Identity.Core.Roles;
 using Logitar.Identity.Core.Settings;
+using Logitar.Identity.Core.Users.Contact;
 using Logitar.Identity.Core.Users.Events;
 using Logitar.Identity.Core.Users.Validators;
 using Logitar.Identity.Core.Validators;
@@ -10,7 +11,7 @@ using Logitar.Security.Cryptography;
 namespace Logitar.Identity.Core.Users;
 
 /// <summary>
-/// TODO
+/// TODO(fpion): document
 /// </summary>
 public class UserAggregate : AggregateRoot
 {
@@ -137,6 +138,16 @@ public class UserAggregate : AggregateRoot
   /// Gets or sets a value indicating whether or not the user is disabled.
   /// </summary>
   public bool IsDisabled { get; private set; }
+
+  /// <summary>
+  /// Gets or sets the email of the user.
+  /// </summary>
+  public ReadOnlyEmail? Email { get; private set; }
+  /// <summary>
+  /// Gets a value indicating whether or not the user is confirmed.
+  /// <br />A confirmed user must have at least one verified contact information (address, email or phone).
+  /// </summary>
+  public bool IsConfirmed => Email?.IsVerified == true;
 
   /// <summary>
   /// Gets or sets the first name of the user.
@@ -478,6 +489,32 @@ public class UserAggregate : AggregateRoot
   /// </summary>
   /// <param name="e">The event to apply.</param>
   protected virtual void Apply(UserStatusChangedEvent e) => IsDisabled = e.IsDisabled;
+
+  /// <summary>
+  /// Sets the email of the user.
+  /// </summary>
+  /// <param name="email">The new email of the user.</param>
+  /// <exception cref="ValidationException">The validation failed.</exception>
+  public void SetEmail(ReadOnlyEmail? email)
+  {
+    if (email != null)
+    {
+      new ReadOnlyEmailValidator().ValidateAndThrow(email);
+    }
+
+    if (email != Email)
+    {
+      ApplyChange(new UserEmailChangedEvent
+      {
+        Email = email
+      });
+    }
+  }
+  /// <summary>
+  /// Applies the specified event to the aggregate.
+  /// </summary>
+  /// <param name="e">The event to apply.</param>
+  protected virtual void Apply(UserEmailChangedEvent e) => Email = e.Email;
 
   /// <summary>
   /// Removes a custom attribute on the user.

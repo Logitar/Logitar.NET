@@ -4,7 +4,7 @@ using Logitar.Identity.Core.ApiKeys.Events;
 namespace Logitar.Identity.Core.ApiKeys.Validators;
 
 /// <summary>
-/// The validator used to validate instance of <see cref="ApiKeyCreatedEvent"/>.
+/// The validator used to validate instances of <see cref="ApiKeyCreatedEvent"/>.
 /// </summary>
 public class ApiKeyCreatedValidator : AbstractValidator<ApiKeyCreatedEvent>
 {

@@ -3,6 +3,7 @@ using FluentValidation.Results;
 using Logitar.EventSourcing;
 using Logitar.Identity.Core.Roles;
 using Logitar.Identity.Core.Settings;
+using Logitar.Identity.Core.Users.Contact;
 using Logitar.Identity.Core.Users.Events;
 using Logitar.Security.Cryptography;
 using System.Globalization;
@@ -85,6 +86,16 @@ public class UserAggregateTests
     _user.ClearChanges();
     Assert.False(_user.Roles.Contains(role.Id));
     Assert.DoesNotContain(_user.Changes, e => e is UserModifiedEvent);
+  }
+
+  [Fact(DisplayName = "It should be confirmed when it has a verified contact.")]
+  public void It_should_be_confirmed_when_it_has_a_verified_contact()
+  {
+    Assert.False(_user.IsConfirmed);
+
+    ReadOnlyEmail email = new(_faker.Person.Email, isVerified: true);
+    _user.SetEmail(email);
+    Assert.True(_user.IsConfirmed);
   }
 
   [Theory(DisplayName = "It should be constructed correctly with_arguments.")]
@@ -297,6 +308,19 @@ public class UserAggregateTests
     Assert.DoesNotContain(_user.Changes, e => e is UserExternalIdentifierChangedEvent);
   }
 
+  [Fact(DisplayName = "It should set the correct Email.")]
+  public void It_should_set_the_correct_Email()
+  {
+    ReadOnlyEmail email = new(_faker.Person.Email);
+    _user.SetEmail(email);
+    Assert.Equal(email, _user.Email);
+    Assert.Contains(_user.Changes, e => e is UserEmailChangedEvent change);
+
+    _user.ClearChanges();
+    _user.SetEmail(email);
+    Assert.DoesNotContain(_user.Changes, e => e is UserEmailChangedEvent change);
+  }
+
   [Fact(DisplayName = "It should set the correct FirstName.")]
   public void It_should_set_the_correct_FirstName()
   {
@@ -491,6 +515,16 @@ public class UserAggregateTests
     var exception = Assert.Throws<ValidationException>(() => _user.SetCustomAttribute("write_users", string.Empty));
     ValidationFailure failure = exception.Errors.Single();
     Assert.Equal("Value", failure.PropertyName);
+  }
+
+  [Fact(DisplayName = "It should throw ValidationException when email is not valid.")]
+  public void It_should_throw_ValidationException_when_email_is_not_valid()
+  {
+    ReadOnlyEmail email = new("test@@abc..123");
+    var exception = Assert.Throws<ValidationException>(() => _user.SetEmail(email));
+    ValidationFailure failure = exception.Errors.Single();
+    Assert.Equal("EmailValidator", failure.ErrorCode);
+    Assert.Equal("Address", failure.PropertyName);
   }
 
   [Fact(DisplayName = "It should throw ValidationException when external identifier key is not valid.")]
