@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Logitar.Identity.Core.Users.Contact;
 
 namespace Logitar.Identity.Core;
 
@@ -8,7 +9,7 @@ namespace Logitar.Identity.Core;
 public static class FluentValidationExtensions
 {
   /// <summary>
-  /// Defines an only allowed characters validator to the specified rule builder.
+  /// Defines an only allowed characters validator on the specified rule builder.
   /// <br />Validation will fail if the input string contains characters that are not allowed.
   /// <br />Validation will succeed if the input string only contains characters that are allowed.
   /// </summary>
@@ -34,7 +35,7 @@ public static class FluentValidationExtensions
   }
 
   /// <summary>
-  /// Defines a future validator to the specified rule builder.
+  /// Defines a future validator on the specified rule builder.
   /// <br />Validation will fail if the input date and time are prior to the validation moment.
   /// <br />Validation will succeed if the input date and time are future to the validation moment.
   /// </summary>
@@ -57,7 +58,7 @@ public static class FluentValidationExtensions
   internal static bool BeInTheFuture(DateTime value, DateTime? moment = null) => value > (moment ?? DateTime.Now);
 
   /// <summary>
-  /// Defines an identifier validator to the specified rule builder.
+  /// Defines an identifier validator on the specified rule builder.
   /// <br />Validation will fail if the input string starts with a digit, or contains a character that is not a letter, nor a digit, nor an underscore(_).
   /// <br />Validation will succeed if the input sting only contains letters, digits, or underscores (_), and do not start with a digit.
   /// </summary>
@@ -80,7 +81,7 @@ public static class FluentValidationExtensions
     || (!string.IsNullOrWhiteSpace(s) && !char.IsDigit(s.First()) && s.All(c => char.IsLetterOrDigit(c) || c == '_'));
 
   /// <summary>
-  /// Defines a locale validator to the specified rule builder.
+  /// Defines a locale validator on the specified rule builder.
   /// <br />Validation will fail if the input culture is the invariant culture, or if it is an user-defined culture.
   /// <br />Validation will succeed if the input culture is not the invariant culture nor an user-defined culture.
   /// </summary>
@@ -103,7 +104,7 @@ public static class FluentValidationExtensions
     || (!string.IsNullOrEmpty(culture.Name) && culture.LCID != 4096);
 
   /// <summary>
-  /// Defines a null or not empty validator to the specified rule builder.
+  /// Defines a null or not empty validator on the specified rule builder.
   /// <br />Validation will fail if the input string is empty or only white space.
   /// <br />Validation will succeed if the input string is null, or is not empty nor only white space.
   /// </summary>
@@ -124,7 +125,7 @@ public static class FluentValidationExtensions
   internal static bool BeNullOrNotEmpty(string? s) => s == null || !string.IsNullOrWhiteSpace(s);
 
   /// <summary>
-  /// Defines a past validator to the specified rule builder.
+  /// Defines a past validator on the specified rule builder.
   /// <br />Validation will fail if the input date and time are future to the validation moment.
   /// <br />Validation will succeed if the input date and time are prior to the validation moment.
   /// </summary>
@@ -145,6 +146,27 @@ public static class FluentValidationExtensions
   /// <param name="moment">The date and time to validate against. Defaults to now.</param>
   /// <returns>The validation result.</returns>
   internal static bool BeInThePast(DateTime value, DateTime? moment = null) => value < (moment ?? DateTime.Now);
+
+  /// <summary>
+  /// Defines a phone number validator on the specified rule builder.
+  /// <br />Validation will fail if the input phone number is not valid according to the libphonenumber library.
+  /// <br />Validation will succeed if the input phone number is valid according to the libphonenumber library.
+  /// </summary>
+  /// <typeparam name="T">The type of the validated instance.</typeparam>
+  /// <param name="ruleBuilder">The rule builder.</param>
+  /// <returns>The rule builder.</returns>
+  public static IRuleBuilderOptions<T, IPhoneNumber?> PhoneNumber<T>(this IRuleBuilder<T, IPhoneNumber>? ruleBuilder)
+  {
+    return ruleBuilder.Must(BeAValidPhoneNumber)
+      .WithErrorCode(GetErrorCode(nameof(PhoneNumber)))
+      .WithMessage("'{PropertyName}' must be a valid phone number.");
+  }
+  /// <summary>
+  /// Returns a value indicating whether or not the specified phone is valid according to the libphonenumber library.
+  /// </summary>
+  /// <param name="phone">The phone number to validate.</param>
+  /// <returns>The validation result.</returns>
+  internal static bool BeAValidPhoneNumber(IPhoneNumber? phone) => phone?.IsValid() != false;
 
   /// <summary>
   /// Constructs an error code from the specified method name.

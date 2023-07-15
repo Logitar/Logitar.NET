@@ -144,10 +144,14 @@ public class UserAggregate : AggregateRoot
   /// </summary>
   public ReadOnlyEmail? Email { get; private set; }
   /// <summary>
+  /// Gets or sets the phone of the user.
+  /// </summary>
+  public ReadOnlyPhone? Phone { get; private set; }
+  /// <summary>
   /// Gets a value indicating whether or not the user is confirmed.
   /// <br />A confirmed user must have at least one verified contact information (address, email or phone).
   /// </summary>
-  public bool IsConfirmed => Email?.IsVerified == true;
+  public bool IsConfirmed => Email?.IsVerified == true || Phone?.IsVerified == true;
 
   /// <summary>
   /// Gets or sets the first name of the user.
@@ -515,6 +519,31 @@ public class UserAggregate : AggregateRoot
   /// </summary>
   /// <param name="e">The event to apply.</param>
   protected virtual void Apply(UserEmailChangedEvent e) => Email = e.Email;
+  /// <summary>
+  /// Sets the phone of the user.
+  /// </summary>
+  /// <param name="phone">The new phone of the user.</param>
+  /// <exception cref="ValidationException">The validation failed.</exception>
+  public void SetPhone(ReadOnlyPhone? phone)
+  {
+    if (phone != null)
+    {
+      new ReadOnlyPhoneValidator(nameof(Phone)).ValidateAndThrow(phone);
+    }
+
+    if (phone != Phone)
+    {
+      ApplyChange(new UserPhoneChangedEvent
+      {
+        Phone = phone
+      });
+    }
+  }
+  /// <summary>
+  /// Applies the specified event to the aggregate.
+  /// </summary>
+  /// <param name="e">The event to apply.</param>
+  protected virtual void Apply(UserPhoneChangedEvent e) => Phone = e.Phone;
 
   /// <summary>
   /// Removes a custom attribute on the user.

@@ -88,13 +88,22 @@ public class UserAggregateTests
     Assert.DoesNotContain(_user.Changes, e => e is UserModifiedEvent);
   }
 
-  [Fact(DisplayName = "It should be confirmed when it has a verified contact.")]
-  public void It_should_be_confirmed_when_it_has_a_verified_contact()
+  [Fact(DisplayName = "It should be confirmed when it has a verified Email.")]
+  public void It_should_be_confirmed_when_it_has_a_verified_Email()
   {
     Assert.False(_user.IsConfirmed);
 
     ReadOnlyEmail email = new(_faker.Person.Email, isVerified: true);
     _user.SetEmail(email);
+    Assert.True(_user.IsConfirmed);
+  }
+  [Fact(DisplayName = "It should be confirmed when it has a verified Phone.")]
+  public void It_should_be_confirmed_when_it_has_a_verified_Phone()
+  {
+    Assert.False(_user.IsConfirmed);
+
+    ReadOnlyPhone phone = new("+15143947377", "CA", "862", isVerified: true);
+    _user.SetPhone(phone);
     Assert.True(_user.IsConfirmed);
   }
 
@@ -317,7 +326,7 @@ public class UserAggregateTests
     Assert.Contains(_user.Changes, e => e is UserEmailChangedEvent change);
 
     _user.ClearChanges();
-    _user.SetEmail(email);
+    _user.SetEmail(new ReadOnlyEmail($"  {_faker.Person.Email}  "));
     Assert.DoesNotContain(_user.Changes, e => e is UserEmailChangedEvent change);
   }
 
@@ -412,6 +421,19 @@ public class UserAggregateTests
     _user.ClearChanges();
     _user.Nickname = $"  {nickname}  ";
     Assert.DoesNotContain(_user.Changes, e => e is UserModifiedEvent);
+  }
+
+  [Fact(DisplayName = "It should set the correct Phone.")]
+  public void It_should_set_the_correct_Phone()
+  {
+    ReadOnlyPhone phone = new(_faker.Person.Phone);
+    _user.SetPhone(phone);
+    Assert.Equal(phone, _user.Phone);
+    Assert.Contains(_user.Changes, e => e is UserPhoneChangedEvent change);
+
+    _user.ClearChanges();
+    _user.SetPhone(new ReadOnlyPhone($"  {_faker.Person.Phone}  "));
+    Assert.DoesNotContain(_user.Changes, e => e is UserPhoneChangedEvent change);
   }
 
   [Fact(DisplayName = "It should set the correct Picture.")]
@@ -597,6 +619,16 @@ public class UserAggregateTests
   {
     var exception = Assert.Throws<ValidationException>(() => _user.ChangePassword(_passwordSettings, string.Empty));
     Assert.Contains(exception.Errors, e => e.ErrorCode == "NotEmptyValidator");
+  }
+
+  [Fact(DisplayName = "It should throw ValidationException when phone is not valid.")]
+  public void It_should_throw_ValidationException_when_phone_is_not_valid()
+  {
+    ReadOnlyPhone phone = new("not_a_valid_phone");
+    var exception = Assert.Throws<ValidationException>(() => _user.SetPhone(phone));
+    ValidationFailure failure = exception.Errors.Single();
+    Assert.Equal("PhoneNumberValidator", failure.ErrorCode);
+    Assert.Equal("Phone", failure.PropertyName);
   }
 
   [Fact(DisplayName = "It should throw ValidationException when unique name is not valid.")]
