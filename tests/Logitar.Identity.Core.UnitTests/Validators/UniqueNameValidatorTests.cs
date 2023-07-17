@@ -61,9 +61,9 @@ public class UniqueNameValidatorTests
     Assert.Equal("MaximumLengthValidator", failure.ErrorCode);
   }
 
-  [Theory(DisplayName = "Validation should success when unique name is valid.")]
+  [Theory(DisplayName = "Validation should succeed when unique name is valid.")]
   [InlineData("admin_123")]
-  public void Validation_should_success_when_unique_name_is_valid(string value)
+  public void Validation_should_succeed_when_unique_name_is_valid(string value)
   {
     ValidationResult result = _validator.Validate(value);
     Assert.True(result.IsValid);

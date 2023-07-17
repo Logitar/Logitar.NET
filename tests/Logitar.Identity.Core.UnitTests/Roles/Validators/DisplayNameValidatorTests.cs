@@ -41,9 +41,9 @@ public class DisplayNameValidatorTests
     Assert.Equal("MaximumLengthValidator", failure.ErrorCode);
   }
 
-  [Theory(DisplayName = "Validation should success when display name is valid.")]
+  [Theory(DisplayName = "Validation should succeed when display name is valid.")]
   [InlineData("Administrator")]
-  public void Validation_should_success_when_display_name_is_valid(string value)
+  public void Validation_should_succeed_when_display_name_is_valid(string value)
   {
     ValidationResult result = _validator.Validate(value);
     Assert.True(result.IsValid);

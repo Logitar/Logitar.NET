@@ -29,9 +29,9 @@ public class CustomAttributeValueValidatorTests
     Assert.Equal("NotEmptyValidator", failure.ErrorCode);
   }
 
-  [Theory(DisplayName = "Validation should success when value is valid.")]
+  [Theory(DisplayName = "Validation should succeed when value is valid.")]
   [InlineData("_Test123")]
-  public void Validation_should_success_when_value_is_valid(string value)
+  public void Validation_should_succeed_when_value_is_valid(string value)
   {
     ValidationResult result = _validator.Validate(value);
     Assert.True(result.IsValid);

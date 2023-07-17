@@ -1,9 +1,25 @@
-﻿namespace Logitar.Identity.Core;
+﻿using Logitar.Identity.Core.Users.Contact;
+
+namespace Logitar.Identity.Core;
 
 [Trait(Traits.Category, Categories.Unit)]
 public class FluentValidationExtensionsTests
 {
   private const string AllowedCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+
+  [Theory(DisplayName = "BeAValidCountry: validation should fail when it is not supported.")]
+  [InlineData("QC")]
+  public void BeAValidCountry_validation_should_fail_when_it_is_not_supported(string country)
+  {
+    Assert.False(FluentValidationExtensions.BeAValidCountry(country));
+  }
+
+  [Theory(DisplayName = "BeAValidCountry: validation should succeed when it is supported.")]
+  [InlineData("CA")]
+  public void BeAValidCountry_validation_should_succeed_when_it_is_supported(string country)
+  {
+    Assert.True(FluentValidationExtensions.BeAValidCountry(country));
+  }
 
   [Theory(DisplayName = "BeAValidIdentifier: validation should fail when it starts with a digit or it contains an invalid character.")]
   [InlineData("321_tesT")]
@@ -20,6 +36,39 @@ public class FluentValidationExtensionsTests
     Assert.True(FluentValidationExtensions.BeAValidIdentifier(s));
   }
 
+  [Theory(DisplayName = "BeAValidLocale: validation should fail when it is invariant or user-defined culture.")]
+  [InlineData("")]
+  [InlineData("fr-MX")]
+  public void BeAValidLocale_validation_should_fail_when_it_is_invariant_or_user_defined_culture(string name)
+  {
+    CultureInfo culture = new(name);
+    Assert.False(FluentValidationExtensions.BeAValidLocale(culture));
+  }
+
+  [Theory(DisplayName = "BeAValidLocale: validation should succeed when it is not invariant nor user-defined culture.")]
+  [InlineData("es-MX")]
+  public void BeAValidLocale_validation_should_succeed_when_it_is_not_invariant_nor_user_defined_culture(string name)
+  {
+    CultureInfo culture = new(name);
+    Assert.True(FluentValidationExtensions.BeAValidLocale(culture));
+  }
+
+  [Theory(DisplayName = "BeAValidPhoneNumber: validation should fail when it is not a valid phone number.")]
+  [InlineData("  helloworld  ")]
+  public void BeAValidPhoneNumber_validation_should_fail_when_it_is_not_a_valid_phone_number(string number)
+  {
+    ReadOnlyPhone phone = new(number);
+    Assert.False(FluentValidationExtensions.BeAValidPhoneNumber(phone));
+  }
+
+  [Theory(DisplayName = "BeAValidPhoneNumber: validation should succeed when it is a valid phone number.")]
+  [InlineData("5143947377")]
+  public void BeAValidPhoneNumber_validation_should_succeed_when_it_is_a_valid_phone_number(string number)
+  {
+    ReadOnlyPhone phone = new(number);
+    Assert.True(FluentValidationExtensions.BeAValidPhoneNumber(phone));
+  }
+
   [Fact(DisplayName = "BeInTheFuture: validation should fail when it is not in the future.")]
   public void BeInTheFuture_validation_should_fail_when_it_is_not_in_the_future()
   {
@@ -33,6 +82,21 @@ public class FluentValidationExtensionsTests
   {
     DateTime future = DateTime.Now.AddMinutes(4);
     Assert.True(FluentValidationExtensions.BeInTheFuture(future));
+  }
+
+  [Fact(DisplayName = "BeInThePast: validation should fail when it is not in the past.")]
+  public void BeInThePast_validation_should_fail_when_it_is_not_in_the_past()
+  {
+    DateTime past = DateTime.Now.AddDays(-1);
+    DateTime future = DateTime.Now.AddHours(15);
+    Assert.False(FluentValidationExtensions.BeInThePast(future, past));
+  }
+
+  [Fact(DisplayName = "BeInThePast: validation should succeed when it is in the past.")]
+  public void BeInThePast_validation_should_succeed_when_it_is_in_the_past()
+  {
+    DateTime future = DateTime.Now.AddMinutes(-4);
+    Assert.True(FluentValidationExtensions.BeInThePast(future));
   }
 
   [Theory(DisplayName = "BeNullOrNotEmpty: validation should fail when it is empty or only white space.")]

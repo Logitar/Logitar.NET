@@ -25,28 +25,6 @@ public class ApiKeyAggregateTests
     _apiKey = new(Title);
   }
 
-  [Fact(DisplayName = "AddRole: it should return false when role is present.")]
-  public void AddRole_it_should_return_false_when_role_is_present()
-  {
-    RoleAggregate role = new(_uniqueNameSettings, "admin");
-    _apiKey.AddRole(role);
-    _apiKey.ClearChanges();
-
-    Assert.False(_apiKey.AddRole(role));
-    Assert.DoesNotContain(_apiKey.Changes, e => e is ApiKeyModifiedEvent);
-  }
-  [Fact(DisplayName = "AddRole: it should return true and add role when role is not present.")]
-  public void AddRole_it_should_return_true_and_add_role_when_role_is_not_present()
-  {
-    Assert.Empty(_apiKey.Roles);
-
-    RoleAggregate role = new(_uniqueNameSettings, "admin");
-    Assert.True(_apiKey.AddRole(role));
-
-    ApiKeyModifiedEvent e = (ApiKeyModifiedEvent)_apiKey.Changes.Last(e => e is ApiKeyModifiedEvent);
-    Assert.True(e.Roles[role.Id.Value]);
-  }
-
   [Fact(DisplayName = "Authenticate: it should throw ApiKeyIsExpiredException when it is expired.")]
   public void Authenticate_it_should_throw_ApiKeyIsExpiredException_when_it_is_expired()
   {
@@ -115,6 +93,33 @@ public class ApiKeyAggregateTests
   public void IsMatch_it_should_return_true_when_the_API_key_secret_is_a_match()
   {
     Assert.True(_apiKey.IsMatch(_apiKey.Secret!));
+  }
+
+  [Fact(DisplayName = "It should add a new role correctly.")]
+  public void It_should_add_a_new_role_correctly()
+  {
+    RoleAggregate role = new(_uniqueNameSettings, "admin");
+    _apiKey.AddRole(role);
+    Assert.True(_apiKey.Roles.Contains(role.Id));
+    Assert.Contains(_apiKey.Changes, e => e is ApiKeyModifiedEvent change && change.Roles[role.Id.Value] == true);
+
+    _apiKey.ClearChanges();
+    _apiKey.AddRole(role);
+    Assert.DoesNotContain(_apiKey.Changes, e => e is ApiKeyModifiedEvent);
+  }
+  [Fact(DisplayName = "It should remove an existing role correctly.")]
+  public void It_should_remove_an_existing_role_correctly()
+  {
+    RoleAggregate role = new(_uniqueNameSettings, "admin");
+    _apiKey.AddRole(role);
+
+    _apiKey.RemoveRole(role);
+    Assert.False(_apiKey.Roles.Contains(role.Id));
+    Assert.Contains(_apiKey.Changes, e => e is ApiKeyModifiedEvent change && change.Roles[role.Id.Value] == false);
+
+    _apiKey.ClearChanges();
+    Assert.False(_apiKey.Roles.Contains(role.Id));
+    Assert.DoesNotContain(_apiKey.Changes, e => e is ApiKeyModifiedEvent);
   }
 
   [Theory(DisplayName = "It should be constructed correctly with_arguments.")]
@@ -327,23 +332,5 @@ public class ApiKeyAggregateTests
     ValidationFailure failure = exception.Errors.Single();
     Assert.Equal("MaximumLengthValidator", failure.ErrorCode);
     Assert.Equal("Title", failure.PropertyName);
-  }
-
-  [Fact(DisplayName = "RemoveRole: it should return false when role is not present.")]
-  public void RemoveRole_it_should_return_false_when_role_is_not_present()
-  {
-    RoleAggregate role = new(_uniqueNameSettings, "admin");
-    Assert.False(_apiKey.RemoveRole(role));
-    Assert.DoesNotContain(_apiKey.Changes, e => e is ApiKeyModifiedEvent);
-  }
-  [Fact(DisplayName = "RemoveRole: it should return true and remove role when role is present.")]
-  public void RemoveRole_it_should_return_true_and_remove_role_when_role_is_present()
-  {
-    RoleAggregate role = new(_uniqueNameSettings, "admin");
-    _apiKey.AddRole(role);
-
-    Assert.True(_apiKey.RemoveRole(role));
-    ApiKeyModifiedEvent e = (ApiKeyModifiedEvent)_apiKey.Changes.Last(e => e is ApiKeyModifiedEvent);
-    Assert.False(e.Roles[role.Id.Value]);
   }
 }

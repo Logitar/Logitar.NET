@@ -4,7 +4,7 @@ using Logitar.Identity.Core.Roles.Events;
 namespace Logitar.Identity.Core.Roles.Validators;
 
 /// <summary>
-/// The validator used to validate instance of <see cref="RoleCreatedEvent"/>.
+/// The validator used to validate instances of <see cref="RoleCreatedEvent"/>.
 /// </summary>
 public class RoleCreatedValidator : AbstractValidator<RoleCreatedEvent>
 {

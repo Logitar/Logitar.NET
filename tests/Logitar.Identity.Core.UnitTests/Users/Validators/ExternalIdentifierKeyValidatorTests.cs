@@ -1,19 +1,19 @@
 ﻿using FluentValidation.Results;
 
-namespace Logitar.Identity.Core.Validators;
+namespace Logitar.Identity.Core.Users.Validators;
 
 [Trait(Traits.Category, Categories.Unit)]
-public class CustomAttributeKeyValidatorTests
+public class ExternalIdentifierKeyValidatorTests
 {
   private readonly Bogus.Faker _faker = new();
 
-  private readonly CustomAttributeKeyValidator _validator = new();
+  private readonly ExternalIdentifierKeyValidator _validator = new();
 
   [Theory(DisplayName = "It should use the specified property name.")]
-  [InlineData("__CustomAttributeKey__")]
+  [InlineData("__ExternalIdentifierKey__")]
   public void It_should_use_the_specified_property_name(string propertyName)
   {
-    CustomAttributeKeyValidator validator = new(propertyName);
+    ExternalIdentifierKeyValidator validator = new(propertyName);
     ValidationResult result = validator.Validate(string.Empty);
     Assert.False(result.IsValid);
     Assert.All(result.Errors, e => Assert.Equal(propertyName, e.PropertyName));

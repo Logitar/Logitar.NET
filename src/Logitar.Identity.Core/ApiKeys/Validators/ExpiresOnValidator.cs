@@ -13,7 +13,7 @@ public class ExpiresOnValidator : AbstractValidator<DateTime>
   /// <param name="propertyName">The name of the validated property.</param>
   public ExpiresOnValidator(string? propertyName = null)
   {
-    var options = RuleFor(x => x).Future();
+    IRuleBuilderOptions<DateTime, DateTime> options = RuleFor(x => x).Future();
 
     if (propertyName != null)
     {
