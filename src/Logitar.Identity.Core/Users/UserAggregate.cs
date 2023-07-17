@@ -463,7 +463,7 @@ public class UserAggregate : AggregateRoot
   protected virtual void Apply(UserPasswordChangedEvent e) => _password = e.Password;
 
   /// <summary>
-  /// Deletes the role.
+  /// Deletes the user.
   /// </summary>
   public void Delete() => ApplyChange(new UserDeletedEvent());
 
