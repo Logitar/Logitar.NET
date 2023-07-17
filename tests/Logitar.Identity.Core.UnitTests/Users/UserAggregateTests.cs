@@ -121,18 +121,18 @@ public class UserAggregateTests
   [InlineData(" admin   ", "", "968")]
   public void It_should_be_constructed_correctly_with_arguments(string uniqueName, string? tenantId = null, string? id = null)
   {
-    AggregateId? roleId = id == null ? null : new(id);
-    UserAggregate role = new(_uniqueNameSettings, uniqueName, tenantId, roleId);
-    Assert.Equal(uniqueName.Trim(), role.UniqueName);
-    Assert.Equal(tenantId?.CleanTrim(), role.TenantId);
+    AggregateId? userId = id == null ? null : new(id);
+    UserAggregate user = new(_uniqueNameSettings, uniqueName, tenantId, userId);
+    Assert.Equal(uniqueName.Trim(), user.UniqueName);
+    Assert.Equal(tenantId?.CleanTrim(), user.TenantId);
 
     if (id == null)
     {
-      Assert.NotEqual(default, role.Id);
+      Assert.NotEqual(default, user.Id);
     }
     else
     {
-      Assert.Equal(roleId, role.Id);
+      Assert.Equal(userId, user.Id);
     }
   }
 
