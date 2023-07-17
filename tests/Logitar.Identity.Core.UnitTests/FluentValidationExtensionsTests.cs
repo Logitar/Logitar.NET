@@ -1,5 +1,4 @@
 ﻿using Logitar.Identity.Core.Users.Contact;
-using System.Globalization;
 
 namespace Logitar.Identity.Core;
 

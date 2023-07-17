@@ -1,5 +1,4 @@
 ﻿using FluentValidation.Results;
-using System.Globalization;
 
 namespace Logitar.Identity.Core.Users.Validators;
 

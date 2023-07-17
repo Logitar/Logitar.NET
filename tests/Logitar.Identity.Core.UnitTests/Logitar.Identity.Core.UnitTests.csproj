@@ -30,6 +30,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Using Include="System.Collections.Immutable" />
+    <Using Include="System.Globalization" />
     <Using Include="System.Reflection" />
     <Using Include="System.Security.Cryptography" />
   </ItemGroup>

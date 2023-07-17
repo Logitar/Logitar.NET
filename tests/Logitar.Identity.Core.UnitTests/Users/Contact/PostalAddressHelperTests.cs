@@ -1,6 +1,4 @@
-﻿using System.Collections.Immutable;
-
-namespace Logitar.Identity.Core.Users.Contact;
+﻿namespace Logitar.Identity.Core.Users.Contact;
 
 [Trait(Traits.Category, Categories.Unit)]
 public class PostalAddressHelperTests

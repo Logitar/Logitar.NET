@@ -6,7 +6,6 @@ using Logitar.Identity.Core.Settings;
 using Logitar.Identity.Core.Users.Contact;
 using Logitar.Identity.Core.Users.Events;
 using Logitar.Security.Cryptography;
-using System.Globalization;
 
 namespace Logitar.Identity.Core.Users;
 
