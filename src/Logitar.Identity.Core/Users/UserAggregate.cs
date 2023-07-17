@@ -141,7 +141,11 @@ public class UserAggregate : AggregateRoot
   public bool IsDisabled { get; private set; }
 
   /// <summary>
-  /// Gets or sets the email of the user.
+  /// Gets or sets the postal address of the user.
+  /// </summary>
+  public ReadOnlyAddress? Address { get; private set; }
+  /// <summary>
+  /// Gets or sets the email address of the user.
   /// </summary>
   public ReadOnlyEmail? Email { get; private set; }
   /// <summary>
@@ -152,7 +156,7 @@ public class UserAggregate : AggregateRoot
   /// Gets a value indicating whether or not the user is confirmed.
   /// <br />A confirmed user must have at least one verified contact information (address, email or phone).
   /// </summary>
-  public bool IsConfirmed => Email?.IsVerified == true || Phone?.IsVerified == true;
+  public bool IsConfirmed => Address?.IsVerified == true || Email?.IsVerified == true || Phone?.IsVerified == true;
 
   /// <summary>
   /// Gets or sets the first name of the user.
@@ -496,9 +500,34 @@ public class UserAggregate : AggregateRoot
   protected virtual void Apply(UserStatusChangedEvent e) => IsDisabled = e.IsDisabled;
 
   /// <summary>
-  /// Sets the email of the user.
+  /// Sets the postal address of the user.
   /// </summary>
-  /// <param name="email">The new email of the user.</param>
+  /// <param name="address">The new postal address of the user.</param>
+  /// <exception cref="ValidationException">The validation failed.</exception>
+  public void SetAddress(ReadOnlyAddress? address)
+  {
+    if (address != null)
+    {
+      new ReadOnlyAddressValidator().ValidateAndThrow(address);
+    }
+
+    if (address != Address)
+    {
+      ApplyChange(new UserAddressChangedEvent
+      {
+        Address = address
+      });
+    }
+  }
+  /// <summary>
+  /// Applies the specified event to the aggregate.
+  /// </summary>
+  /// <param name="e">The event to apply.</param>
+  protected virtual void Apply(UserAddressChangedEvent e) => Address = e.Address;
+  /// <summary>
+  /// Sets the email address of the user.
+  /// </summary>
+  /// <param name="email">The new email address of the user.</param>
   /// <exception cref="ValidationException">The validation failed.</exception>
   public void SetEmail(ReadOnlyEmail? email)
   {

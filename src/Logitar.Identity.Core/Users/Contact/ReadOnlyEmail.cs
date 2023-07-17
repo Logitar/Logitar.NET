@@ -3,7 +3,7 @@
 /// <summary>
 /// Represents an email address contact.
 /// </summary>
-public record ReadOnlyEmail : ReadOnlyContact
+public record ReadOnlyEmail : ReadOnlyContact, IEmailAddress
 {
   /// <summary>
   /// Initializes a new instance of the <see cref="ReadOnlyEmail"/> class.

@@ -33,22 +33,22 @@ public class ReadOnlyPhoneValidatorTests
   }
 
   [Theory(DisplayName = "Validation should fail when country code is too long.")]
-  [InlineData(3)]
-  public void Validation_should_fail_when_country_code_is_too_long(int length)
+  [InlineData("5143947377", 3)]
+  public void Validation_should_fail_when_country_code_is_too_long(string number, int length)
   {
     string countryCode = _faker.Random.String(length, minChar: 'A', maxChar: 'Z');
-    ReadOnlyPhone phone = new(_faker.Person.Phone, countryCode);
+    ReadOnlyPhone phone = new(number, countryCode);
     ValidationResult result = _validator.Validate(phone);
     Assert.False(result.IsValid);
     Assert.Contains(result.Errors, e => e.ErrorCode == "MaximumLengthValidator" && e.PropertyName == "CountryCode");
   }
 
   [Theory(DisplayName = "Validation should fail when extension is too long.")]
-  [InlineData(13)]
-  public void Validation_should_fail_when_extension_is_too_long(int length)
+  [InlineData("5143947377", 13)]
+  public void Validation_should_fail_when_extension_is_too_long(string number, int length)
   {
     string extension = _faker.Random.String(length, minChar: '0', maxChar: '9');
-    ReadOnlyPhone phone = new(_faker.Person.Phone, countryCode: "US", extension);
+    ReadOnlyPhone phone = new(number, countryCode: "US", extension);
     ValidationResult result = _validator.Validate(phone);
     Assert.False(result.IsValid);
     Assert.Contains(result.Errors, e => e.ErrorCode == "MaximumLengthValidator" && e.PropertyName == "Extension");
@@ -65,10 +65,11 @@ public class ReadOnlyPhoneValidatorTests
     Assert.Contains(result.Errors, e => e.ErrorCode == "MaximumLengthValidator" && e.PropertyName == "Number");
   }
 
-  [Fact(DisplayName = "Validation should succeed when it is valid.")]
-  public void Validation_should_succeed_when_it_is_valid()
+  [Theory(DisplayName = "Validation should succeed when it is valid.")]
+  [InlineData("5143947377")]
+  public void Validation_should_succeed_when_it_is_valid(string number)
   {
-    ReadOnlyPhone phone = new(_faker.Person.Phone);
+    ReadOnlyPhone phone = new(number);
     ValidationResult result = _validator.Validate(phone);
     Assert.True(result.IsValid);
   }

@@ -8,6 +8,20 @@ public class FluentValidationExtensionsTests
 {
   private const string AllowedCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
 
+  [Theory(DisplayName = "BeAValidCountry: validation should fail when it is not supported.")]
+  [InlineData("QC")]
+  public void BeAValidCountry_validation_should_fail_when_it_is_not_supported(string country)
+  {
+    Assert.False(FluentValidationExtensions.BeAValidCountry(country));
+  }
+
+  [Theory(DisplayName = "BeAValidCountry: validation should succeed when it is supported.")]
+  [InlineData("CA")]
+  public void BeAValidCountry_validation_should_succeed_when_it_is_supported(string country)
+  {
+    Assert.True(FluentValidationExtensions.BeAValidCountry(country));
+  }
+
   [Theory(DisplayName = "BeAValidIdentifier: validation should fail when it starts with a digit or it contains an invalid character.")]
   [InlineData("321_tesT")]
   [InlineData("Test-123")]

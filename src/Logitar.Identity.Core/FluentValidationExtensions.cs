@@ -29,10 +29,29 @@ public static class FluentValidationExtensions
   /// <param name="s">The input string to validate.</param>
   /// <param name="allowedCharacters">A string containing the list of allowed characters.</param>
   /// <returns>The validation result.</returns>
-  internal static bool ContainOnlyAllowedCharacters(string? s, string? allowedCharacters)
+  internal static bool ContainOnlyAllowedCharacters(string? s, string? allowedCharacters) => s == null
+    || allowedCharacters == null || s.All(allowedCharacters.Contains);
+
+  /// <summary>
+  /// Defines a country validator on the specified rule builder.
+  /// <br />Validation will fail if the input country is not supported.
+  /// <br />Validation will succeed if the input country is supported.
+  /// </summary>
+  /// <typeparam name="T">The type of the validated instance.</typeparam>
+  /// <param name="ruleBuilder">The rule builder.</param>
+  /// <returns>The rule builder.</returns>
+  public static IRuleBuilderOptions<T, string?> Country<T>(this IRuleBuilder<T, string?> ruleBuilder)
   {
-    return s == null || allowedCharacters == null || s.All(allowedCharacters.Contains);
+    return ruleBuilder.Must(BeAValidCountry)
+      .WithErrorCode(GetErrorCode(nameof(Country)))
+      .WithMessage($"'{{PropertyName}}' must be one of the following: {string.Join(", ", PostalAddressHelper.Instance.SupportedCountries)}");
   }
+  /// <summary>
+  /// Returns a value indicating whether or not the specified country is supported.
+  /// </summary>
+  /// <param name="country">The country to validate.</param>
+  /// <returns>The validation result.</returns>
+  internal static bool BeAValidCountry(string? country) => country == null || PostalAddressHelper.Instance.IsSupported(country);
 
   /// <summary>
   /// Defines a future validator on the specified rule builder.
@@ -155,7 +174,7 @@ public static class FluentValidationExtensions
   /// <typeparam name="T">The type of the validated instance.</typeparam>
   /// <param name="ruleBuilder">The rule builder.</param>
   /// <returns>The rule builder.</returns>
-  public static IRuleBuilderOptions<T, IPhoneNumber?> PhoneNumber<T>(this IRuleBuilder<T, IPhoneNumber>? ruleBuilder)
+  public static IRuleBuilderOptions<T, IPhoneNumber?> PhoneNumber<T>(this IRuleBuilder<T, IPhoneNumber> ruleBuilder)
   {
     return ruleBuilder.Must(BeAValidPhoneNumber)
       .WithErrorCode(GetErrorCode(nameof(PhoneNumber)))

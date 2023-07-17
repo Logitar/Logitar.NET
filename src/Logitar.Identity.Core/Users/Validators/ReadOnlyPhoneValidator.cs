@@ -11,6 +11,7 @@ public class ReadOnlyPhoneValidator : AbstractValidator<ReadOnlyPhone>
   /// <summary>
   /// Initializes a new instance of the <see cref="ReadOnlyPhoneValidator"/> class.
   /// </summary>
+  /// <param name="propertyName">The name of the validated property.</param>
   public ReadOnlyPhoneValidator(string? propertyName = null)
   {
     RuleFor(x => x.CountryCode).NullOrNotEmpty()

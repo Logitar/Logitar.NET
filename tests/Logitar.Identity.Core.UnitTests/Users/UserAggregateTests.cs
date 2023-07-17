@@ -88,6 +88,15 @@ public class UserAggregateTests
     Assert.DoesNotContain(_user.Changes, e => e is UserModifiedEvent);
   }
 
+  [Fact(DisplayName = "It should be confirmed when it has a verified Address.")]
+  public void It_should_be_confirmed_when_it_has_a_verified_Address()
+  {
+    Assert.False(_user.IsConfirmed);
+
+    ReadOnlyAddress address = new("Bd Roméo Vachon Nord", "Dorval", "CA", "QC", "H4Y 1H1", isVerified: true);
+    _user.SetAddress(address);
+    Assert.True(_user.IsConfirmed);
+  }
   [Fact(DisplayName = "It should be confirmed when it has a verified Email.")]
   public void It_should_be_confirmed_when_it_has_a_verified_Email()
   {
@@ -261,6 +270,19 @@ public class UserAggregateTests
     Assert.Equal(expected, _user.ToString());
   }
 
+  [Fact(DisplayName = "It should set the correct Address.")]
+  public void It_should_set_the_correct_Address()
+  {
+    ReadOnlyAddress address = new("Bd Roméo Vachon Nord", "Dorval", "CA", "QC", "H4Y 1H1");
+    _user.SetAddress(address);
+    Assert.Equal(address, _user.Address);
+    Assert.Contains(_user.Changes, e => e is UserAddressChangedEvent change);
+
+    _user.ClearChanges();
+    _user.SetAddress(new ReadOnlyAddress("  Bd Roméo Vachon Nord  ", "   Dorval ", " CA   ", " QC ", "   H4Y 1H1   "));
+    Assert.DoesNotContain(_user.Changes, e => e is UserAddressChangedEvent change);
+  }
+
   [Fact(DisplayName = "It should set the correct Birthdate.")]
   public void It_should_set_the_correct_Birthdate()
   {
@@ -423,16 +445,17 @@ public class UserAggregateTests
     Assert.DoesNotContain(_user.Changes, e => e is UserModifiedEvent);
   }
 
-  [Fact(DisplayName = "It should set the correct Phone.")]
-  public void It_should_set_the_correct_Phone()
+  [Theory(DisplayName = "It should set the correct Phone.")]
+  [InlineData("5143947377")]
+  public void It_should_set_the_correct_Phone(string number)
   {
-    ReadOnlyPhone phone = new(_faker.Person.Phone);
+    ReadOnlyPhone phone = new(number);
     _user.SetPhone(phone);
     Assert.Equal(phone, _user.Phone);
     Assert.Contains(_user.Changes, e => e is UserPhoneChangedEvent change);
 
     _user.ClearChanges();
-    _user.SetPhone(new ReadOnlyPhone($"  {_faker.Person.Phone}  "));
+    _user.SetPhone(new ReadOnlyPhone($"  {number}  "));
     Assert.DoesNotContain(_user.Changes, e => e is UserPhoneChangedEvent change);
   }
 
@@ -513,6 +536,16 @@ public class UserAggregateTests
     string current = "Test123!";
     _user.ChangePassword(_passwordSettings, current);
     Assert.Throws<InvalidCredentialsException>(() => _user.ChangePassword(_passwordSettings, current, current[1..]));
+  }
+
+  [Fact(DisplayName = "It should throw ValidationException when address is not valid.")]
+  public void It_should_throw_ValidationException_when_address_is_not_valid()
+  {
+    ReadOnlyAddress address = new("Bd Roméo Vachon Nord", "Dorval", "CA", "QC", "11430");
+    var exception = Assert.Throws<ValidationException>(() => _user.SetAddress(address));
+    ValidationFailure failure = exception.Errors.Single();
+    Assert.Equal("PostalCodeValidator", failure.ErrorCode);
+    Assert.Equal("PostalCode", failure.PropertyName);
   }
 
   [Fact(DisplayName = "It should throw ValidationException when birthdate is not valid.")]
