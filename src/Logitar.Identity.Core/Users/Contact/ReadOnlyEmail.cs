@@ -1,7 +1,7 @@
 ﻿namespace Logitar.Identity.Core.Users.Contact;
 
 /// <summary>
-/// TODO(fpion): document
+/// Represents an email address contact.
 /// </summary>
 public record ReadOnlyEmail : ReadOnlyContact
 {

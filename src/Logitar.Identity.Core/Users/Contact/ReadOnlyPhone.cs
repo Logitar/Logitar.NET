@@ -1,7 +1,7 @@
 ﻿namespace Logitar.Identity.Core.Users.Contact;
 
 /// <summary>
-/// TODO(fpion): document
+/// Represents a phone number contact.
 /// </summary>
 public record ReadOnlyPhone : ReadOnlyContact, IPhoneNumber
 {
@@ -18,7 +18,6 @@ public record ReadOnlyPhone : ReadOnlyContact, IPhoneNumber
     CountryCode = countryCode?.CleanTrim();
     Number = number.Trim();
     Extension = extension?.CleanTrim();
-    //E164Formatted = this.FormatToE164(); // TODO(fpion): implement
   }
 
   /// <summary>
@@ -34,8 +33,4 @@ public record ReadOnlyPhone : ReadOnlyContact, IPhoneNumber
   /// Gets the extension of the phone.
   /// </summary>
   public string? Extension { get; }
-  /// <summary>
-  /// Gets the E.164-formatted string representation of the phone.
-  /// </summary>
-  //public string E164Formatted { get; } // TODO(fpion): implement
 }

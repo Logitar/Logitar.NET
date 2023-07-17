@@ -1,7 +1,7 @@
 ﻿namespace Logitar.Identity.Core.Users.Contact;
 
 /// <summary>
-/// TODO(fpion): document
+/// The base class for contact informations. It states that a contact can be verified or not.
 /// </summary>
 public abstract record ReadOnlyContact
 {

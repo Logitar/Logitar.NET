@@ -11,7 +11,8 @@ using Logitar.Security.Cryptography;
 namespace Logitar.Identity.Core.Users;
 
 /// <summary>
-/// TODO(fpion): document
+/// Represents an user in the identity system. It contains the personal, contact and authentication
+/// information of a person.
 /// </summary>
 public class UserAggregate : AggregateRoot
 {

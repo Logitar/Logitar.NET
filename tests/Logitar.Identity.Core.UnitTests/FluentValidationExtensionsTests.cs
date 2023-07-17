@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using Logitar.Identity.Core.Users.Contact;
+using System.Globalization;
 
 namespace Logitar.Identity.Core;
 
@@ -37,6 +38,22 @@ public class FluentValidationExtensionsTests
   {
     CultureInfo culture = new(name);
     Assert.True(FluentValidationExtensions.BeAValidLocale(culture));
+  }
+
+  [Theory(DisplayName = "BeAValidPhoneNumber: validation should fail when it is not a valid phone number.")]
+  [InlineData("  helloworld  ")]
+  public void BeAValidPhoneNumber_validation_should_fail_when_it_is_not_a_valid_phone_number(string number)
+  {
+    ReadOnlyPhone phone = new(number);
+    Assert.False(FluentValidationExtensions.BeAValidPhoneNumber(phone));
+  }
+
+  [Theory(DisplayName = "BeAValidPhoneNumber: validation should succeed when it is a valid phone number.")]
+  [InlineData("5143947377")]
+  public void BeAValidPhoneNumber_validation_should_succeed_when_it_is_a_valid_phone_number(string number)
+  {
+    ReadOnlyPhone phone = new(number);
+    Assert.True(FluentValidationExtensions.BeAValidPhoneNumber(phone));
   }
 
   [Fact(DisplayName = "BeInTheFuture: validation should fail when it is not in the future.")]

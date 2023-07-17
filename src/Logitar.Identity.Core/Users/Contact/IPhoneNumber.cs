@@ -1,7 +1,7 @@
 ﻿namespace Logitar.Identity.Core.Users.Contact;
 
 /// <summary>
-/// TODO(fpion): document
+/// Represents an abstraction of phone number contacts.
 /// </summary>
 public interface IPhoneNumber
 {
