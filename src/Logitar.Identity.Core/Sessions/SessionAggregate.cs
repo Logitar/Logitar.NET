@@ -8,7 +8,9 @@ using Logitar.Security.Cryptography;
 namespace Logitar.Identity.Core.Sessions;
 
 /// <summary>
-/// TODO(fpion): document
+/// Represents a session of an user in the identity system. A session can be signed-out to prevent
+/// its use. A persistent session has generated a persistence token that can be used to renew the
+/// session as long as it is active.
 /// </summary>
 public class SessionAggregate : AggregateRoot
 {
