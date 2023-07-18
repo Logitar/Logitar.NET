@@ -1,4 +1,5 @@
-﻿using Logitar.Identity.Core.Roles.Models;
+﻿using Logitar.EventSourcing;
+using Logitar.Identity.Core.Roles.Models;
 
 namespace Logitar.Identity.Core.Roles;
 
@@ -7,6 +8,13 @@ namespace Logitar.Identity.Core.Roles;
 /// </summary>
 public interface IRoleRepository
 {
+  /// <summary>
+  /// Loads a role from the event store.
+  /// </summary>
+  /// <param name="id">The identifier of the role.</param>
+  /// <param name="cancellationToken">The cancellation token.</param>
+  /// <returns>The loaded role.</returns>
+  Task<RoleAggregate?> LoadAsync(AggregateId id, CancellationToken cancellationToken = default);
   /// <summary>
   /// Loads a role from the event store.
   /// </summary>

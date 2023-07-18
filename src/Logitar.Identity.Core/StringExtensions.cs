@@ -17,7 +17,7 @@ public static class StringExtensions
   /// <param name="propertyName">The name of the property.</param>
   /// <returns>The parsed instance.</returns>
   /// <exception cref="ValidationException">The validation failed.</exception>
-  public static AggregateId? ParseAggregateId(this string? input, string propertyName)
+  public static AggregateId? ParseAggregateId(this string input, string propertyName)
   {
     if (string.IsNullOrWhiteSpace(input))
     {
@@ -39,6 +39,22 @@ public static class StringExtensions
       });
     }
   }
+  /// <summary>
+  /// Parses a required <see cref="AggregateId"/> from the specified input string.
+  /// </summary>
+  /// <param name="input">The input string.</param>
+  /// <param name="propertyName">The name of the property.</param>
+  /// <returns>The parsed instance.</returns>
+  public static AggregateId RequireAggregateId(this string input, string propertyName)
+  {
+    return ParseAggregateId(input, propertyName) ?? throw new ValidationException(new[]
+    {
+      new ValidationFailure(propertyName, errorMessage: "The aggregate identifier cannot be null, empty, or only white space.", input)
+      {
+        ErrorCode = "RequiredAggregateId"
+      }
+    });
+  }
 
   /// <summary>
   /// Tries parsing a <see cref="Gender"/> from the specified input string.
@@ -47,7 +63,7 @@ public static class StringExtensions
   /// <param name="propertyName">The name of the property.</param>
   /// <returns>The parsed instance.</returns>
   /// <exception cref="ValidationException">The validation failed.</exception>
-  public static Gender? ParseGender(this string? input, string propertyName)
+  public static Gender? ParseGender(this string input, string propertyName)
   {
     if (string.IsNullOrWhiteSpace(input))
     {
@@ -77,7 +93,7 @@ public static class StringExtensions
   /// <param name="propertyName">The name of the property.</param>
   /// <returns>The parsed instance.</returns>
   /// <exception cref="ValidationException">The validation failed.</exception>
-  public static CultureInfo? ParseLocale(this string? input, string propertyName)
+  public static CultureInfo? ParseLocale(this string input, string propertyName)
   {
     if (string.IsNullOrWhiteSpace(input))
     {
@@ -107,7 +123,7 @@ public static class StringExtensions
   /// <param name="propertyName">The name of the property.</param>
   /// <returns>The parsed instance.</returns>
   /// <exception cref="ValidationException">The validation failed.</exception>
-  public static Users.TimeZone? ParseTimeZone(this string? input, string propertyName)
+  public static Users.TimeZone? ParseTimeZone(this string input, string propertyName)
   {
     if (string.IsNullOrWhiteSpace(input))
     {
@@ -137,7 +153,7 @@ public static class StringExtensions
   /// <param name="propertyName">The name of the property.</param>
   /// <returns>The parsed instance.</returns>
   /// <exception cref="ValidationException">The validation failed.</exception>
-  public static Uri? ParseUri(this string? input, string propertyName)
+  public static Uri? ParseUri(this string input, string propertyName)
   {
     if (string.IsNullOrWhiteSpace(input))
     {

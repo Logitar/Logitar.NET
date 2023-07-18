@@ -24,4 +24,12 @@ public class RoleApiController : ControllerBase
 
     return Created(uri, role);
   }
+
+  [HttpDelete("{id}")]
+  public async Task<ActionResult<Role>> DeleteAsync(string id, CancellationToken cancellationToken)
+  {
+    Role? role = await _mediator.Send(new DeleteRoleCommand(id), cancellationToken);
+
+    return role == null ? NotFound() : Ok(role);
+  }
 }
