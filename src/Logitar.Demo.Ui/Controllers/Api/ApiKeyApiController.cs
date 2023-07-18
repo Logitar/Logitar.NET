@@ -26,4 +26,12 @@ public class ApiKeyApiController : ControllerBase
 
     return Created(uri, apiKey);
   }
+
+  [HttpDelete("{id}")]
+  public async Task<ActionResult<ApiKey>> DeleteAsync(string id, CancellationToken cancellationToken)
+  {
+    ApiKey? apiKey = await _mediator.Send(new DeleteApiKeyCommand(id), cancellationToken);
+
+    return apiKey == null ? NotFound() : Ok(apiKey);
+  }
 }

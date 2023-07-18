@@ -1,5 +1,5 @@
-﻿using Logitar.Identity.Core.ApiKeys.Models;
-using Logitar.Identity.Core.Roles;
+﻿using Logitar.EventSourcing;
+using Logitar.Identity.Core.ApiKeys.Models;
 
 namespace Logitar.Identity.Core.ApiKeys;
 
@@ -9,12 +9,19 @@ namespace Logitar.Identity.Core.ApiKeys;
 public interface IApiKeyRepository
 {
   /// <summary>
+  /// Loads an API key from the event store.
+  /// </summary>
+  /// <param name="id">The identifier of the API key.</param>
+  /// <param name="cancellationToken">The cancellation token.</param>
+  /// <returns>The loaded API key.</returns>
+  Task<ApiKeyAggregate?> LoadAsync(AggregateId id, CancellationToken cancellationToken = default);
+  /// <summary>
   /// Loads a list of API keys from the event store.
   /// </summary>
   /// <param name="tenantId">The identifier of the tenant in which the API keys belongs to.</param>
   /// <param name="cancellationToken">The cancellation token.</param>
   /// <returns>The loaded API keys.</returns>
-  Task<IEnumerable<RoleAggregate>> LoadAsync(string? tenantId, CancellationToken cancellationToken = default);
+  Task<IEnumerable<ApiKeyAggregate>> LoadAsync(string? tenantId, CancellationToken cancellationToken = default);
 
   /// <summary>
   /// Persists an API key to the event store.
