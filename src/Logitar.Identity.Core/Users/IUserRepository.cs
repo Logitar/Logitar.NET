@@ -1,4 +1,4 @@
-﻿using Logitar.Identity.Core.Roles;
+﻿using Logitar.EventSourcing;
 using Logitar.Identity.Core.Users.Contact;
 using Logitar.Identity.Core.Users.Models;
 
@@ -8,7 +8,13 @@ namespace Logitar.Identity.Core.Users;
 /// Represents an interface that allows retrieving and storing users in an event store.
 /// </summary>
 public interface IUserRepository
-{
+{  /// <summary>
+   /// Loads an user from the event store.
+   /// </summary>
+   /// <param name="id">The identifier of the user.</param>
+   /// <param name="cancellationToken">The cancellation token.</param>
+   /// <returns>The loaded user.</returns>
+  Task<UserAggregate?> LoadAsync(AggregateId id, CancellationToken cancellationToken = default);
   /// <summary>
   /// Loads an user from the event store.
   /// </summary>
@@ -23,7 +29,7 @@ public interface IUserRepository
   /// <param name="tenantId">The identifier of the tenant in which the users belongs to.</param>
   /// <param name="cancellationToken">The cancellation token.</param>
   /// <returns>The loaded users.</returns>
-  Task<IEnumerable<RoleAggregate>> LoadAsync(string? tenantId, CancellationToken cancellationToken = default);
+  Task<IEnumerable<UserAggregate>> LoadAsync(string? tenantId, CancellationToken cancellationToken = default);
   /// <summary>
   /// Loads a list of users from the event store.
   /// </summary>

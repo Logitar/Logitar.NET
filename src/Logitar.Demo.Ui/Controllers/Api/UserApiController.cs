@@ -24,4 +24,12 @@ public class UserApiController : ControllerBase
 
     return Created(uri, user);
   }
+
+  [HttpDelete("{id}")]
+  public async Task<ActionResult<User>> DeleteAsync(string id, CancellationToken cancellationToken)
+  {
+    User? user = await _mediator.Send(new DeleteUserCommand(id), cancellationToken);
+
+    return user == null ? NotFound() : Ok(user);
+  }
 }
