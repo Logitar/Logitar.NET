@@ -21,7 +21,8 @@ internal class Startup : StartupBase
   {
     base.ConfigureServices(services);
 
-    services.AddControllers();
+    services.AddControllers()
+      .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
     if (_enableOpenApi)
     {
