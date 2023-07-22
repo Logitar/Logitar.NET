@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
@@ -8,16 +8,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentValidation" Version="11.6.0" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="7.0.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\EventSourcing\Logitar.EventSourcing\Logitar.EventSourcing.csproj" />
-    <ProjectReference Include="..\..\Framework\Logitar.Security\Logitar.Security.csproj" />
+    <ProjectReference Include="..\Logitar.Identity.Domain\Logitar.Identity.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Using Include="System.Globalization" />
+    <Using Include="System.Text" />
   </ItemGroup>
 
 </Project>
