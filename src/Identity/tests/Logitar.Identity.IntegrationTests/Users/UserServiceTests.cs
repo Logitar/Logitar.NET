@@ -14,6 +14,7 @@ using Microsoft.Extensions.Options;
 
 namespace Logitar.Identity.IntegrationTests.Users;
 
+[Trait(Traits.Category, Categories.Integration)]
 public class UserServiceTests
 {
   private static readonly Actor _actor = new();
@@ -42,7 +43,7 @@ public class UserServiceTests
       .AddLogitarIdentityWithEntityFrameworkCoreSqlServer(connectionString)
       .AddSingleton<ICurrentActor>(new CurrentActorMock(_actor))
       .BuildServiceProvider();
-  }
+  } // TODO(fpion): refactor
 
   public UserServiceTests()
   {

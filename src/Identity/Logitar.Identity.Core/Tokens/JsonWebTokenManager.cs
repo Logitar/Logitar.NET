@@ -4,6 +4,7 @@ namespace Logitar.Identity.Core.Tokens;
 
 /// <summary>
 /// TODO(fpion): shouldn't this class belong to the Infrastructure layer?
+/// TODO(fpion): move to Logitar.Security.Tokens or Claims
 /// </summary>
 public class JsonWebTokenManager : ITokenManager
 {

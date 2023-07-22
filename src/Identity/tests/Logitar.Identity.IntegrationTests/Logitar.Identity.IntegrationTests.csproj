@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
@@ -37,8 +37,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Framework\tests\Logitar.UnitTests\Logitar.UnitTests.csproj" />
     <ProjectReference Include="..\..\Logitar.Identity.Core\Logitar.Identity.Core.csproj" />
     <ProjectReference Include="..\..\Logitar.Identity.EntityFrameworkCore.SqlServer\Logitar.Identity.EntityFrameworkCore.SqlServer.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="System.IdentityModel.Tokens.Jwt" />
+    <Using Include="System.Security.Claims" />
+    <Using Include="System.Text" />
   </ItemGroup>
 
 </Project>
