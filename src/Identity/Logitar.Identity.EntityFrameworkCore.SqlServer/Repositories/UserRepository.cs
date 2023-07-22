@@ -77,23 +77,26 @@ public class UserRepository : EventSourcing.EntityFrameworkCore.Relational.Aggre
 
   public async Task SaveAsync(UserAggregate user, CancellationToken cancellationToken)
   {
-    foreach (DomainEvent change in user.Changes)
-    {
-      change.ActorId ??= CurrentActor.Actor.Id;
-    } // TODO(fpion): refactor
+    AssignActor(user);
 
     await base.SaveAsync(user, cancellationToken);
   }
   public async Task SaveAsync(IEnumerable<UserAggregate> users, CancellationToken cancellationToken)
   {
-    foreach (UserAggregate user in users)
+    AssignActor(users);
+
+    await base.SaveAsync(users, cancellationToken);
+  }
+
+  private void AssignActor(AggregateRoot aggregate) => AssignActor(new[] { aggregate });
+  private void AssignActor(IEnumerable<AggregateRoot> aggregates)
+  {
+    foreach (AggregateRoot aggregate in aggregates)
     {
-      foreach (DomainEvent change in user.Changes)
+      foreach (DomainEvent change in aggregate.Changes)
       {
         change.ActorId ??= CurrentActor.Actor.Id;
       }
-    } // TODO(fpion): refactor
-
-    await base.SaveAsync(users, cancellationToken);
+    }
   }
 }
