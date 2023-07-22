@@ -1,7 +1,7 @@
 ﻿using Logitar.EventSourcing;
 using Logitar.Security;
 
-namespace Logitar.Identity.Core.Users.Events;
+namespace Logitar.Identity.Domain.Users.Events;
 
 public record UserUpdatedEvent : DomainEvent
 {

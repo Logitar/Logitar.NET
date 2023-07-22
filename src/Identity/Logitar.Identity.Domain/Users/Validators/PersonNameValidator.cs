@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace Logitar.Identity.Core.Users.Validators;
+namespace Logitar.Identity.Domain.Users.Validators;
 public class PersonNameValidator : AbstractValidator<string>
 {
   public PersonNameValidator(string? propertyName = null)

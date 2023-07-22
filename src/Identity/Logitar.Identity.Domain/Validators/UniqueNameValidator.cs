@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
-using Logitar.Identity.Core.Settings;
+using Logitar.Identity.Domain.Settings;
 
-namespace Logitar.Identity.Core.Validators;
+namespace Logitar.Identity.Domain.Validators;
 
 public class UniqueNameValidator : AbstractValidator<string>
 {

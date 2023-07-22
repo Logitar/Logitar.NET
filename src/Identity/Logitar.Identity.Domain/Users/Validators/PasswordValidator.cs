@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
-using Logitar.Identity.Core.Settings;
+using Logitar.Identity.Domain.Settings;
 
-namespace Logitar.Identity.Core.Users.Validators;
+namespace Logitar.Identity.Domain.Users.Validators;
 
 public class PasswordValidator : AbstractValidator<string>
 {

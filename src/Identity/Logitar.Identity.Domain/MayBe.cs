@@ -1,4 +1,4 @@
-﻿namespace Logitar.Identity.Core;
+﻿namespace Logitar.Identity.Domain;
 
 public record MayBe<T>
 {

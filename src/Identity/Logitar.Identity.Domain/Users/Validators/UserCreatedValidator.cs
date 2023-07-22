@@ -1,9 +1,9 @@
 ﻿using FluentValidation;
-using Logitar.Identity.Core.Settings;
-using Logitar.Identity.Core.Users.Events;
-using Logitar.Identity.Core.Validators;
+using Logitar.Identity.Domain.Settings;
+using Logitar.Identity.Domain.Users.Events;
+using Logitar.Identity.Domain.Validators;
 
-namespace Logitar.Identity.Core.Users.Validators;
+namespace Logitar.Identity.Domain.Users.Validators;
 
 public class UserCreatedValidator : AbstractValidator<UserCreatedEvent>
 {

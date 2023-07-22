@@ -1,12 +1,12 @@
 ﻿using FluentValidation;
 using Logitar.EventSourcing;
-using Logitar.Identity.Core.Settings;
-using Logitar.Identity.Core.Users.Events;
-using Logitar.Identity.Core.Users.Validators;
-using Logitar.Identity.Core.Validators;
+using Logitar.Identity.Domain.Settings;
+using Logitar.Identity.Domain.Users.Events;
+using Logitar.Identity.Domain.Users.Validators;
+using Logitar.Identity.Domain.Validators;
 using Logitar.Security;
 
-namespace Logitar.Identity.Core.Users;
+namespace Logitar.Identity.Domain.Users;
 
 public class UserAggregate : AggregateRoot
 {

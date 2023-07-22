@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace Logitar.Identity.Core.Validators;
+namespace Logitar.Identity.Domain.Validators;
 
 public static class FluentValidationExtensions
 {

@@ -1,4 +1,4 @@
-﻿namespace Logitar.Identity.Core.Users;
+﻿namespace Logitar.Identity.Domain.Users;
 
 public static class PersonHelper
 {

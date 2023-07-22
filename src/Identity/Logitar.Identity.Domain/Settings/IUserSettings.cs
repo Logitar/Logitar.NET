@@ -1,4 +1,4 @@
-﻿namespace Logitar.Identity.Core.Settings;
+﻿namespace Logitar.Identity.Domain.Settings;
 
 public interface IUserSettings
 {
