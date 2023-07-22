@@ -34,12 +34,13 @@ internal class Startup : StartupBase
     DatabaseProvider provider = _configuration.GetValue<DatabaseProvider?>("DatabaseProvider")
       ?? DatabaseProvider.EntityFrameworkCoreSqlServer;
     string connectionString;
+    // TODO(fpion): implement MongoDB
     switch (provider)
     {
       case DatabaseProvider.EntityFrameworkCorePostgreSQL:
         connectionString = _configuration.GetValue<string>("POSTGRESQLCONNSTR_Demo") ?? string.Empty;
         services.AddLogitarEventSourcingWithEntityFrameworkCorePostgreSQL(connectionString);
-        //services.AddLogitarIdentityWithEntityFrameworkCorePostgreSQL(connectionString);
+        //services.AddLogitarIdentityWithEntityFrameworkCorePostgreSQL(connectionString); // TODO(fpion): implement
         break;
       case DatabaseProvider.EntityFrameworkCoreSqlServer:
         connectionString = _configuration.GetValue<string>("SQLCONNSTR_Demo") ?? string.Empty;

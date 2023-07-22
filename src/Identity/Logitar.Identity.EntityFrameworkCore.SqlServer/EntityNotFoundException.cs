@@ -39,8 +39,7 @@ public class EntityNotFoundException : Exception
   }
 }
 
-public class EntityNotFoundException<T> : EntityNotFoundException
-  where T : AggregateEntity
+public class EntityNotFoundException<T> : EntityNotFoundException where T : AggregateEntity
 {
   public EntityNotFoundException(string id) : base(typeof(T), id)
   {

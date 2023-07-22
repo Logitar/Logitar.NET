@@ -61,8 +61,7 @@ public class UniqueNameAlreadyUsedException : Exception
   }
 }
 
-public class UniqueNameAlreadyUsedException<T> : UniqueNameAlreadyUsedException
-  where T : AggregateRoot
+public class UniqueNameAlreadyUsedException<T> : UniqueNameAlreadyUsedException where T : AggregateRoot
 {
   public UniqueNameAlreadyUsedException(string? tenantId, string uniqueName, string propertyName)
     : base(typeof(T), tenantId, uniqueName, propertyName)

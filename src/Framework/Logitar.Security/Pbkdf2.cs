@@ -3,6 +3,8 @@
 namespace Logitar.Security;
 
 /// <summary>
+/// TODO(fpion): documentation
+/// TODO(fpion): tests
 /// Reference: <see href="https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#pbkdf2"/>
 /// </summary>
 public class Pbkdf2
