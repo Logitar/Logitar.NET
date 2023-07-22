@@ -31,5 +31,14 @@ public record ActorEntity
     };
   }
 
+  public static ActorEntity From(Actor actor) => new()
+  {
+    Type = actor.Type,
+    IsDeleted = actor.IsDeleted,
+    DisplayName = actor.DisplayName,
+    EmailAddress = actor.EmailAddress,
+    PictureUrl = actor.PictureUrl
+  };
+
   public string Serialize() => JsonSerializer.Serialize(this);
 }

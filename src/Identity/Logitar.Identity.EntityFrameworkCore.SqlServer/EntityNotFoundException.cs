@@ -7,9 +7,9 @@ public class EntityNotFoundException : Exception
 {
   public EntityNotFoundException(Type type, string id) : base(BuildMessage(type, id))
   {
-    if (!type.IsSubclassOf(typeof(AggregateRoot)))
+    if (!type.IsSubclassOf(typeof(AggregateEntity)))
     {
-      throw new ArgumentException($"The type must be a subclass of '{nameof(AggregateRoot)}'.", nameof(type));
+      throw new ArgumentException($"The type must be a subclass of '{nameof(AggregateEntity)}'.", nameof(type));
     }
 
     Type = type.GetName();

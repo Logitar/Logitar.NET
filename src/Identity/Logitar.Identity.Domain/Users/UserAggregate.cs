@@ -204,7 +204,7 @@ public class UserAggregate : AggregateRoot
   }
   protected UserUpdatedEvent GetLatestUpdatedEvent()
   {
-    UserUpdatedEvent? updated = Changes.Last(e => e is UserUpdatedEvent) as UserUpdatedEvent;
+    UserUpdatedEvent? updated = Changes.LastOrDefault(e => e is UserUpdatedEvent) as UserUpdatedEvent;
     if (updated == null)
     {
       updated = new();

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
@@ -18,8 +18,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Using Include="System.Globalization" />
+    <Using Include="System.Reflection" />
     <Using Include="System.Text" />
     <Using Include="System.Text.Json" />
+    <Using Include="System.Text.Json.Serialization" />
   </ItemGroup>
 
 </Project>

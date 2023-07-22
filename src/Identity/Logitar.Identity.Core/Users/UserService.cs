@@ -10,10 +10,10 @@ public class UserService : IUserService
 {
   private readonly IUserQuerier _userQuerier;
   private readonly IUserRepository _userRepository;
-  private readonly IOptions<IUserSettings> _userSettings;
+  private readonly IOptions<UserSettings> _userSettings;
 
   public UserService(IUserQuerier userQuerier, IUserRepository userRepository,
-    IOptions<IUserSettings> userSettings)
+    IOptions<UserSettings> userSettings)
   {
     _userQuerier = userQuerier;
     _userRepository = userRepository;
@@ -27,7 +27,7 @@ public class UserService : IUserService
       throw new UniqueNameAlreadyUsedException<UserAggregate>(payload.TenantId, payload.UniqueName, nameof(payload.UniqueName));
     }
 
-    IUserSettings userSettings = _userSettings.Value;
+    UserSettings userSettings = _userSettings.Value;
 
     UserAggregate user = new(userSettings.UniqueNameSettings, payload.UniqueName, payload.TenantId);
 

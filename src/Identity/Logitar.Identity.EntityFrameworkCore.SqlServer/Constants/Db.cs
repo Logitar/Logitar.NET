@@ -15,8 +15,8 @@ public static class Db
   {
     public static readonly TableId Table = new(nameof(IdentityContext.Users));
 
-    public static readonly ColumnId EmailAddressNormalized = new(nameof(UserEntity.EmailAddressNormalized));
-    public static readonly ColumnId TenantId = new(nameof(UserEntity.TenantId));
-    public static readonly ColumnId UniqueNameNormalized = new(nameof(UserEntity.UniqueNameNormalized));
+    public static readonly ColumnId EmailAddressNormalized = new(nameof(UserEntity.EmailAddressNormalized), Table);
+    public static readonly ColumnId TenantId = new(nameof(UserEntity.TenantId), Table);
+    public static readonly ColumnId UniqueNameNormalized = new(nameof(UserEntity.UniqueNameNormalized), Table);
   }
 }
