@@ -2,6 +2,9 @@
 
 namespace Logitar.Security;
 
+/// <summary>
+/// Reference: <see href="https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#pbkdf2"/>
+/// </summary>
 public class Pbkdf2
 {
   public const string Prefix = "PBKDF2";
