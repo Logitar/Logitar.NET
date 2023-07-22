@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Options" Version="7.0.1" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.32.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -16,7 +17,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Using Include="System.Security.Claims" />
     <Using Include="System.Globalization" />
+    <Using Include="System.IdentityModel.Tokens.Jwt" />
     <Using Include="System.Text" />
   </ItemGroup>
 
