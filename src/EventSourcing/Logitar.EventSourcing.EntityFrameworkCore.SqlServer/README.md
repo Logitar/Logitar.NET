@@ -1,7 +1,7 @@
 # Logitar.EventSourcing.EntityFrameworkCore.SqlServer
 
-Provides an abstraction of a relational event store to be used with the Event Sourcing architecture
-pattern, Entity Framework Core and Microsoft SQL Server.
+Provides an implementation of a relational event store to be used with the Event Sourcing
+architecture pattern, Entity Framework Core and Microsoft SQL Server.
 
 ## Migrations
 
@@ -10,6 +10,6 @@ directory.
 
 ### Create a new migration
 
-Execute the following command to create a new migration.
+Execute the following command to create a new migration. Do not forget to specify a migration name!
 
-`dotnet ef migrations add CreateEventTable --project src/Logitar.EventSourcing.EntityFrameworkCore.SqlServer --startup-project src/Logitar.Demo.Ui`
+`dotnet ef migrations add <YOUR_MIGRATION_NAME> --project src/Logitar.EventSourcing.EntityFrameworkCore.SqlServer --startup-project src/Logitar.Demo.Ui`

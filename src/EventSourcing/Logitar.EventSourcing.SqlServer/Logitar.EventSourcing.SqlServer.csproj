@@ -9,7 +9,7 @@
     <Title>Logitar.EventSourcing.SqlServer</Title>
     <Authors>Francis Pion</Authors>
     <Product>Logitar.NET</Product>
-    <Description>Provides an abstraction of a relational event store to be used with the Event Sourcing architecture pattern and Microsoft SQL Server.</Description>
+    <Description>Provides an implementation of a relational event store to be used with the Event Sourcing architecture pattern and Microsoft SQL Server.</Description>
     <Copyright>© 2023 Logitar All Rights Reserved.</Copyright>
     <PackageIcon>logitar.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>

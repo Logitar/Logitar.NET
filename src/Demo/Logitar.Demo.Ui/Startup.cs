@@ -1,6 +1,7 @@
 ﻿using Logitar.EventSourcing.EntityFrameworkCore.PostgreSQL;
 using Logitar.EventSourcing.EntityFrameworkCore.SqlServer;
 using Logitar.EventSourcing.Infrastructure;
+using Logitar.Identity.EntityFrameworkCore.SqlServer;
 
 namespace Logitar.Demo.Ui;
 
@@ -21,7 +22,8 @@ internal class Startup : StartupBase
   {
     base.ConfigureServices(services);
 
-    services.AddControllers();
+    services.AddControllers()
+      .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
     if (_enableOpenApi)
     {
@@ -32,15 +34,18 @@ internal class Startup : StartupBase
     DatabaseProvider provider = _configuration.GetValue<DatabaseProvider?>("DatabaseProvider")
       ?? DatabaseProvider.EntityFrameworkCoreSqlServer;
     string connectionString;
+    // TODO(fpion): implement MongoDB
     switch (provider)
     {
       case DatabaseProvider.EntityFrameworkCorePostgreSQL:
         connectionString = _configuration.GetValue<string>("POSTGRESQLCONNSTR_Demo") ?? string.Empty;
         services.AddLogitarEventSourcingWithEntityFrameworkCorePostgreSQL(connectionString);
+        //services.AddLogitarIdentityWithEntityFrameworkCorePostgreSQL(connectionString); // TODO(fpion): implement
         break;
       case DatabaseProvider.EntityFrameworkCoreSqlServer:
         connectionString = _configuration.GetValue<string>("SQLCONNSTR_Demo") ?? string.Empty;
         services.AddLogitarEventSourcingWithEntityFrameworkCoreSqlServer(connectionString);
+        services.AddLogitarIdentityWithEntityFrameworkCoreSqlServer(connectionString);
         break;
       default:
         throw new NotSupportedException($"The database provider '{provider}' is not supported.");
