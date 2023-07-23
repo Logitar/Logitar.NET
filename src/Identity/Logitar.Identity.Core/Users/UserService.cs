@@ -81,6 +81,36 @@ public class UserService : IUserService
     return result;
   }
 
+  public async Task<User?> ReadAsync(string? id, string? tenantId, string? uniqueName, CancellationToken cancellationToken)
+  {
+    Dictionary<string, User> users = new(capacity: 2);
+
+    if (id != null)
+    {
+      User? user = await _userQuerier.ReadAsync(id, cancellationToken);
+      if (user != null)
+      {
+        users[user.Id] = user;
+      }
+    }
+
+    if (uniqueName != null)
+    {
+      User? user = await _userQuerier.ReadAsync(tenantId, uniqueName, cancellationToken);
+      if (user != null)
+      {
+        users[user.Id] = user;
+      }
+    }
+
+    if (users.Count > 1)
+    {
+      throw new TooManyResultsException<User>(expected: 1, actual: users.Count);
+    }
+
+    return users.Values.SingleOrDefault();
+  }
+
   public async Task<User?> UpdateAsync(string id, UpdateUserPayload payload, CancellationToken cancellationToken)
   {
     AggregateId userId = id.GetAggregateId(nameof(id));

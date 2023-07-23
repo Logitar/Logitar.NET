@@ -15,16 +15,20 @@ namespace Logitar.Identity.IntegrationTests.Users;
 [Trait(Traits.Category, Categories.Integration)]
 public class UserServiceTests : IntegrationTestingBase
 {
+  private readonly IUserRepository _userRepository;
   private readonly IUserService _userService;
+  private readonly IOptions<UserSettings> _userSettings;
 
   private readonly UserAggregate _user;
 
   public UserServiceTests() : base()
   {
+    _userRepository = ServiceProvider.GetRequiredService<IUserRepository>();
     _userService = ServiceProvider.GetRequiredService<IUserService>();
+    _userSettings = ServiceProvider.GetRequiredService<IOptions<UserSettings>>();
 
-    IOptions<UserSettings> userSettings = ServiceProvider.GetRequiredService<IOptions<UserSettings>>();
-    _user = new(userSettings.Value.UniqueNameSettings, uniqueName: "admin", tenantId: Guid.NewGuid().ToString())
+    UserSettings userSettings = _userSettings.Value;
+    _user = new(userSettings.UniqueNameSettings, uniqueName: "admin", tenantId: Guid.NewGuid().ToString())
     {
       Email = new(Faker.Person.Email, isVerified: true)
     };
@@ -126,6 +130,34 @@ public class UserServiceTests : IntegrationTestingBase
     Assert.Null(entity);
   }
 
+  [Fact(DisplayName = "ReadAsync: it should read the correct user.")]
+  public async Task ReadAsync_it_should_read_the_correct_user()
+  {
+    User? user = await _userService.ReadAsync(_user.Id.Value, _user.TenantId, _user.UniqueName, CancellationToken);
+    Assert.NotNull(user);
+    Assert.Equal(_user.Id.Value, user.Id);
+  }
+
+  [Fact(DisplayName = "ReadAsync: it should return null when user is not found.")]
+  public async Task ReadAsync_it_should_return_null_when_user_is_not_found()
+  {
+    User? user = await _userService.ReadAsync(id: Guid.Empty.ToString(), cancellationToken: CancellationToken);
+    Assert.Null(user);
+  }
+
+  [Fact(DisplayName = "ReadAsync: it should throw TooManyResultsException when there are too many results.")]
+  public async Task ReadAsync_it_should_throw_TooManyResultsException_when_there_are_too_many_results()
+  {
+    UserSettings userSettings = _userSettings.Value;
+    UserAggregate other = new(userSettings.UniqueNameSettings, _user.UniqueName, tenantId: null);
+    await _userRepository.SaveAsync(other);
+
+    var exception = await Assert.ThrowsAsync<TooManyResultsException<User>>(
+      async () => await _userService.ReadAsync(_user.Id.Value, tenantId: null, other.UniqueName, CancellationToken));
+    Assert.Equal(1, exception.Expected);
+    Assert.Equal(2, exception.Actual);
+  }
+
   [Fact(DisplayName = "UpdateAsync: it should return null when user is not found.")]
   public async Task UpdateAsync_it_should_return_null_when_user_is_not_found()
   {
@@ -218,7 +250,6 @@ public class UserServiceTests : IntegrationTestingBase
   {
     await base.InitializeAsync();
 
-    IUserRepository userRepository = ServiceProvider.GetRequiredService<IUserRepository>();
-    await userRepository.SaveAsync(_user);
+    await _userRepository.SaveAsync(_user);
   }
 }
