@@ -64,6 +64,23 @@ public class UserService : IUserService
     return await _userQuerier.ReadAsync(user, cancellationToken);
   }
 
+  public async Task<User?> DeleteAsync(string id, CancellationToken cancellationToken)
+  {
+    AggregateId userId = id.GetAggregateId(nameof(id));
+    UserAggregate? user = await _userRepository.LoadAsync(userId, cancellationToken);
+    if (user == null)
+    {
+      return null;
+    }
+    User result = await _userQuerier.ReadAsync(user, cancellationToken);
+
+    user.Delete();
+
+    await _userRepository.SaveAsync(user, cancellationToken);
+
+    return result;
+  }
+
   public async Task<User?> UpdateAsync(string id, UpdateUserPayload payload, CancellationToken cancellationToken)
   {
     AggregateId userId = id.GetAggregateId(nameof(id));
