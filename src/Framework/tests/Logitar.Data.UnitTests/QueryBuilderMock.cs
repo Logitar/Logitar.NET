@@ -4,6 +4,11 @@ internal class QueryBuilderMock : QueryBuilder
 {
   public QueryBuilderMock(TableId source) : base(source)
   {
+    JoinClauses[JoinKind.Full] = "JOINDRE COMPLÈTEMENT";
+    JoinClauses[JoinKind.Inner] = "JOINDRE À L'INTÉRIEUR";
+    JoinClauses[JoinKind.Left] = "JOINDRE À GAUCHE";
+    JoinClauses[JoinKind.Right] = "JOINDRE À DROITE";
+
     ComparisonOperators["="] = "==";
     ComparisonOperators[">"] = ">>";
     ComparisonOperators[">="] = ">>==";
@@ -26,6 +31,8 @@ internal class QueryBuilderMock : QueryBuilder
   protected override string AllColumnsClause => "Ω";
 
   protected override string FromClause => "DEPUIS";
+
+  protected override string OnClause => "SUR";
 
   protected override string WhereClause => "OÙ";
   protected override string IsClause => "EST";

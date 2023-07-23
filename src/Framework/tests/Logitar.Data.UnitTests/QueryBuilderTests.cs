@@ -17,9 +17,13 @@ public class QueryBuilderTests
   {
     ColumnId priority = new("Priority", _table);
     ColumnId id = new($"{_table.Table}Id", _table);
+    TableId tasks = new("MesTâches", "t");
+    Assert.NotNull(id.Name);
 
     IQuery query = _builder
       .Select(ColumnId.All(), id)
+      .Join(new Join(new ColumnId(id.Name, tasks), id, new OperatorCondition(new ColumnId("IsClosed", tasks), Operators.IsEqualTo(false))))
+      .Join(new Join(JoinKind.Full, new ColumnId("ProjectId", new TableId("MesProjets")), new ColumnId("ProjectId", _table)))
       .Where(new OrCondition(
         new OperatorCondition(priority, Operators.IsBetween(2, 4)),
         new OperatorCondition(priority, Operators.IsNull())
@@ -35,20 +39,23 @@ public class QueryBuilderTests
     string text = string.Join(Environment.NewLine,
       "SÉLECTIONNER Ω, «x»·«MaTableId»",
       "DEPUIS «défaut»·«MaTable» «x»",
-      "OÙ («x»·«Priority» DANS L'INTERVALLE Πp0Θ ET Πp1Θ OU «x»·«Priority» EST NUL) ET «Status» != Πp2Θ ET «x»·«MaTableId» NON DANS (Πp3Θ, Πp4Θ, Πp5Θ) ET «Trace» COMME Πp6Θ",
+      "JOINDRE À L'INTÉRIEUR «défaut»·«MesTâches» «t» SUR «t»·«MaTableId» == «x»·«MaTableId» ET «t»·«IsClosed» == Πp0Θ",
+      "JOINDRE COMPLÈTEMENT «défaut»·«MesProjets» SUR «défaut»·«MesProjets»·«ProjectId» == «x»·«ProjectId»",
+      "OÙ («x»·«Priority» DANS L'INTERVALLE Πp1Θ ET Πp2Θ OU «x»·«Priority» EST NUL) ET «Status» != Πp3Θ ET «x»·«MaTableId» NON DANS (Πp4Θ, Πp5Θ, Πp6Θ) ET «Trace» COMME Πp7Θ",
       "ORDONNER PAR «x»·«DisplayName» ↑ PUIS PAR «UpdatedOn» ↓");
     Assert.Equal(text, query.Text);
 
     Dictionary<string, IParameter> parameters = query.Parameters.Select(p => (IParameter)p)
       .ToDictionary(p => p.Name, p => p);
-    Assert.Equal(7, parameters.Count);
-    Assert.Equal(2, parameters["p0"].Value);
-    Assert.Equal(4, parameters["p1"].Value);
-    Assert.Equal("Success", parameters["p2"].Value);
-    Assert.Equal(7, parameters["p3"].Value);
-    Assert.Equal(49, parameters["p4"].Value);
-    Assert.Equal(343, parameters["p5"].Value);
-    Assert.Equal("%fail%", parameters["p6"].Value);
+    Assert.Equal(8, parameters.Count);
+    Assert.Equal(false, parameters["p0"].Value);
+    Assert.Equal(2, parameters["p1"].Value);
+    Assert.Equal(4, parameters["p2"].Value);
+    Assert.Equal("Success", parameters["p3"].Value);
+    Assert.Equal(7, parameters["p4"].Value);
+    Assert.Equal(49, parameters["p5"].Value);
+    Assert.Equal(343, parameters["p6"].Value);
+    Assert.Equal("%fail%", parameters["p7"].Value);
   }
 
   [Fact(DisplayName = "Build: it throws NotSupportedException when condition type is not supported.")]
@@ -93,6 +100,29 @@ public class QueryBuilderTests
     PropertyInfo? source = _builder.GetType().GetProperty("Source", BindingFlags.NonPublic | BindingFlags.Instance);
     Assert.NotNull(source);
     Assert.Equal(source.GetValue(_builder), _table);
+  }
+
+  [Fact(DisplayName = "Join: it adds joins to join list.")]
+  public void Join_it_adds_joins_to_join_list()
+  {
+    TableId userRoles = new("UserRoles");
+    Join initialJoin = new(left: new ColumnId("UserId", userRoles),
+      right: new ColumnId("UserId", new TableId("Users")),
+      condition: new OperatorCondition(new ColumnId("IsActive", userRoles), Operators.IsEqualTo(true)));
+    _builder.Join(initialJoin);
+
+    PropertyInfo? joins = _builder.GetType().GetProperty("Joins", BindingFlags.NonPublic | BindingFlags.Instance);
+    Assert.NotNull(joins);
+
+    List<Join>? joinList = (List<Join>?)joins.GetValue(_builder);
+    Assert.NotNull(joinList);
+    Assert.Contains(initialJoin, joinList);
+
+    Join otherJoin = new(left: new ColumnId("RoleId", new TableId("Roles")),
+      right: new ColumnId("RoleId", userRoles));
+    _builder.Join(otherJoin);
+    Assert.Contains(initialJoin, joinList);
+    Assert.Contains(otherJoin, joinList);
   }
 
   [Fact(DisplayName = "OrderBy: it replaces the order by list.")]
