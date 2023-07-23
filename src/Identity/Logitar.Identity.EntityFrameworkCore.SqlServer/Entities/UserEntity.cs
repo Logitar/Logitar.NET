@@ -66,6 +66,16 @@ public record UserEntity : AggregateEntity
 
   public string? Locale { get; private set; }
 
+  public void ChangePassword(UserPasswordChangedEvent change, ActorEntity actor)
+  {
+    SetVersion(change);
+
+    Password = change.Password.ToString();
+    PasswordChangedById = change.ActorId ?? Actor.DefaultId;
+    PasswordChangedBy = actor.Serialize();
+    PasswordChangedOn = change.OccurredOn;
+  }
+
   public void Disable(UserDisabledEvent disabled, ActorEntity actor)
   {
     SetVersion(disabled);

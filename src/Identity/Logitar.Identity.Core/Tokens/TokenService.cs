@@ -14,7 +14,7 @@ public class TokenService : ITokenService
     _tokenManager = tokenManager;
   }
 
-  public Task<CreatedToken> CreateAsync(CreateTokenPayload payload, CancellationToken cancellationToken)
+  public virtual Task<CreatedToken> CreateAsync(CreateTokenPayload payload, CancellationToken cancellationToken)
   {
     new CreateTokenValidator().ValidateAndThrow(payload);
 
@@ -52,7 +52,7 @@ public class TokenService : ITokenService
     return Task.FromResult(result);
   }
 
-  public async Task<ValidatedToken> ValidateAsync(ValidateTokenPayload payload, bool consume, CancellationToken cancellationToken)
+  public virtual async Task<ValidatedToken> ValidateAsync(ValidateTokenPayload payload, bool consume, CancellationToken cancellationToken)
   {
     new ValidateTokenValidator().ValidateAndThrow(payload);
 

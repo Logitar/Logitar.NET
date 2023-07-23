@@ -1,4 +1,6 @@
-﻿using Logitar.Identity.Core;
+﻿using FluentValidation;
+using FluentValidation.Results;
+using Logitar.Identity.Core;
 using Logitar.Identity.Core.Users;
 using Logitar.Identity.Core.Users.Models;
 using Logitar.Identity.Core.Users.Payloads;
@@ -6,6 +8,7 @@ using Logitar.Identity.Domain;
 using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.Domain.Users;
 using Logitar.Identity.EntityFrameworkCore.SqlServer.Entities;
+using Logitar.Security;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -32,6 +35,83 @@ public class UserServiceTests : IntegrationTestingBase
     {
       Email = new(Faker.Person.Email, isVerified: true)
     };
+  }
+
+  [Fact(DisplayName = "ChangePasswordAsync: it should change the correct password.")]
+  public async Task ChangePasswordAsync_it_should_change_the_correct_password()
+  {
+    UserSettings userSettings = _userSettings.Value;
+    _user.SetPassword(userSettings.PasswordSettings, "Test123!");
+    await _userRepository.SaveAsync(_user);
+
+    ChangePasswordPayload payload = new()
+    {
+      Current = "Test123!",
+      Password = "yEmZS(C@W39+"
+    };
+    User? user = await _userService.ChangePasswordAsync(_user.Id.Value, payload, CancellationToken);
+    Assert.NotNull(user);
+    Assert.NotNull(user.PasswordChangedOn);
+    Assert.True(user.HasPassword);
+    Assert.Equal(user.Id, user.PasswordChangedBy?.Id);
+
+    UserEntity? entity = await IdentityContext.Users.AsNoTracking()
+      .SingleOrDefaultAsync(x => x.AggregateId == user.Id);
+    Assert.NotNull(entity);
+    Assert.NotNull(entity.Password);
+    Assert.True(Pbkdf2.TryParse(entity.Password, out Pbkdf2? pbkdf2));
+    Assert.NotNull(pbkdf2);
+    Assert.True(pbkdf2.IsMatch(payload.Password));
+  }
+
+  [Fact(DisplayName = "ChangePasswordAsync: it should return null when user is not found.")]
+  public async Task ChangePasswordAsync_it_should_return_null_when_user_is_not_found()
+  {
+    ChangePasswordPayload payload = new();
+    User? user = await _userService.ChangePasswordAsync(Guid.Empty.ToString(), payload, CancellationToken);
+    Assert.Null(user);
+  }
+
+  [Fact(DisplayName = "ChangePasswordAsync: it should thrown InvalidCredentialsException when current password is not valid.")]
+  public async Task ChangePasswordAsync_it_should_throw_InvalidCredentialsException_when_current_password_is_not_valid()
+  {
+    UserSettings userSettings = _userSettings.Value;
+    _user.SetPassword(userSettings.PasswordSettings, "Test123!");
+    await _userRepository.SaveAsync(_user);
+
+    ChangePasswordPayload payload = new()
+    {
+      Current = "AAaa!!11"
+    };
+    await Assert.ThrowsAsync<InvalidCredentialsException>(
+      async () => await _userService.ChangePasswordAsync(_user.Id.Value, payload, CancellationToken));
+  }
+
+  [Fact(DisplayName = "ChangePasswordAsync: it should throw InvalidCredentialsException when user has no password.")]
+  public async Task ChangePasswordAsync_it_should_throw_InvalidCredentialsException_when_user_has_no_password()
+  {
+    ChangePasswordPayload payload = new();
+    await Assert.ThrowsAsync<InvalidCredentialsException>(
+      async () => await _userService.ChangePasswordAsync(_user.Id.Value, payload, CancellationToken));
+  }
+
+  [Fact(DisplayName = "ChangePasswordAsync: it should throw ValidationException when new password is not valid.")]
+  public async Task ChangePasswordAsync_it_should_throw_ValidationException_when_new_password_is_not_valid()
+  {
+    UserSettings userSettings = _userSettings.Value;
+    _user.SetPassword(userSettings.PasswordSettings, "Test123!");
+    await _userRepository.SaveAsync(_user);
+
+    ChangePasswordPayload payload = new()
+    {
+      Current = "Test123!",
+      Password = "AAaa!!11"
+    };
+    var exception = await Assert.ThrowsAsync<ValidationException>(
+      async () => await _userService.ChangePasswordAsync(_user.Id.Value, payload, CancellationToken));
+    ValidationFailure failure = exception.Errors.Single();
+    Assert.Equal("PasswordRequiresUniqueChars", failure.ErrorCode);
+    Assert.Equal("Password", failure.PropertyName);
   }
 
   [Fact(DisplayName = "CreateAsync: it should create the correct user.")]
@@ -111,13 +191,6 @@ public class UserServiceTests : IntegrationTestingBase
     Assert.Equal("UniqueName", exception.PropertyName);
   }
 
-  [Fact(DisplayName = "DeleteAsync: it should return null when user is not found.")]
-  public async Task DeleteAsync_it_should_return_null_when_user_is_not_found()
-  {
-    User? user = await _userService.DeleteAsync(Guid.Empty.ToString(), CancellationToken);
-    Assert.Null(user);
-  }
-
   [Fact(DisplayName = "DeleteAsync: it should delete the correct user.")]
   public async Task DeleteAsync_it_should_delete_the_correct_user()
   {
@@ -128,6 +201,13 @@ public class UserServiceTests : IntegrationTestingBase
     UserEntity? entity = await IdentityContext.Users.AsNoTracking()
       .SingleOrDefaultAsync(x => x.AggregateId == _user.Id.Value);
     Assert.Null(entity);
+  }
+
+  [Fact(DisplayName = "DeleteAsync: it should return null when user is not found.")]
+  public async Task DeleteAsync_it_should_return_null_when_user_is_not_found()
+  {
+    User? user = await _userService.DeleteAsync(Guid.Empty.ToString(), CancellationToken);
+    Assert.Null(user);
   }
 
   [Fact(DisplayName = "ReadAsync: it should read the correct user.")]
