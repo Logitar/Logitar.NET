@@ -62,7 +62,7 @@ public class UserAggregate : AggregateRoot
       if (value != _email)
       {
         UserUpdatedEvent updated = GetLatestUpdatedEvent();
-        updated.Email = new MayBe<EmailAddress?>(value);
+        updated.Email = new MayBe<EmailAddress>(value);
         Apply(updated);
       }
     }
@@ -82,8 +82,8 @@ public class UserAggregate : AggregateRoot
       if (value != _firstName)
       {
         UserUpdatedEvent updated = GetLatestUpdatedEvent();
-        updated.FirstName = new MayBe<string?>(value);
-        updated.FullName = new MayBe<string?>(PersonHelper.BuildFullName(value, _lastName));
+        updated.FirstName = new MayBe<string>(value);
+        updated.FullName = new MayBe<string>(PersonHelper.BuildFullName(value, _lastName));
         Apply(updated);
       }
     }
@@ -102,8 +102,8 @@ public class UserAggregate : AggregateRoot
       if (value != _lastName)
       {
         UserUpdatedEvent updated = GetLatestUpdatedEvent();
-        updated.LastName = new MayBe<string?>(value);
-        updated.FullName = new MayBe<string?>(PersonHelper.BuildFullName(_firstName, value));
+        updated.LastName = new MayBe<string>(value);
+        updated.FullName = new MayBe<string>(PersonHelper.BuildFullName(_firstName, value));
         Apply(updated);
       }
     }
@@ -123,7 +123,7 @@ public class UserAggregate : AggregateRoot
       if (value != _locale)
       {
         UserUpdatedEvent updated = GetLatestUpdatedEvent();
-        updated.Locale = new MayBe<CultureInfo?>(value);
+        updated.Locale = new MayBe<CultureInfo>(value);
         Apply(updated);
       }
     }
