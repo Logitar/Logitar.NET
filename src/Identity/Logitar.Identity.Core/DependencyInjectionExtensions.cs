@@ -11,7 +11,7 @@ public static class DependencyInjectionExtensions
     JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
     return services
-      .AddSingleton<ITokenManager, JsonWebTokenManager>()
+      .AddTransient<ITokenManager, JsonWebTokenManager>()
       .AddTransient<ITokenService, TokenService>()
       .AddTransient<IUserService, UserService>();
   }

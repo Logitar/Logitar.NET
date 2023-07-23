@@ -9,6 +9,7 @@ public class IdentityContext : DbContext
   {
   }
 
+  public DbSet<BlacklistedTokenEntity> TokenBlacklist { get; private set; } = null!;
   public DbSet<UserEntity> Users { get; private set; } = null!;
 
   protected override void OnModelCreating(ModelBuilder modelBuilder)
