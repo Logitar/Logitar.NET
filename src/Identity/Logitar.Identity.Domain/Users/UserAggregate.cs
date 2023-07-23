@@ -129,6 +129,26 @@ public class UserAggregate : AggregateRoot
     }
   }
 
+  public void ChangePassword(IPasswordSettings passwordSettings, string password, string current)
+  {
+    if (_password?.IsMatch(current) != true)
+    {
+      StringBuilder message = new();
+      message.AppendLine("The specified password does not match the user.");
+      message.Append("User: ").AppendLine(ToString());
+      message.Append("Password: ").AppendLine(current);
+      throw new InvalidCredentialsException(message.ToString());
+    }
+
+    new PasswordValidator(passwordSettings, "Password").ValidateAndThrow(password);
+
+    ApplyChange(new UserPasswordChangedEvent
+    {
+      Password = new Pbkdf2(password)
+    }, actorId: Id.Value);
+  }
+  protected virtual void Apply(UserPasswordChangedEvent change) => _password = change.Password;
+
   public void Delete() => ApplyChange(new UserDeletedEvent());
 
   public void Disable()

@@ -1,4 +1,5 @@
 ﻿using Logitar.Identity.Core.Models;
+using Logitar.Identity.EntityFrameworkCore.SqlServer.Entities;
 
 namespace Logitar.Identity.EntityFrameworkCore.SqlServer.Actors;
 
@@ -38,6 +39,14 @@ public record ActorEntity
     DisplayName = actor.DisplayName,
     EmailAddress = actor.EmailAddress,
     PictureUrl = actor.PictureUrl
+  };
+  public static ActorEntity From(UserEntity user, bool isDeleted = false) => new()
+  {
+    Type = "User",
+    IsDeleted = isDeleted,
+    DisplayName = user.FullName ?? user.UniqueName,
+    EmailAddress = user.EmailAddress,
+    PictureUrl = null // TODO(fpion): User Picture
   };
 
   public string Serialize() => JsonSerializer.Serialize(this);

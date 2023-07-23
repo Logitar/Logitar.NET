@@ -21,6 +21,24 @@ public class UserService : IUserService
     _userSettings = userSettings;
   }
 
+  public virtual async Task<User?> ChangePasswordAsync(string id, ChangePasswordPayload payload, CancellationToken cancellationToken)
+  {
+    AggregateId userId = id.GetAggregateId(nameof(id));
+    UserAggregate? user = await _userRepository.LoadAsync(userId, cancellationToken);
+    if (user == null)
+    {
+      return null;
+    }
+
+    UserSettings userSettings = _userSettings.Value;
+
+    user.ChangePassword(userSettings.PasswordSettings, payload.Password, payload.Current);
+
+    await _userRepository.SaveAsync(user, cancellationToken);
+
+    return await _userQuerier.ReadAsync(user, cancellationToken);
+  }
+
   public virtual async Task<User> CreateAsync(CreateUserPayload payload, CancellationToken cancellationToken)
   {
     if (await _userRepository.LoadAsync(payload.TenantId, payload.UniqueName, cancellationToken) != null)
@@ -64,7 +82,7 @@ public class UserService : IUserService
     return await _userQuerier.ReadAsync(user, cancellationToken);
   }
 
-  public async Task<User?> DeleteAsync(string id, CancellationToken cancellationToken)
+  public virtual async Task<User?> DeleteAsync(string id, CancellationToken cancellationToken)
   {
     AggregateId userId = id.GetAggregateId(nameof(id));
     UserAggregate? user = await _userRepository.LoadAsync(userId, cancellationToken);
@@ -81,7 +99,7 @@ public class UserService : IUserService
     return result;
   }
 
-  public async Task<User?> ReadAsync(string? id, string? tenantId, string? uniqueName, CancellationToken cancellationToken)
+  public virtual async Task<User?> ReadAsync(string? id, string? tenantId, string? uniqueName, CancellationToken cancellationToken)
   {
     Dictionary<string, User> users = new(capacity: 2);
 
@@ -111,7 +129,7 @@ public class UserService : IUserService
     return users.Values.SingleOrDefault();
   }
 
-  public async Task<User?> UpdateAsync(string id, UpdateUserPayload payload, CancellationToken cancellationToken)
+  public virtual async Task<User?> UpdateAsync(string id, UpdateUserPayload payload, CancellationToken cancellationToken)
   {
     AggregateId userId = id.GetAggregateId(nameof(id));
     UserAggregate? user = await _userRepository.LoadAsync(userId, cancellationToken);
