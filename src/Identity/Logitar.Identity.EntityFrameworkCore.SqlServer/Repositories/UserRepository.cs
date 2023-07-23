@@ -1,15 +1,18 @@
 ﻿using Logitar.Data;
+using Logitar.Data.SqlServer;
 using Logitar.EventSourcing;
 using Logitar.EventSourcing.EntityFrameworkCore.Relational;
 using Logitar.EventSourcing.Infrastructure;
 using Logitar.Identity.Domain.Users;
-using Microsoft.Data.SqlClient;
+using Logitar.Identity.EntityFrameworkCore.SqlServer.Constants;
 using Microsoft.EntityFrameworkCore;
 
 namespace Logitar.Identity.EntityFrameworkCore.SqlServer.Repositories;
 
 public class UserRepository : EventSourcing.EntityFrameworkCore.Relational.AggregateRepository, IUserRepository
 {
+  private static readonly string _aggregateType = typeof(UserAggregate).GetName();
+
   public UserRepository(ICurrentActor currentActor, IEventBus eventBus, EventContext eventContext)
     : base(eventBus, eventContext)
   {
@@ -23,23 +26,18 @@ public class UserRepository : EventSourcing.EntityFrameworkCore.Relational.Aggre
     tenantId = tenantId?.CleanTrim();
     string uniqueNameNormalized = uniqueName.Trim().ToUpper();
 
-    //IQuery query = SqlServerQueryBuilder.From(Db.Event.Table)
-    //  // JOIN "Users" u ON u."AggregateId" = e."AggregateId" AND e."AggregateType" = @AggregateType
-    //  .WhereAnd(
-    //    new OperatorCondition(Db.User.TenantId, tenantId == null ? Operators.IsNull() : Operators.IsEqualTo(tenantId)),
-    //    new OperatorCondition(Db.User.UniqueNameNormalized, Operators.IsEqualTo(uniqueNameNormalized))
-    //  )
-    //  .SelectAll(Db.Event.Table)
-    //  .Build(); // TODO(fpion): implement JOIN
+    IQuery query = SqlServerQueryBuilder.From(Db.Events.Table)
+      .Join(new Join(Db.Users.AggregateId, Db.Events.AggregateId,
+        new OperatorCondition(Db.Events.AggregateType, Operators.IsEqualTo(_aggregateType)))
+      )
+      .WhereAnd(
+        new OperatorCondition(Db.Users.TenantId, tenantId == null ? Operators.IsNull() : Operators.IsEqualTo(tenantId)),
+        new OperatorCondition(Db.Users.UniqueNameNormalized, Operators.IsEqualTo(uniqueNameNormalized))
+      )
+      .SelectAll(Db.Events.Table)
+      .Build();
 
-    string sql = "SELECT [dbo].[Events].* FROM [dbo].[Events] JOIN [dbo].[Users] ON [dbo].[Users].[AggregateId] = [dbo].[Events].[AggregateId] AND [dbo].[Events].[AggregateType] = @AggregateType WHERE ([dbo].[Users].[TenantId] = @TenantId AND [dbo].[Users].[UniqueNameNormalized] = @UniqueNameNormalized)";
-    object[] parameters = new[]
-    {
-      new SqlParameter("AggregateType", typeof(UserAggregate).GetName()),
-      new SqlParameter("TenantId", tenantId),
-      new SqlParameter("UniqueNameNormalized", uniqueNameNormalized)
-    };
-    EventEntity[] events = await EventContext.Events.FromSqlRaw(sql, parameters)
+    EventEntity[] events = await EventContext.Events.FromQuery(query)
       .OrderBy(e => e.Version)
       .AsNoTracking()
       .ToArrayAsync(cancellationToken);
@@ -51,23 +49,18 @@ public class UserRepository : EventSourcing.EntityFrameworkCore.Relational.Aggre
     tenantId = tenantId?.CleanTrim();
     string emailAddressNormalized = email.Address.ToUpper();
 
-    //IQuery query = SqlServerQueryBuilder.From(Db.Event.Table)
-    //  // JOIN "Users" u ON u."AggregateId" = e."AggregateId" AND e."AggregateType" = @AggregateType
-    //  .WhereAnd(
-    //    new OperatorCondition(Db.User.TenantId, tenantId == null ? Operators.IsNull() : Operators.IsEqualTo(tenantId)),
-    //    new OperatorCondition(Db.User.EmailAddressNormalized, Operators.IsEqualTo(emailAddressNormalized))
-    //  )
-    //  .SelectAll(Db.Event.Table)
-    //  .Build(); // TODO(fpion): implement JOIN
+    IQuery query = SqlServerQueryBuilder.From(Db.Events.Table)
+      .Join(new Join(Db.Users.AggregateId, Db.Events.AggregateId,
+        new OperatorCondition(Db.Events.AggregateType, Operators.IsEqualTo(_aggregateType)))
+      )
+      .WhereAnd(
+        new OperatorCondition(Db.Users.TenantId, tenantId == null ? Operators.IsNull() : Operators.IsEqualTo(tenantId)),
+        new OperatorCondition(Db.Users.EmailAddressNormalized, Operators.IsEqualTo(emailAddressNormalized))
+      )
+      .SelectAll(Db.Events.Table)
+      .Build();
 
-    string sql = "SELECT [dbo].[Events].* FROM [dbo].[Events] JOIN [dbo].[Users] ON [dbo].[Users].[AggregateId] = [dbo].[Events].[AggregateId] AND [dbo].[Events].[AggregateType] = @AggregateType WHERE ([dbo].[Users].[TenantId] = @TenantId AND [dbo].[Users].[EmailAddressNormalized] = @EmailAddressNormalized)";
-    object[] parameters = new[]
-    {
-      new SqlParameter("AggregateType", typeof(UserAggregate).GetName()),
-      new SqlParameter("TenantId", tenantId),
-      new SqlParameter("EmailAddressNormalized", emailAddressNormalized)
-    };
-    EventEntity[] events = await EventContext.Events.FromSqlRaw(sql, parameters)
+    EventEntity[] events = await EventContext.Events.FromQuery(query)
       .OrderBy(e => e.Version)
       .AsNoTracking()
       .ToArrayAsync(cancellationToken);
