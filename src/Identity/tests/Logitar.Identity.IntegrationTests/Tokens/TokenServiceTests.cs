@@ -2,6 +2,7 @@
 using Logitar.Identity.Core.Tokens;
 using Logitar.Identity.Core.Tokens.Models;
 using Logitar.Identity.Core.Tokens.Payloads;
+using Logitar.Identity.EntityFrameworkCore.SqlServer.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -13,6 +14,7 @@ public class TokenServiceTests : IntegrationTestingBase
 {
   private readonly ITokenService _tokenService;
 
+  private readonly Guid _blacklistedTokenId = Guid.NewGuid();
   private readonly string _secret;
   private readonly SecurityKey _securityKey;
   private readonly SigningCredentials _signingCredentials;
@@ -30,7 +32,6 @@ public class TokenServiceTests : IntegrationTestingBase
   [Fact(DisplayName = "CreateAsync: it should create the correct token.")]
   public async Task CreateAsync_it_should_create_the_correct_token()
   {
-    Assert.NotNull(User.Email);
     CreateTokenPayload payload = new()
     {
       IsConsumable = true,
@@ -39,8 +40,8 @@ public class TokenServiceTests : IntegrationTestingBase
       Secret = _secret,
       Audience = "audience",
       Issuer = "issuer",
-      Subject = User.Id.Value,
-      EmailAddress = User.Email.Address,
+      Subject = Guid.NewGuid().ToString(),
+      EmailAddress = Faker.Person.Email,
       Claims = new[]
       {
         new TokenClaim("claim_type", "claim_value", ClaimValueTypes.String)
@@ -93,7 +94,7 @@ public class TokenServiceTests : IntegrationTestingBase
     string purpose = "reset_password";
     ClaimsIdentity subject = new();
     subject.AddClaim(new Claim(Rfc7519ClaimTypes.Purpose, purpose));
-    subject.AddClaim(new Claim(Rfc7519ClaimTypes.Subject, User.Id.Value));
+    subject.AddClaim(new Claim(Rfc7519ClaimTypes.Subject, Guid.NewGuid().ToString()));
     SecurityTokenDescriptor tokenDescriptor = new()
     {
       SigningCredentials = _signingCredentials,
@@ -118,7 +119,7 @@ public class TokenServiceTests : IntegrationTestingBase
   public async Task ValidateAsync_it_should_throw_SecurityTokenBlacklistedException_when_token_is_blacklisted()
   {
     ClaimsIdentity subject = new();
-    subject.AddClaim(new Claim(Rfc7519ClaimTypes.TokenId, BlacklistedTokenId.ToString()));
+    subject.AddClaim(new Claim(Rfc7519ClaimTypes.TokenId, _blacklistedTokenId.ToString()));
     SecurityTokenDescriptor tokenDescriptor = new()
     {
       SigningCredentials = _signingCredentials,
@@ -134,7 +135,7 @@ public class TokenServiceTests : IntegrationTestingBase
     };
     var exception = await Assert.ThrowsAsync<SecurityTokenBlacklistedException>(
       async () => await _tokenService.ValidateAsync(validatePayload, consume: false, CancellationToken));
-    Assert.Equal(new[] { BlacklistedTokenId }, exception.BlacklistedIds);
+    Assert.Equal(new[] { _blacklistedTokenId }, exception.BlacklistedIds);
   }
 
   [Fact(DisplayName = "ValidateAsync: it should throw ValidationException when payload is not valid.")]
@@ -154,14 +155,15 @@ public class TokenServiceTests : IntegrationTestingBase
   [Fact(DisplayName = "ValidateAsync: it should validate the correct token.")]
   public async Task ValidateAsync_it_should_validate_the_correct_token()
   {
-    Assert.NotNull(User.Email);
+    string userId = Guid.NewGuid().ToString();
+    string emailAddress = Faker.Person.Email;
     Guid tokenId = Guid.NewGuid();
     ClaimsIdentity subject = new();
     subject.AddClaim(new Claim(Rfc7519ClaimTypes.Audience, "audience"));
-    subject.AddClaim(new Claim(Rfc7519ClaimTypes.EmailAddress, User.Email.Address));
+    subject.AddClaim(new Claim(Rfc7519ClaimTypes.EmailAddress, emailAddress));
     subject.AddClaim(new Claim(Rfc7519ClaimTypes.Issuer, "issuer"));
     subject.AddClaim(new Claim(Rfc7519ClaimTypes.Purpose, "reset_password"));
-    subject.AddClaim(new Claim(Rfc7519ClaimTypes.Subject, User.Id.Value));
+    subject.AddClaim(new Claim(Rfc7519ClaimTypes.Subject, userId));
     subject.AddClaim(new Claim(Rfc7519ClaimTypes.TokenId, tokenId.ToString()));
     subject.AddClaim(DateTime.UtcNow.AddDays(1).CreateClaim(Rfc7519ClaimTypes.ExpiresOn));
     SecurityTokenDescriptor tokenDescriptor = new()
@@ -181,10 +183,19 @@ public class TokenServiceTests : IntegrationTestingBase
       Purpose = "reset_password"
     };
     ValidatedToken validatedToken = await _tokenService.ValidateAsync(payload, consume: true, CancellationToken);
-    Assert.Equal(User.Id.Value, validatedToken.Subject);
-    Assert.Equal(User.Email.Address, validatedToken.EmailAddress);
+    Assert.Equal(userId, validatedToken.Subject);
+    Assert.Equal(emailAddress, validatedToken.EmailAddress);
     Assert.Contains(validatedToken.Claims, claim => claim.Type == Rfc7519ClaimTypes.TokenId && claim.Value == tokenId.ToString());
 
     Assert.True(await IdentityContext.TokenBlacklist.AnyAsync(x => x.Id == tokenId, CancellationToken));
+  }
+
+  public override async Task InitializeAsync()
+  {
+    await base.InitializeAsync();
+
+    BlacklistedTokenEntity blacklisted = new(_blacklistedTokenId);
+    IdentityContext.TokenBlacklist.Add(blacklisted);
+    await IdentityContext.SaveChangesAsync();
   }
 }

@@ -1,7 +1,10 @@
-﻿namespace Logitar.Identity.Domain.Users;
+﻿using Logitar.EventSourcing;
+
+namespace Logitar.Identity.Domain.Users;
 
 public interface IUserRepository
 {
+  Task<UserAggregate?> LoadAsync(AggregateId id, CancellationToken cancellationToken = default);
   Task<UserAggregate?> LoadAsync(string? tenantId, string uniqueName, CancellationToken cancellationToken = default);
   Task<IEnumerable<UserAggregate>> LoadAsync(string? tenantId, IEmailAddress email, CancellationToken cancellationToken = default);
 

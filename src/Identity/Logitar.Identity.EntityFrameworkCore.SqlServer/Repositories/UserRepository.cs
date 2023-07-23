@@ -21,6 +21,9 @@ public class UserRepository : EventSourcing.EntityFrameworkCore.Relational.Aggre
 
   protected ICurrentActor CurrentActor { get; }
 
+  public async Task<UserAggregate?> LoadAsync(AggregateId id, CancellationToken cancellationToken)
+    => await base.LoadAsync<UserAggregate>(id, cancellationToken);
+
   public async Task<UserAggregate?> LoadAsync(string? tenantId, string uniqueName, CancellationToken cancellationToken)
   {
     tenantId = tenantId?.CleanTrim();
