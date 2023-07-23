@@ -52,6 +52,37 @@ public class TokenService : ITokenService
     return Task.FromResult(result);
   }
 
+  public async Task<ValidatedToken> ValidateAsync(ValidateTokenPayload payload, bool consume, CancellationToken cancellationToken)
+  {
+    new ValidateTokenValidator().ValidateAndThrow(payload);
+
+    ClaimsPrincipal principal = await _tokenManager.ValidateAsync(payload.Token, payload.Secret,
+        payload.Audience, payload.Issuer, payload.Purpose, consume, cancellationToken);
+
+    ValidatedToken token = new();
+
+    List<TokenClaim> claims = new(capacity: principal.Claims.Count());
+    foreach (Claim claim in principal.Claims)
+    {
+      switch (claim.Type)
+      {
+        case Rfc7519ClaimTypes.EmailAddress:
+          token.EmailAddress = claim.Value;
+          break;
+        case Rfc7519ClaimTypes.Subject:
+          token.Subject = claim.Value;
+          break;
+        default:
+          claims.Add(new TokenClaim(claim.Type, claim.Value, claim.ValueType));
+          break;
+      }
+    }
+
+    token.Claims = claims;
+
+    return token;
+  }
+
   private static Claim CreateClaim(TokenClaim claim)
     => CreateClaim(claim.Type, claim.Value, claim.ValueType);
   private static Claim CreateClaim(string type, string value, string? valueType = null)

@@ -6,4 +6,5 @@ namespace Logitar.Identity.Core.Tokens;
 public interface ITokenService
 {
   Task<CreatedToken> CreateAsync(CreateTokenPayload payload, CancellationToken cancellationToken = default);
+  Task<ValidatedToken> ValidateAsync(ValidateTokenPayload payload, bool consume = false, CancellationToken cancellationToken = default);
 }

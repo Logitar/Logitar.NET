@@ -7,6 +7,7 @@ using Logitar.Identity.Core.Users.Payloads;
 using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.Domain.Users;
 using Logitar.Identity.EntityFrameworkCore.SqlServer;
+using Logitar.Identity.EntityFrameworkCore.SqlServer.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,6 +19,7 @@ namespace Logitar.Identity.IntegrationTests.Users;
 public class UserServiceTests
 {
   private static readonly Actor _actor = new();
+  private static readonly Guid _blacklistedTokenId = Guid.NewGuid();
   private static readonly CancellationToken _cancellationToken = default;
 
   private static readonly IServiceProvider _serviceProvider;
@@ -150,7 +152,12 @@ public class UserServiceTests
 
     await _identityContext.Database.MigrateAsync(cancellationToken);
     await _identityContext.Database.ExecuteSqlRawAsync("DELETE FROM [dbo].[Users];", cancellationToken);
+    await _identityContext.Database.ExecuteSqlRawAsync("DELETE FROM [dbo].[Tokenblacklist];", cancellationToken);
 
     await _userRepository.SaveAsync(_user, cancellationToken);
+
+    BlacklistedTokenEntity blacklisted = new(_blacklistedTokenId);
+    _identityContext.TokenBlacklist.Add(blacklisted);
+    await _identityContext.SaveChangesAsync(cancellationToken);
   }
 }

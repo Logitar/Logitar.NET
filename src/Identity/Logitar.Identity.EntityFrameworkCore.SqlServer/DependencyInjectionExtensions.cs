@@ -1,6 +1,7 @@
 ﻿using Logitar.EventSourcing.EntityFrameworkCore.SqlServer;
 using Logitar.EventSourcing.Infrastructure;
 using Logitar.Identity.Core;
+using Logitar.Identity.Core.Tokens;
 using Logitar.Identity.Core.Users;
 using Logitar.Identity.Domain.Users;
 using Logitar.Identity.EntityFrameworkCore.SqlServer.Actors;
@@ -30,7 +31,8 @@ public static class DependencyInjectionExtensions
       .AddQueriers()
       .AddRepositories()
       .AddScoped<IActorService, ActorService>()
-      .AddScoped<IEventBus, EventBus>();
+      .AddScoped<IEventBus, EventBus>()
+      .AddScoped<ITokenBlacklist, TokenBlacklist>();
   }
 
   private static IServiceCollection AddQueriers(this IServiceCollection services)
