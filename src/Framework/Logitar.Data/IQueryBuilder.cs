@@ -13,6 +13,13 @@ public interface IQueryBuilder
   IQueryBuilder Select(params ColumnId[] columns);
 
   /// <summary>
+  /// Applies the specified joins to the query.
+  /// </summary>
+  /// <param name="joins">The joins to apply.</param>
+  /// <returns>The query builder.</returns>
+  IQueryBuilder Join(params Join[] joins);
+
+  /// <summary>
   /// Applies the specified conditions to the query.
   /// </summary>
   /// <param name="conditions">The conditions to apply.</param>

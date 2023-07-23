@@ -33,6 +33,10 @@ public abstract class QueryBuilder : IQueryBuilder
   /// </summary>
   protected ICollection<ColumnId> Selections { get; } = new List<ColumnId>();
   /// <summary>
+  /// Gets the list of joins of the query.
+  /// </summary>
+  protected ICollection<Join> Joins { get; } = new List<Join>();
+  /// <summary>
   /// Gets the list of conditions of the query.
   /// </summary>
   protected ICollection<Condition> Conditions { get; } = new List<Condition>();
@@ -79,6 +83,15 @@ public abstract class QueryBuilder : IQueryBuilder
   /// Gets the FROM clause in the generic dialect.
   /// </summary>
   protected virtual string FromClause => "FROM";
+
+  /// <summary>
+  /// Gets the join clauses of the current dialect.
+  /// </summary>
+  protected virtual Dictionary<JoinKind, string> JoinClauses { get; } = new();
+  /// <summary>
+  /// Gets the ON clause in the generic dialect.
+  /// </summary>
+  protected virtual string OnClause => "ON";
 
   /// <summary>
   /// Gets the WHERE clause in the generic dialect.
@@ -146,6 +159,17 @@ public abstract class QueryBuilder : IQueryBuilder
   }
 
   /// <summary>
+  /// Applies the specified joins to the query.
+  /// </summary>
+  /// <param name="joins">The joins to apply.</param>
+  /// <returns>The query builder.</returns>
+  public IQueryBuilder Join(params Join[] joins)
+  {
+    Joins.AddRange(joins);
+    return this;
+  }
+
+  /// <summary>
   /// Applies the specified conditions to the query.
   /// </summary>
   /// <param name="conditions">The conditions to apply.</param>
@@ -183,6 +207,14 @@ public abstract class QueryBuilder : IQueryBuilder
 
     text.Append(FromClause).Append(' ').AppendLine(Format(Source, fullName: true));
 
+    if (Joins.Any())
+    {
+      foreach (Join join in Joins)
+      {
+        text.AppendLine(Format(join));
+      }
+    }
+
     if (Conditions.Any())
     {
       _ = GroupOperators.TryGetValue("AND", out string? andOperator);
@@ -199,6 +231,39 @@ public abstract class QueryBuilder : IQueryBuilder
     IEnumerable<object> parameters = Parameters.Select(CreateParameter);
 
     return new Query(text.ToString(), parameters);
+  }
+
+  /// <summary>
+  /// Formats the specified join to SQL.
+  /// </summary>
+  /// <param name="join">The join to format.</param>
+  /// <returns>The formatted SQL.</returns>
+  protected virtual string Format(Join join)
+  {
+    StringBuilder formatted = new();
+
+    if (!JoinClauses.TryGetValue(join.Kind, out string? joinClause))
+    {
+      joinClause = $"{join.Kind.ToString().ToUpper()} JOIN";
+    }
+    if (!ComparisonOperators.TryGetValue("=", out string? equalOperator))
+    {
+      equalOperator = "=";
+    }
+
+    formatted.Append(joinClause).Append(' ').Append(Format(join.Left.Table!, fullName: true))
+      .Append(' ').Append(OnClause).Append(' ').Append(Format(join.Left)).Append(' ')
+      .Append(equalOperator).Append(' ').Append(Format(join.Right));
+
+    if (join.Condition != null)
+    {
+      _ = GroupOperators.TryGetValue("AND", out string? andOperator);
+      andOperator ??= "AND";
+
+      formatted.Append(' ').Append(andOperator).Append(' ').Append(Format(join.Condition));
+    }
+
+    return formatted.ToString();
   }
 
   /// <summary>
