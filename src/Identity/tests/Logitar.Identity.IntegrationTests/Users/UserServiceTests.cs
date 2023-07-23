@@ -5,6 +5,8 @@ using Logitar.Identity.Core.Users.Payloads;
 using Logitar.Identity.Domain;
 using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.Domain.Users;
+using Logitar.Identity.EntityFrameworkCore.SqlServer.Entities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -103,6 +105,25 @@ public class UserServiceTests : IntegrationTestingBase
     Assert.Equal(payload.TenantId, exception.TenantId);
     Assert.Equal(payload.UniqueName, exception.UniqueName);
     Assert.Equal("UniqueName", exception.PropertyName);
+  }
+
+  [Fact(DisplayName = "DeleteAsync: it should return null when user is not found.")]
+  public async Task DeleteAsync_it_should_return_null_when_user_is_not_found()
+  {
+    User? user = await _userService.DeleteAsync(Guid.Empty.ToString(), CancellationToken);
+    Assert.Null(user);
+  }
+
+  [Fact(DisplayName = "DeleteAsync: it should delete the correct user.")]
+  public async Task DeleteAsync_it_should_delete_the_correct_user()
+  {
+    User? user = await _userService.DeleteAsync(_user.Id.Value, CancellationToken);
+    Assert.NotNull(user);
+    Assert.Equal(_user.Id.Value, user.Id);
+
+    UserEntity? entity = await IdentityContext.Users.AsNoTracking()
+      .SingleOrDefaultAsync(x => x.AggregateId == _user.Id.Value);
+    Assert.Null(entity);
   }
 
   [Fact(DisplayName = "UpdateAsync: it should return null when user is not found.")]

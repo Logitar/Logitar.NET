@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Creating & Updating an Identity user.
+- Creating, Deleting & Updating an Identity user.
 - Identity Token management.
 - Implemented query JOINs.
 
