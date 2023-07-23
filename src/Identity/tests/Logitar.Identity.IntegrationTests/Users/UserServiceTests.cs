@@ -1,100 +1,52 @@
-﻿using Logitar.EventSourcing.EntityFrameworkCore.Relational;
-using Logitar.Identity.Core;
-using Logitar.Identity.Core.Models;
+﻿using Logitar.Identity.Core;
 using Logitar.Identity.Core.Users;
 using Logitar.Identity.Core.Users.Models;
 using Logitar.Identity.Core.Users.Payloads;
-using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.Domain.Users;
-using Logitar.Identity.EntityFrameworkCore.SqlServer;
-using Logitar.Identity.EntityFrameworkCore.SqlServer.Entities;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
 namespace Logitar.Identity.IntegrationTests.Users;
 
 [Trait(Traits.Category, Categories.Integration)]
-public class UserServiceTests
+public class UserServiceTests : IntegrationTestingBase
 {
-  private static readonly Actor _actor = new();
-  private static readonly Guid _blacklistedTokenId = Guid.NewGuid();
-  private static readonly CancellationToken _cancellationToken = default;
-
-  private static readonly IServiceProvider _serviceProvider;
-
-  private readonly EventContext _eventContext;
-  private readonly IdentityContext _identityContext;
-
-  private readonly IUserRepository _userRepository;
   private readonly IUserService _userService;
-  private readonly IOptions<UserSettings> _userSettings;
 
-  private readonly UserAggregate _user;
-
-  static UserServiceTests()
+  public UserServiceTests() : base()
   {
-    IConfiguration configuration = new ConfigurationBuilder()
-      .AddJsonFile("appsettings.json")
-      .Build();
-
-    string connectionString = configuration.GetValue<string>("SQLCONNSTR_IntegrationTests") ?? string.Empty;
-
-    _serviceProvider = new ServiceCollection()
-      .AddLogitarIdentityWithEntityFrameworkCoreSqlServer(connectionString)
-      .AddSingleton<ICurrentActor>(new CurrentActorMock(_actor))
-      .BuildServiceProvider();
-  } // TODO(fpion): refactor
-
-  public UserServiceTests()
-  {
-    _eventContext = _serviceProvider.GetRequiredService<EventContext>();
-    _identityContext = _serviceProvider.GetRequiredService<IdentityContext>();
-
-    _userRepository = _serviceProvider.GetRequiredService<IUserRepository>();
-    _userService = _serviceProvider.GetRequiredService<IUserService>();
-    _userSettings = _serviceProvider.GetRequiredService<IOptions<UserSettings>>();
-
-    UserSettings userSettings = _userSettings.Value;
-    _user = new(userSettings.UniqueNameSettings, uniqueName: "admin", tenantId: "16fc05de-cff6-4be8-aa3b-fb67d4e7f6a6")
-    {
-      Email = new("admin@test.com", isVerified: true)
-    };
+    _userService = ServiceProvider.GetRequiredService<IUserService>();
   }
 
   [Fact(DisplayName = "CreateAsync: it should create the correct user.")]
-  public async Task CreateAsync_it_should_create_the_correct_user()
+  public async Task CreateAsync_it_should_create_the_correctUser()
   {
-    await InitializeDatabaseAsync();
-
-    Assert.NotNull(_user.Email);
-    string[] emailParts = _user.Email.Address.Split('@');
+    Assert.NotNull(User.Email);
+    string[] emailParts = User.Email.Address.Split('@');
     emailParts[0] = $"{emailParts[0]}2";
     string emailAddress = string.Join('@', emailParts);
     CreateUserPayload payload = new()
     {
-      TenantId = _user.TenantId,
-      UniqueName = $"{_user.UniqueName}2",
+      TenantId = User.TenantId,
+      UniqueName = $"{User.UniqueName}2",
       Password = "Test123!",
       IsDisabled = true,
       Email = new CreateEmailPayload
       {
         Address = emailAddress,
-        IsVerified = _user.Email.IsVerified
+        IsVerified = User.Email.IsVerified
       },
       FirstName = "Charles",
       LastName = "Raymond",
       Locale = "fr-CA"
     };
-    User user = await _userService.CreateAsync(payload, _cancellationToken);
+    User user = await _userService.CreateAsync(payload, CancellationToken);
     Assert.Equal(payload.TenantId, user.TenantId);
     Assert.Equal(payload.UniqueName, user.UniqueName);
     Assert.True(user.HasPassword);
-    Assert.Equal(_actor, user.PasswordChangedBy);
+    Assert.Equal(Actor, user.PasswordChangedBy);
     Assert.NotNull(user.PasswordChangedOn);
     Assert.True(user.IsDisabled);
-    Assert.Equal(_actor, user.DisabledBy);
+    Assert.Equal(Actor, user.DisabledBy);
     Assert.NotNull(user.DisabledOn);
     Assert.Equal(emailAddress, user.Email?.Address);
     Assert.True(user.Email?.IsVerified);
@@ -108,21 +60,19 @@ public class UserServiceTests
   [Fact(DisplayName = "CreateAsync: it should throw EmailAddressAlreadyUsedException when email address is already used.")]
   public async Task CreateAsync_it_should_throw_EmailAddressAlreadyUsedException_when_email_address_is_already_used()
   {
-    await InitializeDatabaseAsync();
-
-    Assert.NotNull(_user.Email);
+    Assert.NotNull(User.Email);
     CreateUserPayload payload = new()
     {
-      TenantId = _user.TenantId,
-      UniqueName = $"{_user.UniqueName}2",
+      TenantId = User.TenantId,
+      UniqueName = $"{User.UniqueName}2",
       Email = new CreateEmailPayload
       {
-        Address = _user.Email.Address,
-        IsVerified = _user.Email.IsVerified
+        Address = User.Email.Address,
+        IsVerified = User.Email.IsVerified
       }
     };
     var exception = await Assert.ThrowsAsync<EmailAddressAlreadyUsedException>(
-      async () => await _userService.CreateAsync(payload, _cancellationToken));
+      async () => await _userService.CreateAsync(payload, CancellationToken));
     Assert.Equal(payload.TenantId, exception.TenantId);
     Assert.Equal(payload.Email.Address, exception.EmailAddress);
     Assert.Equal("Email", exception.PropertyName);
@@ -131,33 +81,15 @@ public class UserServiceTests
   [Fact(DisplayName = "CreateAsync: it should throw UniqueNameAlreadyUsedException when unique name is already used.")]
   public async Task CreateAsync_it_should_throw_UniqueNameAlreadyUsedException_when_unique_name_is_already_used()
   {
-    await InitializeDatabaseAsync();
-
     CreateUserPayload payload = new()
     {
-      TenantId = _user.TenantId,
-      UniqueName = _user.UniqueName
+      TenantId = User.TenantId,
+      UniqueName = User.UniqueName
     };
     var exception = await Assert.ThrowsAsync<UniqueNameAlreadyUsedException<UserAggregate>>(
-      async () => await _userService.CreateAsync(payload, _cancellationToken));
+      async () => await _userService.CreateAsync(payload, CancellationToken));
     Assert.Equal(payload.TenantId, exception.TenantId);
     Assert.Equal(payload.UniqueName, exception.UniqueName);
     Assert.Equal("UniqueName", exception.PropertyName);
-  }
-
-  private async Task InitializeDatabaseAsync(CancellationToken cancellationToken = default)
-  {
-    await _eventContext.Database.MigrateAsync(cancellationToken);
-    await _eventContext.Database.ExecuteSqlRawAsync("DELETE FROM [dbo].[Events];", cancellationToken);
-
-    await _identityContext.Database.MigrateAsync(cancellationToken);
-    await _identityContext.Database.ExecuteSqlRawAsync("DELETE FROM [dbo].[Users];", cancellationToken);
-    await _identityContext.Database.ExecuteSqlRawAsync("DELETE FROM [dbo].[Tokenblacklist];", cancellationToken);
-
-    await _userRepository.SaveAsync(_user, cancellationToken);
-
-    BlacklistedTokenEntity blacklisted = new(_blacklistedTokenId);
-    _identityContext.TokenBlacklist.Add(blacklisted);
-    await _identityContext.SaveChangesAsync(cancellationToken);
   }
 }
