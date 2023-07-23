@@ -30,4 +30,15 @@ public class UserQuerier : IUserQuerier
 
     return _mapper.Map<User?>(user);
   }
+
+  public async Task<User?> ReadAsync(string? tenantId, string uniqueName, CancellationToken cancellationToken)
+  {
+    tenantId = tenantId?.CleanTrim();
+    string uniqueNameNormalized = uniqueName.Trim().ToUpper();
+
+    UserEntity? user = await _users.AsNoTracking()
+      .SingleOrDefaultAsync(x => x.TenantId == tenantId && x.UniqueNameNormalized == uniqueNameNormalized, cancellationToken);
+
+    return _mapper.Map<User?>(user);
+  }
 }
