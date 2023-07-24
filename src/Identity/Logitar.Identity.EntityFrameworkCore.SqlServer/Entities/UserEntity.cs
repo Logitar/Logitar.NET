@@ -60,11 +60,15 @@ public record UserEntity : AggregateEntity
     private set { }
   }
 
+  public DateTime? AuthenticatedOn { get; private set; }
+
   public string? FirstName { get; private set; }
   public string? LastName { get; private set; }
   public string? FullName { get; private set; }
 
   public string? Locale { get; private set; }
+
+  public void Authenticate(UserAuthenticatedEvent authenticated) => AuthenticatedOn = authenticated.OccurredOn;
 
   public void ChangePassword(UserPasswordChangedEvent change, ActorEntity actor)
   {

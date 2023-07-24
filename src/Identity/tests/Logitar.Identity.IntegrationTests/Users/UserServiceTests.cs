@@ -37,6 +37,87 @@ public class UserServiceTests : IntegrationTestingBase
     };
   }
 
+  [Fact(DisplayName = "AuthenticateAsync: it authenticates the correct user.")]
+  public async Task AuthenticateAsync_it_authenticates_the_correct_user()
+  {
+    AuthenticateUserPayload payload = new()
+    {
+      TenantId = _user.TenantId,
+      UniqueName = _user.UniqueName,
+      Password = "Test123!"
+    };
+
+    _user.SetPassword(_userSettings.Value.PasswordSettings, payload.Password);
+    await _userRepository.SaveAsync(_user);
+
+    Assert.Null(_user.AuthenticatedOn);
+
+    User user = await _userService.AuthenticateAsync(payload, CancellationToken);
+    Assert.Equal(_user.Id.Value, user.Id);
+    Assert.NotNull(user.AuthenticatedOn);
+  }
+
+  [Fact(DisplayName = "AuthenticateAsync: it throws InvalidCredentialsException when password is not valid.")]
+  public async Task AuthenticateAsync_it_throws_InvalidCredentialsException_when_passord_is_not_valid()
+  {
+    AuthenticateUserPayload payload = new()
+    {
+      TenantId = _user.TenantId,
+      UniqueName = _user.UniqueName,
+      Password = "Test123!"
+    };
+    var exception = await Assert.ThrowsAsync<InvalidCredentialsException>(
+      async () => await _userService.AuthenticateAsync(payload, CancellationToken));
+    Assert.StartsWith("The specified password does not match the user.", exception.Message);
+  }
+
+  [Fact(DisplayName = "AuthenticateAsync: it throws InvalidCredentialsException when user is not found.")]
+  public async Task AuthenticateAsync_it_throws_InvalidCredentialsException_when_user_is_not_found()
+  {
+    AuthenticateUserPayload payload = new()
+    {
+      TenantId = _user.TenantId,
+      UniqueName = $"{_user.UniqueName}2"
+    };
+    var exception = await Assert.ThrowsAsync<InvalidCredentialsException>(
+      async () => await _userService.AuthenticateAsync(payload, CancellationToken));
+    Assert.StartsWith("The specified user could not be found.", exception.Message);
+  }
+
+  [Fact(DisplayName = "AuthenticateAsync: it throws UserIsDisabledException when user is disabled.")]
+  public async Task AuthenticateAsync_it_throws_UserIsDisabledException_when_user_is_disabled()
+  {
+    _user.Disable();
+    await _userRepository.SaveAsync(_user);
+
+    AuthenticateUserPayload payload = new()
+    {
+      TenantId = _user.TenantId,
+      UniqueName = _user.UniqueName,
+      Password = "Test123!"
+    };
+    var exception = await Assert.ThrowsAsync<UserIsDisabledException>(
+      async () => await _userService.AuthenticateAsync(payload, CancellationToken));
+    Assert.Equal(_user.ToString(), exception.User);
+  }
+
+  [Fact(DisplayName = "AuthenticateAsync: it throws UserIsNotConfirmedException when user is not confirmed.")]
+  public async Task AuthenticateAsync_it_throws_UserIsNotConfirmedException_when_user_is_not_confirmed()
+  {
+    _user.Email = null;
+    await _userRepository.SaveAsync(_user);
+
+    AuthenticateUserPayload payload = new()
+    {
+      TenantId = _user.TenantId,
+      UniqueName = _user.UniqueName,
+      Password = "Test123!"
+    };
+    var exception = await Assert.ThrowsAsync<UserIsNotConfirmedException>(
+      async () => await _userService.AuthenticateAsync(payload, CancellationToken));
+    Assert.Equal(_user.ToString(), exception.User);
+  }
+
   [Fact(DisplayName = "ChangePasswordAsync: it should change the correct password.")]
   public async Task ChangePasswordAsync_it_should_change_the_correct_password()
   {
