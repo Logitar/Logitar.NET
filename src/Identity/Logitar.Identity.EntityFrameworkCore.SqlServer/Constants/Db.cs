@@ -14,6 +14,14 @@ public static class Db
     public static readonly ColumnId AggregateType = new(nameof(EventEntity.AggregateType), Table);
   }
 
+  public static class Sessions
+  {
+    public static readonly TableId Table = new(nameof(IdentityContext.Sessions));
+
+    public static readonly ColumnId AggregateId = new(nameof(SessionEntity.AggregateId), Table);
+    public static readonly ColumnId IsActive = new(nameof(SessionEntity.IsActive), Table);
+  }
+
   public static class Users
   {
     public static readonly TableId Table = new(nameof(IdentityContext.Users));

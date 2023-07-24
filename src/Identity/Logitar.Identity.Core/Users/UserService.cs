@@ -1,7 +1,9 @@
 ﻿using Logitar.EventSourcing;
+using Logitar.Identity.Core.Sessions;
 using Logitar.Identity.Core.Users.Models;
 using Logitar.Identity.Core.Users.Payloads;
 using Logitar.Identity.Domain;
+using Logitar.Identity.Domain.Sessions;
 using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.Domain.Users;
 using Microsoft.Extensions.Options;
@@ -10,13 +12,15 @@ namespace Logitar.Identity.Core.Users;
 
 public class UserService : IUserService
 {
+  private readonly ISessionRepository _sessionRepository;
   private readonly IUserQuerier _userQuerier;
   private readonly IUserRepository _userRepository;
   private readonly IOptions<UserSettings> _userSettings;
 
-  public UserService(IUserQuerier userQuerier, IUserRepository userRepository,
-    IOptions<UserSettings> userSettings)
+  public UserService(ISessionRepository sessionRepository, IUserQuerier userQuerier,
+    IUserRepository userRepository, IOptions<UserSettings> userSettings)
   {
+    _sessionRepository = sessionRepository;
     _userQuerier = userQuerier;
     _userRepository = userRepository;
     _userSettings = userSettings;
@@ -163,6 +167,26 @@ public class UserService : IUserService
     }
 
     return users.Values.SingleOrDefault();
+  }
+
+  public virtual async Task<User?> SignOutAsync(string id, CancellationToken cancellationToken)
+  {
+    AggregateId userId = id.GetAggregateId(nameof(id));
+    UserAggregate? user = await _userRepository.LoadAsync(userId, cancellationToken);
+    if (user == null)
+    {
+      return null;
+    }
+
+    IEnumerable<SessionAggregate> sessions = await _sessionRepository.LoadActiveAsync(user, cancellationToken);
+    foreach (SessionAggregate session in sessions)
+    {
+      session.SignOut();
+    }
+
+    await _sessionRepository.SaveAsync(sessions, cancellationToken);
+
+    return await _userQuerier.ReadAsync(user, cancellationToken);
   }
 
   public virtual async Task<User?> UpdateAsync(string id, UpdateUserPayload payload, CancellationToken cancellationToken)
