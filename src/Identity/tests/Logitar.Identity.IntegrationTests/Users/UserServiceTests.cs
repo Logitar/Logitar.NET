@@ -1,10 +1,12 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
 using Logitar.Identity.Core;
+using Logitar.Identity.Core.Sessions;
 using Logitar.Identity.Core.Users;
 using Logitar.Identity.Core.Users.Models;
 using Logitar.Identity.Core.Users.Payloads;
 using Logitar.Identity.Domain;
+using Logitar.Identity.Domain.Sessions;
 using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.Domain.Users;
 using Logitar.Identity.EntityFrameworkCore.SqlServer.Entities;
@@ -18,6 +20,7 @@ namespace Logitar.Identity.IntegrationTests.Users;
 [Trait(Traits.Category, Categories.Integration)]
 public class UserServiceTests : IntegrationTestingBase
 {
+  private readonly ISessionRepository _sessionRepository;
   private readonly IUserRepository _userRepository;
   private readonly IUserService _userService;
   private readonly IOptions<UserSettings> _userSettings;
@@ -26,6 +29,7 @@ public class UserServiceTests : IntegrationTestingBase
 
   public UserServiceTests() : base()
   {
+    _sessionRepository = ServiceProvider.GetRequiredService<ISessionRepository>();
     _userRepository = ServiceProvider.GetRequiredService<IUserRepository>();
     _userService = ServiceProvider.GetRequiredService<IUserService>();
     _userSettings = ServiceProvider.GetRequiredService<IOptions<UserSettings>>();
@@ -326,6 +330,39 @@ public class UserServiceTests : IntegrationTestingBase
       async () => await _userService.ReadAsync(_user.Id.Value, tenantId: null, other.UniqueName, CancellationToken));
     Assert.Equal(1, exception.Expected);
     Assert.Equal(2, exception.Actual);
+  }
+
+  [Fact]
+  public async Task SignOutAsync_it_should_return_null_when_user_is_not_found()
+  {
+    User? user = await _userService.SignOutAsync(Guid.Empty.ToString(), CancellationToken);
+    Assert.Null(user);
+  }
+
+  [Fact]
+  public async Task SignOutAsync_it_should_sign_out_the_correct_sessions()
+  {
+    SessionAggregate session1 = new(_user);
+    SessionAggregate session2 = new(_user);
+    SessionAggregate signedOut = new(_user);
+    signedOut.SignOut();
+    await _sessionRepository.SaveAsync(new[] { session1, session2, signedOut });
+
+    SessionEntity[] sessions = await IdentityContext.Sessions.AsNoTracking()
+      .Include(x => x.User)
+      .Where(x => x.User!.AggregateId == _user.Id.Value && x.IsActive)
+      .ToArrayAsync();
+    Assert.NotEmpty(sessions);
+
+    User? user = await _userService.SignOutAsync(_user.Id.Value, CancellationToken);
+    Assert.NotNull(user);
+    Assert.Equal(_user.Id.Value, user.Id);
+
+    sessions = await IdentityContext.Sessions.AsNoTracking()
+      .Include(x => x.User)
+      .Where(x => x.User!.AggregateId == _user.Id.Value && x.IsActive)
+      .ToArrayAsync();
+    Assert.Empty(sessions);
   }
 
   [Fact(DisplayName = "UpdateAsync: it should return null when user is not found.")]

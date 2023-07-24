@@ -25,7 +25,7 @@ public class SessionService : ISessionService
     _userSettings = userSettings;
   }
 
-  public async Task<Session> CreateAsync(CreateSessionPayload payload, CancellationToken cancellationToken)
+  public virtual async Task<Session> CreateAsync(CreateSessionPayload payload, CancellationToken cancellationToken)
   {
     AggregateId userId = payload.UserId.GetAggregateId(nameof(payload.UserId));
     UserAggregate user = await _userRepository.LoadAsync(userId, cancellationToken)
@@ -34,7 +34,7 @@ public class SessionService : ISessionService
     return await SignInAsync(user, password: null, payload.IsPersistent, cancellationToken);
   }
 
-  public async Task<Session> RenewAsync(RenewPayload payload, CancellationToken cancellationToken)
+  public virtual async Task<Session> RenewAsync(RenewPayload payload, CancellationToken cancellationToken)
   {
     RefreshToken refreshToken;
     try
@@ -62,7 +62,7 @@ public class SessionService : ISessionService
     return result;
   }
 
-  public async Task<Session> SignInAsync(SignInPayload payload, CancellationToken cancellationToken)
+  public virtual async Task<Session> SignInAsync(SignInPayload payload, CancellationToken cancellationToken)
   {
     UserSettings userSettings = _userSettings.Value;
 
@@ -89,7 +89,7 @@ public class SessionService : ISessionService
     return await SignInAsync(user, payload.Password, payload.IsPersistent, cancellationToken);
   }
 
-  public async Task<Session?> SignOutAsync(string id, CancellationToken cancellationToken)
+  public virtual async Task<Session?> SignOutAsync(string id, CancellationToken cancellationToken)
   {
     AggregateId sessionId = id.GetAggregateId(nameof(id));
     SessionAggregate? session = await _sessionRepository.LoadAsync(sessionId, cancellationToken);
