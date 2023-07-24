@@ -67,6 +67,9 @@ public class UserAggregate : AggregateRoot
       }
     }
   }
+  public bool IsConfirmed => Email?.IsVerified == true;
+
+  public DateTime? AuthenticatedOn { get; private set; }
 
   public string? FirstName
   {
@@ -129,16 +132,26 @@ public class UserAggregate : AggregateRoot
     }
   }
 
+  public void Authenticate(IUserSettings userSettings, string password)
+  {
+    if (IsDisabled)
+    {
+      throw new UserIsDisabledException(this);
+    }
+    else if (userSettings.RequireConfirmedAccount && !IsConfirmed)
+    {
+      throw new UserIsNotConfirmedException(this);
+    }
+
+    CheckPassword(password);
+
+    ApplyChange(new UserAuthenticatedEvent(), actorId: Id.Value);
+  }
+  protected virtual void Apply(UserAuthenticatedEvent authenticated) => AuthenticatedOn = authenticated.OccurredOn;
+
   public void ChangePassword(IPasswordSettings passwordSettings, string password, string current)
   {
-    if (_password?.IsMatch(current) != true)
-    {
-      StringBuilder message = new();
-      message.AppendLine("The specified password does not match the user.");
-      message.Append("User: ").AppendLine(ToString());
-      message.Append("Password: ").AppendLine(current);
-      throw new InvalidCredentialsException(message.ToString());
-    }
+    CheckPassword(current);
 
     new PasswordValidator(passwordSettings, "Password").ValidateAndThrow(password);
 
@@ -232,6 +245,18 @@ public class UserAggregate : AggregateRoot
     }
 
     return updated;
+  }
+
+  protected virtual void CheckPassword(string password)
+  {
+    if (_password?.IsMatch(password) != true)
+    {
+      StringBuilder message = new();
+      message.AppendLine("The specified password does not match the user.");
+      message.Append("User: ").AppendLine(ToString());
+      message.Append("Password: ").AppendLine(password);
+      throw new InvalidCredentialsException(message.ToString());
+    }
   }
 
   public override string ToString() => $"{FullName ?? UniqueName} | {base.ToString()}";

@@ -20,6 +20,8 @@ public record User : Aggregate
 
   public bool IsConfirmed { get; set; }
 
+  public DateTime? AuthenticatedOn { get; set; }
+
   public string? FirstName { get; set; }
   public string? LastName { get; set; }
   public string? FullName { get; set; }
