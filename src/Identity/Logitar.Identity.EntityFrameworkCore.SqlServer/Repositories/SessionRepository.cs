@@ -19,6 +19,9 @@ public class SessionRepository : EventSourcing.EntityFrameworkCore.Relational.Ag
 
   protected ICurrentActor CurrentActor { get; }
 
+  public async Task<SessionAggregate?> LoadAsync(AggregateId id, CancellationToken cancellationToken)
+    => await base.LoadAsync<SessionAggregate>(id, cancellationToken);
+
   public async Task SaveAsync(SessionAggregate session, CancellationToken cancellationToken)
   {
     AssignActor(session);

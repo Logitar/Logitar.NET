@@ -35,4 +35,11 @@ public record SessionEntity : AggregateEntity
 
   public int UserId { get; private set; }
   public UserEntity? User { get; private set; }
+
+  public void Renew(SessionRenewedEvent renewed, ActorEntity actor)
+  {
+    Update(renewed, actor);
+
+    Secret = renewed.Secret.ToString();
+  }
 }

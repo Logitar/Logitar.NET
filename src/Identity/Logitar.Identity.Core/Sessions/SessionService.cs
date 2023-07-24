@@ -34,6 +34,34 @@ public class SessionService : ISessionService
     return await SignInAsync(user, password: null, payload.IsPersistent, cancellationToken);
   }
 
+  public async Task<Session> RenewAsync(RenewPayload payload, CancellationToken cancellationToken)
+  {
+    RefreshToken refreshToken;
+    try
+    {
+      refreshToken = RefreshToken.Parse(payload.RefreshToken);
+    }
+    catch (Exception innerException)
+    {
+      throw new InvalidCredentialsException($"The refresh token '{payload.RefreshToken}' is not valid.", innerException);
+    }
+
+    SessionAggregate session = await _sessionRepository.LoadAsync(refreshToken.Id, cancellationToken)
+      ?? throw new InvalidCredentialsException($"The session '{refreshToken.Id}' could not be found.");
+
+    session.Renew(refreshToken.Secret);
+
+    await _sessionRepository.SaveAsync(session, cancellationToken);
+
+    Session result = await _sessionQuerier.ReadAsync(session, cancellationToken);
+    if (session.Secret != null)
+    {
+      result.RefreshToken = new RefreshToken(session).ToString();
+    }
+
+    return result;
+  }
+
   public async Task<Session> SignInAsync(SignInPayload payload, CancellationToken cancellationToken)
   {
     UserSettings userSettings = _userSettings.Value;

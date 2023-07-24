@@ -36,7 +36,7 @@ public record RefreshToken
       throw new ArgumentException($"The value '{s}' is not a valid refresh token.", nameof(s));
     }
 
-    return new RefreshToken(new AggregateId(values[1].FromUriSafeBase64()),
+    return new RefreshToken(new AggregateId(values[1]),
       Convert.FromBase64String(values[2].FromUriSafeBase64()));
   }
   public static bool TryParse(string s, out RefreshToken? result)
@@ -54,5 +54,5 @@ public record RefreshToken
   }
 
   public override string ToString() => string.Join(Separator, Prefix,
-    Id.Value.ToUriSafeBase64(), Convert.ToBase64String(Secret).ToUriSafeBase64());
+    Id.Value, Convert.ToBase64String(Secret).ToUriSafeBase64());
 }
