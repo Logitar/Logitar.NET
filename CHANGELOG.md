@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Identity Session creation.
+- Identity Session creation & sign-in.
 - Identity Token management.
 - Identity User management & authentication.
 - Implemented query JOINs.
