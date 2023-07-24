@@ -7,7 +7,7 @@ public class UniqueNameValidator : AbstractValidator<string>
 {
   public UniqueNameValidator(IUniqueNameSettings uniqueNameSettings, string? propertyName = null)
   {
-    var options = RuleFor(x => x).NotEmpty()
+    IRuleBuilderOptions<string, string?> options = RuleFor(x => x).NotEmpty()
       .MaximumLength(byte.MaxValue)
       .AllowedCharacters(uniqueNameSettings.AllowedCharacters);
 
