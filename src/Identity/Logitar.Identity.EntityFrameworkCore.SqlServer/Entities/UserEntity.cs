@@ -68,6 +68,8 @@ public record UserEntity : AggregateEntity
 
   public string? Locale { get; private set; }
 
+  public List<SessionEntity> Sessions { get; private set; } = new();
+
   public void Authenticate(UserAuthenticatedEvent authenticated) => AuthenticatedOn = authenticated.OccurredOn;
 
   public void ChangePassword(UserPasswordChangedEvent change, ActorEntity actor)
@@ -99,6 +101,8 @@ public record UserEntity : AggregateEntity
     DisabledOn = null;
     IsDisabled = false;
   }
+
+  public void SignIn(UserSignedInEvent signedIn) => AuthenticatedOn = signedIn.OccurredOn;
 
   public void Update(UserUpdatedEvent updated, ActorEntity actor)
   {

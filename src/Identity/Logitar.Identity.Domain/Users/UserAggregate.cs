@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Logitar.EventSourcing;
+using Logitar.Identity.Domain.Sessions;
 using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.Domain.Users.Events;
 using Logitar.Identity.Domain.Users.Validators;
@@ -134,15 +135,7 @@ public class UserAggregate : AggregateRoot
 
   public void Authenticate(IUserSettings userSettings, string password)
   {
-    if (IsDisabled)
-    {
-      throw new UserIsDisabledException(this);
-    }
-    else if (userSettings.RequireConfirmedAccount && !IsConfirmed)
-    {
-      throw new UserIsNotConfirmedException(this);
-    }
-
+    CheckStatus(userSettings);
     CheckPassword(password);
 
     ApplyChange(new UserAuthenticatedEvent(), actorId: Id.Value);
@@ -200,6 +193,24 @@ public class UserAggregate : AggregateRoot
     Apply(updated);
   }
 
+  public SessionAggregate SignIn(IUserSettings userSettings, bool isPersistent = false)
+    => SignIn(userSettings, password: null, isPersistent);
+  public SessionAggregate SignIn(IUserSettings userSettings, string? password, bool isPersistent = false)
+  {
+    CheckStatus(userSettings);
+
+    if (password != null)
+    {
+      CheckPassword(password);
+    }
+
+    DateTime now = DateTime.UtcNow;
+    ApplyChange(new UserSignedInEvent(), actorId: Id.Value, occurredOn: now);
+
+    return new SessionAggregate(this, isPersistent, now);
+  }
+  protected virtual void Apply(UserSignedInEvent signedIn) => AuthenticatedOn = signedIn.OccurredOn;
+
   protected virtual void Apply(UserUpdatedEvent updated)
   {
     if (updated.UniqueName != null)
@@ -256,6 +267,17 @@ public class UserAggregate : AggregateRoot
       message.Append("User: ").AppendLine(ToString());
       message.Append("Password: ").AppendLine(password);
       throw new InvalidCredentialsException(message.ToString());
+    }
+  }
+  protected virtual void CheckStatus(IUserSettings userSettings)
+  {
+    if (IsDisabled)
+    {
+      throw new UserIsDisabledException(this);
+    }
+    else if (userSettings.RequireConfirmedAccount && !IsConfirmed)
+    {
+      throw new UserIsNotConfirmedException(this);
     }
   }
 

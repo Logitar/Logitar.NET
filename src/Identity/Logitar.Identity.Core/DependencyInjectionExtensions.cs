@@ -1,4 +1,5 @@
-﻿using Logitar.Identity.Core.Tokens;
+﻿using Logitar.Identity.Core.Sessions;
+using Logitar.Identity.Core.Tokens;
 using Logitar.Identity.Core.Users;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,6 +12,7 @@ public static class DependencyInjectionExtensions
     JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
     return services
+      .AddTransient<ISessionService, SessionService>()
       .AddTransient<ITokenManager, JsonWebTokenManager>()
       .AddTransient<ITokenService, TokenService>()
       .AddTransient<IUserService, UserService>();
