@@ -66,4 +66,13 @@ public class SessionAggregate : AggregateRoot
     }, actorId: UserId.Value);
   }
   protected virtual void Apply(SessionRenewedEvent renewed) => _secret = renewed.Secret;
+
+  public void SignOut()
+  {
+    if (IsActive)
+    {
+      ApplyChange(new SessionSignedOutEvent());
+    }
+  }
+  protected virtual void Apply(SessionSignedOutEvent signedOut) => IsActive = false;
 }

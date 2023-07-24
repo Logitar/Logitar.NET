@@ -89,6 +89,22 @@ public class SessionService : ISessionService
     return await SignInAsync(user, payload.Password, payload.IsPersistent, cancellationToken);
   }
 
+  public async Task<Session?> SignOutAsync(string id, CancellationToken cancellationToken)
+  {
+    AggregateId sessionId = id.GetAggregateId(nameof(id));
+    SessionAggregate? session = await _sessionRepository.LoadAsync(sessionId, cancellationToken);
+    if (session == null)
+    {
+      return null;
+    }
+
+    session.SignOut();
+
+    await _sessionRepository.SaveAsync(session, cancellationToken);
+
+    return await _sessionQuerier.ReadAsync(session, cancellationToken);
+  }
+
   private async Task<Session> SignInAsync(UserAggregate user, string? password, bool isPersistent, CancellationToken cancellationToken)
   {
     UserSettings userSettings = _userSettings.Value;
