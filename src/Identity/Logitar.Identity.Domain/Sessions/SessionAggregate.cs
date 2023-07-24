@@ -29,12 +29,41 @@ public class SessionAggregate : AggregateRoot
   {
     _secret = created.Secret;
 
+    UserId = created.UserId;
+
     IsActive = true;
   }
+
+  public AggregateId UserId { get; private set; }
 
   public bool IsPersistent => _secret != null;
 
   public bool IsActive { get; private set; }
 
   public byte[]? Secret { get; private set; }
+
+  public void Renew(byte[] secret)
+  {
+    if (!IsActive)
+    {
+      throw new SessionIsNotActiveException(this);
+    }
+
+    if (_secret?.IsMatch(secret) != true)
+    {
+      StringBuilder message = new();
+      message.AppendLine("The specified secret does not match the session.");
+      message.Append("Session: ").AppendLine(ToString());
+      message.Append("Secret: ").AppendLine(Convert.ToBase64String(secret));
+      throw new InvalidCredentialsException(message.ToString());
+    }
+
+    Secret = RandomNumberGenerator.GetBytes(SecretLength);
+
+    ApplyChange(new SessionRenewedEvent
+    {
+      Secret = new Pbkdf2(Secret)
+    }, actorId: UserId.Value);
+  }
+  protected virtual void Apply(SessionRenewedEvent renewed) => _secret = renewed.Secret;
 }

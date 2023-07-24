@@ -41,4 +41,16 @@ public class UserQuerier : IUserQuerier
 
     return _mapper.Map<User?>(user);
   }
+
+  public async Task<IEnumerable<User>> ReadAsync(string? tenantId, IEmailAddress email, CancellationToken cancellationToken)
+  {
+    tenantId = tenantId?.CleanTrim();
+    string emailAddressNormalized = email.Address.ToUpper();
+
+    UserEntity[] users = await _users.AsNoTracking()
+      .Where(x => x.TenantId == tenantId && x.EmailAddressNormalized == emailAddressNormalized)
+      .ToArrayAsync(cancellationToken);
+
+    return _mapper.Map<IEnumerable<User>>(users);
+  }
 }

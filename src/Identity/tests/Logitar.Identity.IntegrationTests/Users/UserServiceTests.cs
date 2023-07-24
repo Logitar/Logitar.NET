@@ -299,6 +299,15 @@ public class UserServiceTests : IntegrationTestingBase
     Assert.Equal(_user.Id.Value, user.Id);
   }
 
+  [Fact(DisplayName = "ReadAsync: it should read the correct user by EmailAddress.")]
+  public async Task ReadAsync_it_should_read_the_correct_user_by_EmailAddress()
+  {
+    Assert.NotNull(_user.Email);
+    User? user = await _userService.ReadAsync(id: null, _user.TenantId, _user.Email.Address, CancellationToken);
+    Assert.NotNull(user);
+    Assert.Equal(_user.Id.Value, user.Id);
+  }
+
   [Fact(DisplayName = "ReadAsync: it should return null when user is not found.")]
   public async Task ReadAsync_it_should_return_null_when_user_is_not_found()
   {

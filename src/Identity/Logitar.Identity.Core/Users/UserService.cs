@@ -114,6 +114,8 @@ public class UserService : IUserService
 
     user.Delete();
 
+    // TODO(fpion): delete user sessions
+
     await _userRepository.SaveAsync(user, cancellationToken);
 
     return result;
@@ -138,6 +140,20 @@ public class UserService : IUserService
       if (user != null)
       {
         users[user.Id] = user;
+      }
+      else
+      {
+        UserSettings userSettings = _userSettings.Value;
+        if (userSettings.RequireUniqueEmail)
+        {
+          EmailAddress email = new(uniqueName);
+          IEnumerable<User> foundUsers = await _userQuerier.ReadAsync(tenantId, email, cancellationToken);
+          if (foundUsers.Count() == 1)
+          {
+            user = foundUsers.Single();
+            users[user.Id] = user;
+          }
+        }
       }
     }
 
