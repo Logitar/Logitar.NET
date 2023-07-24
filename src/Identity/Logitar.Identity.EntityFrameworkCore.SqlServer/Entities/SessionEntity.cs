@@ -1,5 +1,6 @@
 ﻿using Logitar.Identity.Domain.Sessions.Events;
 using Logitar.Identity.EntityFrameworkCore.SqlServer.Actors;
+using Logitar.Identity.EntityFrameworkCore.SqlServer.Constants;
 
 namespace Logitar.Identity.EntityFrameworkCore.SqlServer.Entities;
 
@@ -41,5 +42,15 @@ public record SessionEntity : AggregateEntity
     Update(renewed, actor);
 
     Secret = renewed.Secret.ToString();
+  }
+
+  public void SignOut(SessionSignedOutEvent signedOut, ActorEntity actor)
+  {
+    SetVersion(signedOut);
+
+    IsActive = false;
+    SignedOutById = signedOut.ActorId ?? Actor.DefaultId;
+    SignedOutBy = actor.Serialize();
+    SignedOutOn = signedOut.OccurredOn;
   }
 }

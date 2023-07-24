@@ -181,21 +181,21 @@ public class SessionServiceTests : IntegrationTestingBase
     Assert.StartsWith("The specified secret does not match the session.", exception.Message);
   }
 
-  //[Fact(DisplayName = "RenewAsync: it should throw SessionIsNotActiveException when session is not active")]
-  //public async Task RenewAsync_it_should_throw_SessionIsNotActiveException_when_session_is_not_active()
-  //{
-  //  SessionAggregate session = new(_user, isPersistent: true);
-  //  // TODO(fpion): sign-out
-  //  await _sessionRepository.SaveAsync(session);
+  [Fact(DisplayName = "RenewAsync: it should throw SessionIsNotActiveException when session is not active")]
+  public async Task RenewAsync_it_should_throw_SessionIsNotActiveException_when_session_is_not_active()
+  {
+    SessionAggregate session = new(_user, isPersistent: true);
+    session.SignOut();
+    await _sessionRepository.SaveAsync(session);
 
-  //  RenewPayload payload = new()
-  //  {
-  //    RefreshToken = new RefreshToken(session).ToString()
-  //  };
-  //  var exception = await Assert.ThrowsAsync<SessionIsNotActiveException>(
-  //    async () => await _sessionService.RenewAsync(payload, CancellationToken));
-  //  Assert.Equal(session.ToString(), exception.Session);
-  //} // TODO(fpion): implement
+    RenewPayload payload = new()
+    {
+      RefreshToken = new RefreshToken(session).ToString()
+    };
+    var exception = await Assert.ThrowsAsync<SessionIsNotActiveException>(
+      async () => await _sessionService.RenewAsync(payload, CancellationToken));
+    Assert.Equal(session.ToString(), exception.Session);
+  }
 
   [Fact(DisplayName = "SignInAsync: it should sign in the correct user using EmailAddress.")]
   public async Task SignInAsync_it_should_sign_in_the_correct_user_using_EmailAddress()
@@ -316,6 +316,27 @@ public class SessionServiceTests : IntegrationTestingBase
     var exception = await Assert.ThrowsAsync<UserIsNotConfirmedException>(
       async () => await _sessionService.SignInAsync(payload, CancellationToken));
     Assert.Equal(_user.ToString(), exception.User);
+  }
+
+  [Fact(DisplayName = "SignOutAsync: it return null when session is not found.")]
+  public async Task SignOutAsync_it_return_null_when_session_is_not_found()
+  {
+    Session? session = await _sessionService.SignOutAsync(Guid.Empty.ToString(), CancellationToken);
+    Assert.Null(session);
+  }
+
+  [Fact(DisplayName = "SignOutAsync: it should sign out the correct session.")]
+  public async Task SignOutAsync_it_should_sign_out_the_correct_session()
+  {
+    SessionAggregate aggregate = new(_user);
+    await _sessionRepository.SaveAsync(aggregate);
+
+    Session? session = await _sessionService.SignOutAsync(aggregate.Id.Value, CancellationToken);
+    Assert.NotNull(session);
+    Assert.Equal(aggregate.Id.Value, session.Id);
+    Assert.False(session.IsActive);
+    Assert.Equal(Actor, session.SignedOutBy);
+    Assert.NotNull(session.SignedOutOn);
   }
 
   public override async Task InitializeAsync()
