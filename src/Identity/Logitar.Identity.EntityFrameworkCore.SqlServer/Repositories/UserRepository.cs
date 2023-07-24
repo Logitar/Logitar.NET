@@ -84,6 +84,7 @@ public class UserRepository : EventSourcing.EntityFrameworkCore.Relational.Aggre
     await base.SaveAsync(users, cancellationToken);
   }
 
+  #region TODO(fpion): refactor
   private void AssignActor(AggregateRoot aggregate) => AssignActor(new[] { aggregate });
   private void AssignActor(IEnumerable<AggregateRoot> aggregates)
   {
@@ -95,4 +96,5 @@ public class UserRepository : EventSourcing.EntityFrameworkCore.Relational.Aggre
       }
     }
   }
+  #endregion
 }

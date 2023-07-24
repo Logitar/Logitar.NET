@@ -13,6 +13,9 @@ public class UserConfiguration : AggregateConfiguration<UserEntity>, IEntityType
 
     builder.ToTable(nameof(IdentityContext.Users));
     builder.HasKey(x => x.UserId);
+    builder.HasIndex(x => x.PasswordChangedById);
+    builder.HasIndex(x => x.DisabledById);
+    builder.HasIndex(x => x.EmailVerifiedById);
     builder.HasIndex(x => new { x.TenantId, x.UniqueNameNormalized }).IsUnique();
     builder.HasIndex(x => new { x.TenantId, x.EmailAddressNormalized });
 
