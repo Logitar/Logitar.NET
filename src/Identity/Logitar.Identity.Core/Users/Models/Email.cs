@@ -1,6 +1,8 @@
-﻿namespace Logitar.Identity.Core.Users.Models;
+﻿using Logitar.Identity.Domain.Users;
 
-public record Email : Contact
+namespace Logitar.Identity.Core.Users.Models;
+
+public record Email : Contact, IEmailAddress
 {
   public string Address { get; set; } = string.Empty;
 }

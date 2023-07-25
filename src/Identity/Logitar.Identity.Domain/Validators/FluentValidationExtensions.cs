@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Logitar.Identity.Domain.Users;
 
 namespace Logitar.Identity.Domain.Validators;
 
@@ -23,4 +24,19 @@ public static class FluentValidationExtensions
   }
   internal static bool BeAValidLocale(CultureInfo? locale)
     => locale == null || (!string.IsNullOrEmpty(locale.Name) && locale.LCID != LOCALE_CUSTOM_UNSPECIFIED);
+
+  public static IRuleBuilderOptions<T, DateTime> Past<T>(this IRuleBuilder<T, DateTime> ruleBuilder, DateTime? moment = null)
+  {
+    return ruleBuilder.Must(d => BeInThePast(d, moment))
+      .WithErrorCode("PastValidator")
+      .WithMessage("'{PropertyName}' must be in the past.");
+  }
+  internal static bool BeInThePast(DateTime dateTime, DateTime? moment) => dateTime < (moment ?? DateTime.UtcNow);
+
+  public static IRuleBuilderOptions<T, IPhoneNumber?> PhoneNumber<T>(this IRuleBuilder<T, IPhoneNumber> ruleBuilder)
+  {
+    return ruleBuilder.Must(phone => phone.IsValid())
+      .WithErrorCode("PhoneNumberValidator")
+      .WithMessage("'{PropertyName}' must be a valid phone number.");
+  }
 }

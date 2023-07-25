@@ -217,12 +217,28 @@ public class UserServiceTests : IntegrationTestingBase
         Address = emailAddress,
         IsVerified = _user.Email.IsVerified
       },
+      Phone = new CreatePhonePayload
+      {
+        CountryCode = "CA",
+        Number = "+15149322582",
+        Extension = "4232",
+        IsVerified = false
+      },
       FirstName = "Charles",
+      MiddleName = "Robert",
       LastName = "Raymond",
-      Locale = "fr-CA"
+      Nickname = "Bob",
+      Birthdate = DateTime.UtcNow.AddYears(-25),
+      Gender = "Male",
+      Locale = "fr-CA",
+      TimeZone = "America/Toronto",
+      Picture = "https://www.test.com/assets/img/profile.jpg",
+      Profile = "    ",
+      Website = "https://www.test.com/"
     };
     User user = await _userService.CreateAsync(payload, CancellationToken);
     Assert.NotNull(user.Email);
+    Assert.NotNull(user.Phone);
     Assert.Equal(payload.TenantId, user.TenantId);
     Assert.Equal(payload.UniqueName, user.UniqueName);
     Assert.Equal(payload.Password != null, user.HasPassword);
@@ -230,14 +246,28 @@ public class UserServiceTests : IntegrationTestingBase
     Assert.Equal(payload.IsDisabled, user.IsDisabled);
     Assert.Equal(Actor, user.DisabledBy);
     Assert.Equal(emailAddress, user.Email.Address);
-    Assert.Equal(payload.Email.IsVerified, user.Email.IsVerified);
-    Assert.Equal(payload.Email.IsVerified, user.IsConfirmed);
+    Assert.Equal(payload.Phone.CountryCode, user.Phone.CountryCode);
+    Assert.Equal(payload.Phone.Number, user.Phone.Number);
+    Assert.Equal(payload.Phone.Extension, user.Phone.Extension);
+    Assert.Equal(payload.Phone.Number, user.Phone.E164Formatted);
+    Assert.Equal(payload.Phone.IsVerified, user.Phone.IsVerified);
     Assert.Equal(payload.FirstName, user.FirstName);
+    Assert.Equal(payload.MiddleName, user.MiddleName);
     Assert.Equal(payload.LastName, user.LastName);
-    Assert.Equal(PersonHelper.BuildFullName(payload.FirstName, payload.LastName), user.FullName);
+    Assert.Equal(payload.Nickname, user.Nickname);
+    Assert.Equal(payload.Birthdate.Value, user.Birthdate);
+    Assert.Equal(payload.Gender?.ToLower(), user.Gender);
     Assert.Equal(payload.Locale, user.Locale);
+    Assert.Equal(payload.TimeZone, user.TimeZone);
+    Assert.Equal(payload.Picture, user.Picture);
+    Assert.Equal(payload.Website, user.Website);
+    Assert.Equal(PersonHelper.BuildFullName(payload.FirstName, payload.MiddleName, payload.LastName), user.FullName);
     Assert.NotNull(user.PasswordChangedOn);
     Assert.NotNull(user.DisabledOn);
+    Assert.Null(user.Profile);
+
+    bool isConfirmed = payload.Email.IsVerified || payload.Phone.IsVerified;
+    Assert.Equal(isConfirmed, user.IsConfirmed);
   }
 
   [Fact(DisplayName = "CreateAsync: it should throw EmailAddressAlreadyUsedException when email address is already used.")]
@@ -435,21 +465,52 @@ public class UserServiceTests : IntegrationTestingBase
       {
         Address = Faker.Internet.Email()
       }),
+      Phone = new MayBe<UpdatePhonePayload>(new UpdatePhonePayload
+      {
+        CountryCode = "CA",
+        Number = "+15149322582",
+        Extension = "4232"
+      }),
       FirstName = new MayBe<string>(Faker.Person.FirstName),
+      MiddleName = new MayBe<string>("Edward"),
       LastName = new MayBe<string>(Faker.Person.LastName),
-      Locale = new MayBe<string>("en-US")
+      Nickname = new MayBe<string>("Eddy"),
+      Birthdate = new MayBe<DateTime?>(DateTime.UtcNow.AddYears(-25)),
+      Gender = new MayBe<string>(Faker.Person.Gender.ToString()),
+      Locale = new MayBe<string>("en-US"),
+      TimeZone = new MayBe<string>("America/New_York"),
+      Picture = new MayBe<string>("https://www.test.com/assets/img/profile.jpg"),
+      Profile = new MayBe<string>("   "),
+      Website = new MayBe<string>("https://www.test.com/")
     };
     Assert.NotNull(payload.Email.Value);
+    Assert.NotNull(payload.Phone.Value);
     User? user = await _userService.UpdateAsync(_user.Id.Value, payload, CancellationToken);
     Assert.NotNull(user);
     Assert.NotNull(user.Email);
+    Assert.NotNull(user.Phone);
     Assert.Equal(payload.UniqueName, user.UniqueName);
     Assert.Equal(payload.IsDisabled, user.IsDisabled);
     Assert.Equal(payload.Email.Value.Address, user.Email.Address);
-    Assert.Equal(payload.Email.Value.IsVerified ?? _user.Email.IsVerified, user.Email.IsVerified);
+    Assert.Equal(payload.Email.Value.IsVerified ?? _user.Email?.IsVerified ?? false, user.Email.IsVerified);
+    Assert.Equal(payload.Phone.Value.CountryCode, user.Phone.CountryCode);
+    Assert.Equal(payload.Phone.Value.Number, user.Phone.Number);
+    Assert.Equal(payload.Phone.Value.Extension, user.Phone.Extension);
+    Assert.Equal(payload.Phone.Value.Number, user.Phone.E164Formatted);
+    Assert.Equal(payload.Phone.Value.IsVerified ?? _user.Phone?.IsVerified ?? false, user.Phone.IsVerified);
     Assert.Equal(payload.FirstName.Value, user.FirstName);
+    Assert.Equal(payload.MiddleName.Value, user.MiddleName);
     Assert.Equal(payload.LastName.Value, user.LastName);
+    Assert.Equal(payload.Nickname.Value, user.Nickname);
+    Assert.Equal(payload.Birthdate.Value, user.Birthdate);
+    Assert.Equal(payload.Gender.Value?.ToLower(), user.Gender);
     Assert.Equal(payload.Locale.Value, user.Locale);
+    Assert.Equal(payload.TimeZone.Value, user.TimeZone);
+    Assert.Equal(payload.Picture.Value, user.Picture);
+    Assert.Equal(payload.Website.Value, user.Website);
+    Assert.Equal(PersonHelper.BuildFullName(payload.FirstName.Value, payload.MiddleName.Value,
+      payload.LastName.Value), user.FullName);
+    Assert.Null(user.Profile);
     Assert.True(user.HasPassword);
   }
 
