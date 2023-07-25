@@ -21,7 +21,9 @@ public static class DependencyInjectionExtensions
     Assembly assembly = typeof(DependencyInjectionExtensions).Assembly;
 
     EventSerializer.Instance.RegisterConverter(new CultureInfoConverter());
+    EventSerializer.Instance.RegisterConverter(new GenderConverter());
     EventSerializer.Instance.RegisterConverter(new Pbkdf2Converter());
+    EventSerializer.Instance.RegisterConverter(new TimeZoneEntryConverter());
 
     return services
       .AddAutoMapper(assembly)

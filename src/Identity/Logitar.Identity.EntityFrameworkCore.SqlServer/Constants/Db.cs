@@ -26,9 +26,17 @@ public static class Db
   {
     public static readonly TableId Table = new(nameof(IdentityContext.Users));
 
+    public static readonly ColumnId AddressFormatted = new(nameof(UserEntity.AggregateId), Table);
     public static readonly ColumnId AggregateId = new(nameof(UserEntity.AggregateId), Table);
+    public static readonly ColumnId EmailAddress = new(nameof(UserEntity.EmailAddress), Table);
     public static readonly ColumnId EmailAddressNormalized = new(nameof(UserEntity.EmailAddressNormalized), Table);
+    public static readonly ColumnId FullName = new(nameof(UserEntity.EmailAddressNormalized), Table);
+    public static readonly ColumnId HasPassword = new(nameof(UserEntity.HasPassword), Table);
+    public static readonly ColumnId IsConfirmed = new(nameof(UserEntity.IsConfirmed), Table);
+    public static readonly ColumnId IsDisabled = new(nameof(UserEntity.IsDisabled), Table);
+    public static readonly ColumnId PhoneE164Formatted = new(nameof(UserEntity.EmailAddressNormalized), Table);
     public static readonly ColumnId TenantId = new(nameof(UserEntity.TenantId), Table);
+    public static readonly ColumnId UniqueName = new(nameof(UserEntity.UniqueName), Table);
     public static readonly ColumnId UniqueNameNormalized = new(nameof(UserEntity.UniqueNameNormalized), Table);
   }
 }

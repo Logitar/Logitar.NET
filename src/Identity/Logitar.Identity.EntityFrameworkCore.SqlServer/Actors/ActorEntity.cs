@@ -46,7 +46,7 @@ public record ActorEntity
     IsDeleted = isDeleted,
     DisplayName = user.FullName ?? user.UniqueName,
     EmailAddress = user.EmailAddress,
-    PictureUrl = null // TODO(fpion): User Picture
+    PictureUrl = user.Picture
   };
 
   public string Serialize() => JsonSerializer.Serialize(this);

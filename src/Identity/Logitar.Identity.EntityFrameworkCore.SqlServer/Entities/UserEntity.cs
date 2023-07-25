@@ -43,6 +43,17 @@ public record UserEntity : AggregateEntity
   public DateTime? DisabledOn { get; private set; }
   public bool IsDisabled { get; private set; }
 
+  public string? AddressStreet { get; private set; }
+  public string? AddressLocality { get; private set; }
+  public string? AddressCountry { get; private set; }
+  public string? AddressRegion { get; private set; }
+  public string? AddressPostalCode { get; private set; }
+  public string? AddressFormatted { get; private set; }
+  public string? AddressVerifiedById { get; private set; }
+  public string? AddressVerifiedBy { get; private set; }
+  public DateTime? AddressVerifiedOn { get; private set; }
+  public bool IsAddressVerified { get; private set; }
+
   public string? EmailAddress { get; private set; }
   public string? EmailAddressNormalized
   {
@@ -54,19 +65,37 @@ public record UserEntity : AggregateEntity
   public DateTime? EmailVerifiedOn { get; private set; }
   public bool IsEmailVerified { get; private set; }
 
+  public string? PhoneCountryCode { get; private set; }
+  public string? PhoneNumber { get; private set; }
+  public string? PhoneExtension { get; private set; }
+  public string? PhoneE164Formatted { get; private set; }
+  public string? PhoneVerifiedById { get; private set; }
+  public string? PhoneVerifiedBy { get; private set; }
+  public DateTime? PhoneVerifiedOn { get; private set; }
+  public bool IsPhoneVerified { get; private set; }
+
   public bool IsConfirmed
   {
-    get => IsEmailVerified;
+    get => IsAddressVerified || IsEmailVerified || IsPhoneVerified;
     private set { }
   }
 
   public DateTime? AuthenticatedOn { get; private set; }
 
   public string? FirstName { get; private set; }
+  public string? MiddleName { get; private set; }
   public string? LastName { get; private set; }
   public string? FullName { get; private set; }
+  public string? Nickname { get; private set; }
 
+  public DateTime? Birthdate { get; private set; }
+  public string? Gender { get; private set; }
   public string? Locale { get; private set; }
+  public string? TimeZone { get; private set; }
+
+  public string? Profile { get; private set; }
+  public string? Picture { get; private set; }
+  public string? Website { get; private set; }
 
   public List<SessionEntity> Sessions { get; private set; } = new();
 
@@ -130,6 +159,30 @@ public record UserEntity : AggregateEntity
       PasswordChangedOn = updated.OccurredOn;
     }
 
+    if (updated.Address != null)
+    {
+      AddressStreet = updated.Address.Value?.Street;
+      AddressLocality = updated.Address.Value?.Locality;
+      AddressCountry = updated.Address.Value?.Country;
+      AddressRegion = updated.Address.Value?.Region;
+      AddressPostalCode = updated.Address.Value?.PostalCode;
+      AddressFormatted = updated.Address.Value?.Format();
+
+      if (updated.Address.Value == null || !updated.Address.Value.IsVerified)
+      {
+        AddressVerifiedById = null;
+        AddressVerifiedBy = null;
+        AddressVerifiedOn = null;
+        IsAddressVerified = false;
+      }
+      else if (!IsAddressVerified && updated.Address.Value.IsVerified)
+      {
+        AddressVerifiedById = updated.ActorId ?? Actor.DefaultId;
+        AddressVerifiedBy = actor.Serialize();
+        AddressVerifiedOn = updated.OccurredOn;
+        IsAddressVerified = true;
+      }
+    }
     if (updated.Email != null)
     {
       EmailAddress = updated.Email.Value?.Address;
@@ -149,10 +202,36 @@ public record UserEntity : AggregateEntity
         IsEmailVerified = true;
       }
     }
+    if (updated.Phone != null)
+    {
+      PhoneCountryCode = updated.Phone.Value?.CountryCode;
+      PhoneNumber = updated.Phone.Value?.Number;
+      PhoneExtension = updated.Phone.Value?.Extension;
+      PhoneE164Formatted = updated.Phone.Value?.FormatToE164();
+
+      if (updated.Phone.Value == null || !updated.Phone.Value.IsVerified)
+      {
+        PhoneVerifiedById = null;
+        PhoneVerifiedBy = null;
+        PhoneVerifiedOn = null;
+        IsPhoneVerified = false;
+      }
+      else if (!IsPhoneVerified && updated.Phone.Value.IsVerified)
+      {
+        PhoneVerifiedById = updated.ActorId ?? Actor.DefaultId;
+        PhoneVerifiedBy = actor.Serialize();
+        PhoneVerifiedOn = updated.OccurredOn;
+        IsPhoneVerified = true;
+      }
+    }
 
     if (updated.FirstName != null)
     {
       FirstName = updated.FirstName.Value;
+    }
+    if (updated.MiddleName != null)
+    {
+      MiddleName = updated.MiddleName.Value;
     }
     if (updated.LastName != null)
     {
@@ -162,10 +241,39 @@ public record UserEntity : AggregateEntity
     {
       FullName = updated.FullName.Value;
     }
+    if (updated.Nickname != null)
+    {
+      Nickname = updated.Nickname.Value;
+    }
 
+    if (updated.Birthdate != null)
+    {
+      Birthdate = updated.Birthdate.Value?.ToUniversalTime();
+    }
+    if (updated.Gender != null)
+    {
+      Gender = updated.Gender.Value?.Value;
+    }
     if (updated.Locale != null)
     {
       Locale = updated.Locale.Value?.Name;
+    }
+    if (updated.TimeZone != null)
+    {
+      TimeZone = updated.TimeZone.Value?.Id;
+    }
+
+    if (updated.Picture != null)
+    {
+      Picture = updated.Picture.Value?.ToString();
+    }
+    if (updated.Profile != null)
+    {
+      Profile = updated.Profile.Value?.ToString();
+    }
+    if (updated.Website != null)
+    {
+      Website = updated.Website.Value?.ToString();
     }
   }
 }

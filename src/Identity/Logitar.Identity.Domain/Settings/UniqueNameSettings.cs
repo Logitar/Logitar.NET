@@ -2,5 +2,5 @@
 
 public record UniqueNameSettings : IUniqueNameSettings
 {
-  public string? AllowedCharacters { get; init; }
+  public string? AllowedCharacters { get; set; }
 }

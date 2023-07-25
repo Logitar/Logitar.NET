@@ -142,12 +142,50 @@ namespace Logitar.Identity.EntityFrameworkCore.SqlServer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
 
+                    b.Property<string>("AddressCountry")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("AddressFormatted")
+                        .HasMaxLength(2048)
+                        .HasColumnType("nvarchar(2048)");
+
+                    b.Property<string>("AddressLocality")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("AddressPostalCode")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("AddressRegion")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("AddressStreet")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("AddressVerifiedBy")
+                        .HasMaxLength(3000)
+                        .HasColumnType("nvarchar(3000)");
+
+                    b.Property<string>("AddressVerifiedById")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime?>("AddressVerifiedOn")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("AggregateId")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<DateTime?>("AuthenticatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("Birthdate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
@@ -201,7 +239,14 @@ namespace Logitar.Identity.EntityFrameworkCore.SqlServer.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
+                    b.Property<string>("Gender")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
                     b.Property<bool>("HasPassword")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsAddressVerified")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsConfirmed")
@@ -213,11 +258,22 @@ namespace Logitar.Identity.EntityFrameworkCore.SqlServer.Migrations
                     b.Property<bool>("IsEmailVerified")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsPhoneVerified")
+                        .HasColumnType("bit");
+
                     b.Property<string>("LastName")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("Locale")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("MiddleName")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Nickname")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
@@ -236,7 +292,46 @@ namespace Logitar.Identity.EntityFrameworkCore.SqlServer.Migrations
                     b.Property<DateTime?>("PasswordChangedOn")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("PhoneCountryCode")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("PhoneE164Formatted")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("PhoneExtension")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("PhoneVerifiedBy")
+                        .HasMaxLength(3000)
+                        .HasColumnType("nvarchar(3000)");
+
+                    b.Property<string>("PhoneVerifiedById")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime?>("PhoneVerifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Picture")
+                        .HasMaxLength(2048)
+                        .HasColumnType("nvarchar(2048)");
+
+                    b.Property<string>("Profile")
+                        .HasMaxLength(2048)
+                        .HasColumnType("nvarchar(2048)");
+
                     b.Property<string>("TenantId")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("TimeZone")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
@@ -266,7 +361,13 @@ namespace Logitar.Identity.EntityFrameworkCore.SqlServer.Migrations
                     b.Property<long>("Version")
                         .HasColumnType("bigint");
 
+                    b.Property<string>("Website")
+                        .HasMaxLength(2048)
+                        .HasColumnType("nvarchar(2048)");
+
                     b.HasKey("UserId");
+
+                    b.HasIndex("AddressVerifiedById");
 
                     b.HasIndex("AggregateId")
                         .IsUnique();
@@ -280,6 +381,8 @@ namespace Logitar.Identity.EntityFrameworkCore.SqlServer.Migrations
                     b.HasIndex("EmailVerifiedById");
 
                     b.HasIndex("PasswordChangedById");
+
+                    b.HasIndex("PhoneVerifiedById");
 
                     b.HasIndex("UpdatedById");
 

@@ -1,4 +1,5 @@
 ﻿using Logitar.EventSourcing;
+using Logitar.Identity.Core.Models;
 using Logitar.Identity.Core.Sessions;
 using Logitar.Identity.Core.Users.Models;
 using Logitar.Identity.Core.Users.Payloads;
@@ -84,6 +85,13 @@ public class UserService : IUserService
       user.Disable();
     }
 
+    if (payload.Address != null)
+    {
+      PostalAddress address = new(payload.Address.Street, payload.Address.Locality,
+        payload.Address.Country, payload.Address.Region, payload.Address.PostalCode,
+        payload.Address.IsVerified);
+      user.Address = address;
+    }
     if (payload.Email != null)
     {
       EmailAddress email = new(payload.Email.Address, payload.Email.IsVerified);
@@ -95,11 +103,26 @@ public class UserService : IUserService
 
       user.Email = email;
     }
+    if (payload.Phone != null)
+    {
+      PhoneNumber phone = new(payload.Phone.Number, payload.Phone.CountryCode,
+        payload.Phone.Extension, payload.Phone.IsVerified);
+      user.Phone = phone;
+    }
 
     user.FirstName = payload.FirstName;
+    user.MiddleName = payload.MiddleName;
     user.LastName = payload.LastName;
+    user.Nickname = payload.Nickname;
 
+    user.Birthdate = payload.Birthdate;
+    user.Gender = payload.Gender?.GetGender(nameof(payload.Gender));
     user.Locale = payload.Locale?.GetCultureInfo(nameof(payload.Locale));
+    user.TimeZone = payload.TimeZone?.GetTimeZone(nameof(payload.TimeZone));
+
+    user.Picture = payload.Picture?.GetUri(nameof(payload.Picture));
+    user.Profile = payload.Profile?.GetUri(nameof(payload.Profile));
+    user.Website = payload.Website?.GetUri(nameof(payload.Website));
 
     await _userRepository.SaveAsync(user, cancellationToken);
 
@@ -169,6 +192,11 @@ public class UserService : IUserService
     return users.Values.SingleOrDefault();
   }
 
+  public virtual async Task<SearchResults<User>> SearchAsync(SearchUserPayload payload, CancellationToken cancellationToken)
+  {
+    return await _userQuerier.SearchAsync(payload, cancellationToken);
+  }
+
   public virtual async Task<User?> SignOutAsync(string id, CancellationToken cancellationToken)
   {
     AggregateId userId = id.GetAggregateId(nameof(id));
@@ -227,6 +255,15 @@ public class UserService : IUserService
       }
     }
 
+    if (payload.Address != null)
+    {
+      bool isVerified = payload.Address.Value?.IsVerified ?? user.Address?.IsVerified ?? false;
+      PostalAddress? address = payload.Address.Value == null ? null
+        : new(payload.Address.Value.Street, payload.Address.Value.Locality,
+          payload.Address.Value.Country, payload.Address.Value.Region,
+          payload.Address.Value.PostalCode, isVerified);
+      user.Address = address;
+    }
     if (payload.Email != null)
     {
       bool isVerified = payload.Email.Value?.IsVerified ?? user.Email?.IsVerified ?? false;
@@ -243,19 +280,60 @@ public class UserService : IUserService
 
       user.Email = email;
     }
+    if (payload.Phone != null)
+    {
+      bool isVerified = payload.Phone.Value?.IsVerified ?? user.Phone?.IsVerified ?? false;
+      PhoneNumber? phone = payload.Phone.Value == null ? null
+        : new(payload.Phone.Value.Number, payload.Phone.Value.CountryCode,
+          payload.Phone.Value.Extension, isVerified);
+      user.Phone = phone;
+    }
 
     if (payload.FirstName != null)
     {
       user.FirstName = payload.FirstName.Value;
     }
+    if (payload.MiddleName != null)
+    {
+      user.MiddleName = payload.MiddleName.Value;
+    }
     if (payload.LastName != null)
     {
       user.LastName = payload.LastName.Value;
     }
+    if (payload.Nickname != null)
+    {
+      user.Nickname = payload.Nickname.Value;
+    }
 
+    if (payload.Birthdate != null)
+    {
+      user.Birthdate = payload.Birthdate.Value;
+    }
+    if (payload.Gender != null)
+    {
+      user.Gender = payload.Gender.Value?.GetGender(nameof(payload.Gender));
+    }
     if (payload.Locale != null)
     {
       user.Locale = payload.Locale.Value?.GetCultureInfo(nameof(payload.Locale));
+    }
+    if (payload.TimeZone != null)
+    {
+      user.TimeZone = payload.TimeZone.Value?.GetTimeZone(nameof(payload.TimeZone));
+    }
+
+    if (payload.Picture != null)
+    {
+      user.Picture = payload.Picture.Value?.GetUri(nameof(payload.Picture));
+    }
+    if (payload.Profile != null)
+    {
+      user.Profile = payload.Profile.Value?.GetUri(nameof(payload.Profile));
+    }
+    if (payload.Website != null)
+    {
+      user.Website = payload.Website.Value?.GetUri(nameof(payload.Website));
     }
 
     await _userRepository.SaveAsync(user, cancellationToken);
