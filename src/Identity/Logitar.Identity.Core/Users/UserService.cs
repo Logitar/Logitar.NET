@@ -194,8 +194,6 @@ public class UserService : IUserService
 
   public virtual async Task<SearchResults<User>> SearchAsync(SearchUserPayload payload, CancellationToken cancellationToken)
   {
-    // TODO(fpion): validate payload?
-
     return await _userQuerier.SearchAsync(payload, cancellationToken);
   }
 
