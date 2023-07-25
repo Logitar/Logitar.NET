@@ -13,11 +13,27 @@ public class UserConfiguration : AggregateConfiguration<UserEntity>, IEntityType
 
     builder.ToTable(nameof(IdentityContext.Users));
     builder.HasKey(x => x.UserId);
+    builder.HasIndex(x => x.TenantId);
+    builder.HasIndex(x => x.UniqueName);
+    builder.HasIndex(x => x.HasPassword);
     builder.HasIndex(x => x.PasswordChangedById);
+    builder.HasIndex(x => x.PasswordChangedOn);
     builder.HasIndex(x => x.DisabledById);
+    builder.HasIndex(x => x.DisabledOn);
+    builder.HasIndex(x => x.IsDisabled);
+    builder.HasIndex(x => x.AddressFormatted);
     builder.HasIndex(x => x.AddressVerifiedById);
+    builder.HasIndex(x => x.EmailAddress);
     builder.HasIndex(x => x.EmailVerifiedById);
+    builder.HasIndex(x => x.PhoneE164Formatted);
     builder.HasIndex(x => x.PhoneVerifiedById);
+    builder.HasIndex(x => x.IsConfirmed);
+    builder.HasIndex(x => x.AuthenticatedOn);
+    builder.HasIndex(x => x.FirstName);
+    builder.HasIndex(x => x.MiddleName);
+    builder.HasIndex(x => x.LastName);
+    builder.HasIndex(x => x.FullName);
+    builder.HasIndex(x => x.Birthdate);
     builder.HasIndex(x => new { x.TenantId, x.UniqueNameNormalized }).IsUnique();
     builder.HasIndex(x => new { x.TenantId, x.EmailAddressNormalized });
 

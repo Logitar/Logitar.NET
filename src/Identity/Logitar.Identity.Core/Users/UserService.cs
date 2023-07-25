@@ -1,4 +1,5 @@
 ﻿using Logitar.EventSourcing;
+using Logitar.Identity.Core.Models;
 using Logitar.Identity.Core.Sessions;
 using Logitar.Identity.Core.Users.Models;
 using Logitar.Identity.Core.Users.Payloads;
@@ -189,6 +190,13 @@ public class UserService : IUserService
     }
 
     return users.Values.SingleOrDefault();
+  }
+
+  public virtual async Task<SearchResults<User>> SearchAsync(SearchUserPayload payload, CancellationToken cancellationToken)
+  {
+    // TODO(fpion): validate payload?
+
+    return await _userQuerier.SearchAsync(payload, cancellationToken);
   }
 
   public virtual async Task<User?> SignOutAsync(string id, CancellationToken cancellationToken)

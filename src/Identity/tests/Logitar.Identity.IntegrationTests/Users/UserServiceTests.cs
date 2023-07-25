@@ -1,6 +1,8 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
 using Logitar.Identity.Core;
+using Logitar.Identity.Core.Models;
+using Logitar.Identity.Core.Payloads;
 using Logitar.Identity.Core.Sessions;
 using Logitar.Identity.Core.Users;
 using Logitar.Identity.Core.Users.Models;
@@ -377,14 +379,50 @@ public class UserServiceTests : IntegrationTestingBase
     Assert.Equal(2, exception.Actual);
   }
 
-  [Fact]
+  [Fact(DisplayName = "SearchAsync: it should return the correct search results.")]
+  public async Task SearchAsync_it_should_return_the_correct_search_results()
+  {
+    UserSettings userSettings = _userSettings.Value;
+    string tenantId = Guid.NewGuid().ToString();
+
+    UserAggregate user1 = new(userSettings.UniqueNameSettings, "aadmin", tenantId);
+    UserAggregate user2 = new(userSettings.UniqueNameSettings, "badmin", tenantId);
+    UserAggregate user3 = new(userSettings.UniqueNameSettings, "cadmin", tenantId);
+    UserAggregate disabled = new(userSettings.UniqueNameSettings, "dadmin", tenantId);
+    disabled.Disable();
+    await _userRepository.SaveAsync(new[] { user1, user2, user3, disabled });
+
+    SearchUserPayload payload = new()
+    {
+      IsDisabled = false,
+      Sort = new[]
+      {
+        new UserSortOption(UserSort.UniqueName, isDescending: true),
+        new UserSortOption((UserSort)(-1))
+      },
+      Skip = 1,
+      Limit = -10
+    };
+    payload.Id.Operator = (SearchOperator)(-1);
+    payload.Id.Terms = new[] { new SearchTerm(_user.Id.Value) };
+    payload.Search.Terms = new[] { new SearchTerm("%ADMIN%") };
+    payload.TenantId.Terms = new[] { new SearchTerm(tenantId) };
+
+    SearchResults<User> results = await _userService.SearchAsync(payload, CancellationToken);
+    Assert.Equal(3, results.Total);
+    Assert.Equal(2, results.Items.Count());
+    Assert.Equal(user2.Id.Value, results.Items.ElementAt(0).Id);
+    Assert.Equal(user1.Id.Value, results.Items.ElementAt(1).Id);
+  }
+
+  [Fact(DisplayName = "SignOutAsync: it should return null when user is not found.")]
   public async Task SignOutAsync_it_should_return_null_when_user_is_not_found()
   {
     User? user = await _userService.SignOutAsync(Guid.Empty.ToString(), CancellationToken);
     Assert.Null(user);
   }
 
-  [Fact]
+  [Fact(DisplayName = "SignOutAsync: it should sign out the correct sessions.")]
   public async Task SignOutAsync_it_should_sign_out_the_correct_sessions()
   {
     SessionAggregate session1 = new(_user);
