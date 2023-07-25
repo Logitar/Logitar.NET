@@ -16,6 +16,7 @@ public record User : Aggregate
   public DateTime? DisabledOn { get; set; }
   public bool IsDisabled { get; set; }
 
+  public Address? Address { get; set; }
   public Email? Email { get; set; }
   public Phone? Phone { get; set; }
 

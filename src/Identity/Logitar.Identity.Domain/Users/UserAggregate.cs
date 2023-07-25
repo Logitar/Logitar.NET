@@ -13,6 +13,7 @@ public class UserAggregate : AggregateRoot
 {
   private Pbkdf2? _password = null;
 
+  private PostalAddress? _address = null;
   private EmailAddress? _email = null;
   private PhoneNumber? _phone = null;
 
@@ -60,6 +61,24 @@ public class UserAggregate : AggregateRoot
 
   public bool IsDisabled { get; private set; }
 
+  public PostalAddress? Address
+  {
+    get => _address;
+    set
+    {
+      if (value != null)
+      {
+        new PostalAddressValidator().ValidateAndThrow(value);
+      }
+
+      if (value != _address)
+      {
+        UserUpdatedEvent updated = GetLatestUpdatedEvent();
+        updated.Address = new MayBe<PostalAddress>(value);
+        Apply(updated);
+      }
+    }
+  }
   public EmailAddress? Email
   {
     get => _email;
@@ -96,7 +115,7 @@ public class UserAggregate : AggregateRoot
       }
     }
   }
-  public bool IsConfirmed => Email?.IsVerified == true || Phone?.IsVerified == true;
+  public bool IsConfirmed => Address?.IsVerified == true || Email?.IsVerified == true || Phone?.IsVerified == true;
 
   public DateTime? AuthenticatedOn { get; private set; }
 
@@ -374,6 +393,10 @@ public class UserAggregate : AggregateRoot
       _password = updated.Password;
     }
 
+    if (updated.Address != null)
+    {
+      _address = updated.Address.Value;
+    }
     if (updated.Email != null)
     {
       _email = updated.Email.Value;

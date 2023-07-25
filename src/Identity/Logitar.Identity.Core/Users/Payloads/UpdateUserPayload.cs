@@ -9,6 +9,7 @@ public record UpdateUserPayload
 
   public bool? IsDisabled { get; set; }
 
+  public MayBe<UpdateAddressPayload>? Address { get; set; }
   public MayBe<UpdateEmailPayload>? Email { get; set; }
   public MayBe<UpdatePhonePayload>? Phone { get; set; }
 

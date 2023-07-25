@@ -43,6 +43,17 @@ public record UserEntity : AggregateEntity
   public DateTime? DisabledOn { get; private set; }
   public bool IsDisabled { get; private set; }
 
+  public string? AddressStreet { get; private set; }
+  public string? AddressLocality { get; private set; }
+  public string? AddressCountry { get; private set; }
+  public string? AddressRegion { get; private set; }
+  public string? AddressPostalCode { get; private set; }
+  public string? AddressFormatted { get; private set; }
+  public string? AddressVerifiedById { get; private set; }
+  public string? AddressVerifiedBy { get; private set; }
+  public DateTime? AddressVerifiedOn { get; private set; }
+  public bool IsAddressVerified { get; private set; }
+
   public string? EmailAddress { get; private set; }
   public string? EmailAddressNormalized
   {
@@ -65,7 +76,7 @@ public record UserEntity : AggregateEntity
 
   public bool IsConfirmed
   {
-    get => IsEmailVerified || IsPhoneVerified;
+    get => IsAddressVerified || IsEmailVerified || IsPhoneVerified;
     private set { }
   }
 
@@ -148,6 +159,30 @@ public record UserEntity : AggregateEntity
       PasswordChangedOn = updated.OccurredOn;
     }
 
+    if (updated.Address != null)
+    {
+      AddressStreet = updated.Address.Value?.Street;
+      AddressLocality = updated.Address.Value?.Locality;
+      AddressCountry = updated.Address.Value?.Country;
+      AddressRegion = updated.Address.Value?.Region;
+      AddressPostalCode = updated.Address.Value?.PostalCode;
+      AddressFormatted = updated.Address.Value?.Format();
+
+      if (updated.Address.Value == null || !updated.Address.Value.IsVerified)
+      {
+        AddressVerifiedById = null;
+        AddressVerifiedBy = null;
+        AddressVerifiedOn = null;
+        IsAddressVerified = false;
+      }
+      else if (!IsAddressVerified && updated.Address.Value.IsVerified)
+      {
+        AddressVerifiedById = updated.ActorId ?? Actor.DefaultId;
+        AddressVerifiedBy = actor.Serialize();
+        AddressVerifiedOn = updated.OccurredOn;
+        IsAddressVerified = true;
+      }
+    }
     if (updated.Email != null)
     {
       EmailAddress = updated.Email.Value?.Address;

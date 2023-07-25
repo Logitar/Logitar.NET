@@ -1,6 +1,8 @@
-﻿namespace Logitar.Identity.Core.Users.Payloads;
+﻿using Logitar.Identity.Domain.Users;
 
-public record CreatePhonePayload
+namespace Logitar.Identity.Core.Users.Payloads;
+
+public record CreatePhonePayload : IPhoneNumber
 {
   public string? CountryCode { get; set; }
   public string Number { get; set; } = string.Empty;

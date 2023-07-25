@@ -15,6 +15,7 @@ public class UserConfiguration : AggregateConfiguration<UserEntity>, IEntityType
     builder.HasKey(x => x.UserId);
     builder.HasIndex(x => x.PasswordChangedById);
     builder.HasIndex(x => x.DisabledById);
+    builder.HasIndex(x => x.AddressVerifiedById);
     builder.HasIndex(x => x.EmailVerifiedById);
     builder.HasIndex(x => x.PhoneVerifiedById);
     builder.HasIndex(x => new { x.TenantId, x.UniqueNameNormalized }).IsUnique();
@@ -28,6 +29,14 @@ public class UserConfiguration : AggregateConfiguration<UserEntity>, IEntityType
     builder.Property(x => x.PasswordChangedBy).HasMaxLength(Actor.SerializedLength);
     builder.Property(x => x.DisabledById).HasMaxLength(byte.MaxValue);
     builder.Property(x => x.DisabledBy).HasMaxLength(Actor.SerializedLength);
+    builder.Property(x => x.AddressStreet).HasMaxLength(byte.MaxValue);
+    builder.Property(x => x.AddressLocality).HasMaxLength(byte.MaxValue);
+    builder.Property(x => x.AddressCountry).HasMaxLength(byte.MaxValue);
+    builder.Property(x => x.AddressRegion).HasMaxLength(byte.MaxValue);
+    builder.Property(x => x.AddressPostalCode).HasMaxLength(byte.MaxValue);
+    builder.Property(x => x.AddressFormatted).HasMaxLength(2048);
+    builder.Property(x => x.AddressVerifiedById).HasMaxLength(byte.MaxValue);
+    builder.Property(x => x.AddressVerifiedBy).HasMaxLength(Actor.SerializedLength);
     builder.Property(x => x.EmailAddress).HasMaxLength(byte.MaxValue);
     builder.Property(x => x.EmailAddressNormalized).HasMaxLength(byte.MaxValue);
     builder.Property(x => x.EmailVerifiedById).HasMaxLength(byte.MaxValue);

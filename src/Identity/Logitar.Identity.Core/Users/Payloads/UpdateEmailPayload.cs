@@ -1,6 +1,8 @@
-﻿namespace Logitar.Identity.Core.Users.Payloads;
+﻿using Logitar.Identity.Domain.Users;
 
-public record UpdateEmailPayload
+namespace Logitar.Identity.Core.Users.Payloads;
+
+public record UpdateEmailPayload : IEmailAddress
 {
   public string Address { get; set; } = string.Empty;
   public bool? IsVerified { get; set; }

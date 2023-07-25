@@ -84,6 +84,13 @@ public class UserService : IUserService
       user.Disable();
     }
 
+    if (payload.Address != null)
+    {
+      PostalAddress address = new(payload.Address.Street, payload.Address.Locality,
+        payload.Address.Country, payload.Address.Region, payload.Address.PostalCode,
+        payload.Address.IsVerified);
+      user.Address = address;
+    }
     if (payload.Email != null)
     {
       EmailAddress email = new(payload.Email.Address, payload.Email.IsVerified);
@@ -242,6 +249,15 @@ public class UserService : IUserService
       }
     }
 
+    if (payload.Address != null)
+    {
+      bool isVerified = payload.Address.Value?.IsVerified ?? user.Address?.IsVerified ?? false;
+      PostalAddress? address = payload.Address.Value == null ? null
+        : new(payload.Address.Value.Street, payload.Address.Value.Locality,
+          payload.Address.Value.Country, payload.Address.Value.Region,
+          payload.Address.Value.PostalCode, isVerified);
+      user.Address = address;
+    }
     if (payload.Email != null)
     {
       bool isVerified = payload.Email.Value?.IsVerified ?? user.Email?.IsVerified ?? false;

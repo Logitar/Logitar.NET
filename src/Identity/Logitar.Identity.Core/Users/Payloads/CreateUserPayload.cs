@@ -9,6 +9,7 @@ public record CreateUserPayload
 
   public bool IsDisabled { get; set; }
 
+  public CreateAddressPayload? Address { get; set; }
   public CreateEmailPayload? Email { get; set; }
   public CreatePhonePayload? Phone { get; set; }
 

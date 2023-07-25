@@ -212,6 +212,14 @@ public class UserServiceTests : IntegrationTestingBase
       UniqueName = $"{_user.UniqueName}2",
       Password = "Test123!",
       IsDisabled = true,
+      Address = new CreateAddressPayload
+      {
+        Street = "1909 Av. des Canadiens-de-Montréal",
+        Locality = "Montréal",
+        Country = "CA",
+        Region = "QC",
+        PostalCode = "H3B 5E8"
+      },
       Email = new CreateEmailPayload
       {
         Address = emailAddress,
@@ -237,6 +245,7 @@ public class UserServiceTests : IntegrationTestingBase
       Website = "https://www.test.com/"
     };
     User user = await _userService.CreateAsync(payload, CancellationToken);
+    Assert.NotNull(user.Address);
     Assert.NotNull(user.Email);
     Assert.NotNull(user.Phone);
     Assert.Equal(payload.TenantId, user.TenantId);
@@ -245,6 +254,12 @@ public class UserServiceTests : IntegrationTestingBase
     Assert.Equal(Actor, user.PasswordChangedBy);
     Assert.Equal(payload.IsDisabled, user.IsDisabled);
     Assert.Equal(Actor, user.DisabledBy);
+    Assert.Equal(payload.Address.Street, user.Address.Street);
+    Assert.Equal(payload.Address.Locality, user.Address.Locality);
+    Assert.Equal(payload.Address.Country, user.Address.Country);
+    Assert.Equal(payload.Address.Region, user.Address.Region);
+    Assert.Equal(payload.Address.PostalCode, user.Address.PostalCode);
+    Assert.Equal(PostalAddressHelper.Format(payload.Address), user.Address.Formatted);
     Assert.Equal(emailAddress, user.Email.Address);
     Assert.Equal(payload.Phone.CountryCode, user.Phone.CountryCode);
     Assert.Equal(payload.Phone.Number, user.Phone.Number);
@@ -461,6 +476,14 @@ public class UserServiceTests : IntegrationTestingBase
       UniqueName = $"{_user.UniqueName}2",
       Password = "Test123!",
       IsDisabled = true,
+      Address = new MayBe<UpdateAddressPayload>(new UpdateAddressPayload
+      {
+        Street = "1909 Av. des Canadiens-de-Montréal",
+        Locality = "Montréal",
+        Country = "CA",
+        Region = "QC",
+        PostalCode = "H3B 5E8"
+      }),
       Email = new MayBe<UpdateEmailPayload>(new UpdateEmailPayload
       {
         Address = Faker.Internet.Email()
@@ -483,14 +506,22 @@ public class UserServiceTests : IntegrationTestingBase
       Profile = new MayBe<string>("   "),
       Website = new MayBe<string>("https://www.test.com/")
     };
+    Assert.NotNull(payload.Address.Value);
     Assert.NotNull(payload.Email.Value);
     Assert.NotNull(payload.Phone.Value);
     User? user = await _userService.UpdateAsync(_user.Id.Value, payload, CancellationToken);
     Assert.NotNull(user);
+    Assert.NotNull(user.Address);
     Assert.NotNull(user.Email);
     Assert.NotNull(user.Phone);
     Assert.Equal(payload.UniqueName, user.UniqueName);
     Assert.Equal(payload.IsDisabled, user.IsDisabled);
+    Assert.Equal(payload.Address.Value.Street, user.Address.Street);
+    Assert.Equal(payload.Address.Value.Locality, user.Address.Locality);
+    Assert.Equal(payload.Address.Value.Country, user.Address.Country);
+    Assert.Equal(payload.Address.Value.Region, user.Address.Region);
+    Assert.Equal(payload.Address.Value.PostalCode, user.Address.PostalCode);
+    Assert.Equal(PostalAddressHelper.Format(payload.Address.Value), user.Address.Formatted);
     Assert.Equal(payload.Email.Value.Address, user.Email.Address);
     Assert.Equal(payload.Email.Value.IsVerified ?? _user.Email?.IsVerified ?? false, user.Email.IsVerified);
     Assert.Equal(payload.Phone.Value.CountryCode, user.Phone.CountryCode);

@@ -16,6 +16,13 @@ public static class FluentValidationExtensions
   internal static bool ContainOnlyAllowedCharacters(string? s, string? allowedCharacters)
     => s == null || allowedCharacters == null || s.All(allowedCharacters.Contains);
 
+  public static IRuleBuilderOptions<T, string> Country<T>(this IRuleBuilder<T, string> ruleBuilder)
+  {
+    return ruleBuilder.Must(PostalAddressHelper.IsSupported)
+      .WithErrorCode("CountryValidator")
+      .WithMessage($"'{{PropertyName}}' must be one of the following: {string.Join(", ", PostalAddressHelper.SupportedCountries)}");
+  }
+
   public static IRuleBuilderOptions<T, CultureInfo?> Locale<T>(this IRuleBuilder<T, CultureInfo?> ruleBuilder)
   {
     return ruleBuilder.Must(BeAValidLocale)
