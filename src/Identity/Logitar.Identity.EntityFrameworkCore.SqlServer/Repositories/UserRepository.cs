@@ -9,17 +9,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Logitar.Identity.EntityFrameworkCore.SqlServer.Repositories;
 
-public class UserRepository : EventSourcing.EntityFrameworkCore.Relational.AggregateRepository, IUserRepository
+public class UserRepository : IdentityRepository, IUserRepository
 {
   private static readonly string _aggregateType = typeof(UserAggregate).GetName();
 
   public UserRepository(ICurrentActor currentActor, IEventBus eventBus, EventContext eventContext)
-    : base(eventBus, eventContext)
+    : base(currentActor, eventBus, eventContext)
   {
-    CurrentActor = currentActor;
   }
-
-  protected ICurrentActor CurrentActor { get; }
 
   public async Task<UserAggregate?> LoadAsync(AggregateId id, CancellationToken cancellationToken)
     => await base.LoadAsync<UserAggregate>(id, cancellationToken);
@@ -73,28 +70,10 @@ public class UserRepository : EventSourcing.EntityFrameworkCore.Relational.Aggre
 
   public async Task SaveAsync(UserAggregate user, CancellationToken cancellationToken)
   {
-    AssignActor(user);
-
     await base.SaveAsync(user, cancellationToken);
   }
   public async Task SaveAsync(IEnumerable<UserAggregate> users, CancellationToken cancellationToken)
   {
-    AssignActor(users);
-
     await base.SaveAsync(users, cancellationToken);
   }
-
-  #region TODO(fpion): refactor
-  private void AssignActor(AggregateRoot aggregate) => AssignActor(new[] { aggregate });
-  private void AssignActor(IEnumerable<AggregateRoot> aggregates)
-  {
-    foreach (AggregateRoot aggregate in aggregates)
-    {
-      foreach (DomainEvent change in aggregate.Changes)
-      {
-        change.ActorId ??= CurrentActor.Actor.Id;
-      }
-    }
-  }
-  #endregion
 }

@@ -68,7 +68,7 @@ public class UserAggregate : AggregateRoot
     {
       if (value != null)
       {
-        new PostalAddressValidator().ValidateAndThrow(value);
+        new PostalAddressValidator(value.Country).ValidateAndThrow(value);
       }
 
       if (value != _address)

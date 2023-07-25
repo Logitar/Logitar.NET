@@ -46,4 +46,18 @@ public static class FluentValidationExtensions
       .WithErrorCode("PhoneNumberValidator")
       .WithMessage("'{PropertyName}' must be a valid phone number.");
   }
+
+  public static IRuleBuilderOptions<T, string?> PostalCode<T>(this IRuleBuilder<T, string?> ruleBuilder, string expression)
+  {
+    return ruleBuilder.Matches(expression)
+      .WithErrorCode("PostalCodeValidator")
+      .WithMessage(x => $"'{{PropertyName}}' must match the following expression: {expression}");
+  }
+
+  public static IRuleBuilderOptions<T, string?> Region<T>(this IRuleBuilder<T, string?> ruleBuilder, ISet<string> regions)
+  {
+    return ruleBuilder.Must(region => region == null || regions.Contains(region))
+      .WithErrorCode("RegionValidator")
+      .WithMessage(x => $"'{{PropertyName}}' must be one of the following: {string.Join(", ", regions)}");
+  }
 }

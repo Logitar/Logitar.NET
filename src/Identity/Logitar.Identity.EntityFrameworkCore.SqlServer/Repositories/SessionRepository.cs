@@ -11,17 +11,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Logitar.Identity.EntityFrameworkCore.SqlServer.Repositories;
 
-public class SessionRepository : EventSourcing.EntityFrameworkCore.Relational.AggregateRepository, ISessionRepository
+public class SessionRepository : IdentityRepository, ISessionRepository
 {
   private static readonly string _aggregateType = typeof(SessionAggregate).GetName();
 
   public SessionRepository(ICurrentActor currentActor, IEventBus eventBus, EventContext eventContext)
-    : base(eventBus, eventContext)
+    : base(currentActor, eventBus, eventContext)
   {
-    CurrentActor = currentActor;
   }
-
-  protected ICurrentActor CurrentActor { get; }
 
   public async Task<IEnumerable<SessionAggregate>> LoadActiveAsync(UserAggregate user, CancellationToken cancellationToken)
   {
@@ -46,28 +43,10 @@ public class SessionRepository : EventSourcing.EntityFrameworkCore.Relational.Ag
 
   public async Task SaveAsync(SessionAggregate session, CancellationToken cancellationToken)
   {
-    AssignActor(session);
-
     await base.SaveAsync(session, cancellationToken);
   }
   public async Task SaveAsync(IEnumerable<SessionAggregate> sessions, CancellationToken cancellationToken)
   {
-    AssignActor(sessions);
-
     await base.SaveAsync(sessions, cancellationToken);
   }
-
-  #region TODO(fpion): refactor
-  private void AssignActor(AggregateRoot aggregate) => AssignActor(new[] { aggregate });
-  private void AssignActor(IEnumerable<AggregateRoot> aggregates)
-  {
-    foreach (AggregateRoot aggregate in aggregates)
-    {
-      foreach (DomainEvent change in aggregate.Changes)
-      {
-        change.ActorId ??= CurrentActor.Actor.Id;
-      }
-    }
-  }
-  #endregion
 }

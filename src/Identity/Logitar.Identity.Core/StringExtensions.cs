@@ -5,9 +5,6 @@ using Logitar.Identity.Domain.Users;
 
 namespace Logitar.Identity.Core;
 
-/// <summary>
-/// TODO(fpion): Get or Parse?
-/// </summary>
 public static class StringExtensions
 {
   public static AggregateId GetAggregateId(this string value, string propertyName)
