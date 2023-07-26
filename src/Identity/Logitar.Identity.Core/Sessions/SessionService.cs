@@ -1,4 +1,5 @@
 ﻿using Logitar.EventSourcing;
+using Logitar.Identity.Core.Models;
 using Logitar.Identity.Core.Sessions.Models;
 using Logitar.Identity.Core.Sessions.Payloads;
 using Logitar.Identity.Domain;
@@ -81,6 +82,11 @@ public class SessionService : ISessionService
     }
 
     return result;
+  }
+
+  public virtual async Task<SearchResults<Session>> SearchAsync(SearchSessionPayload payload, CancellationToken cancellationToken)
+  {
+    return await _sessionQuerier.SearchAsync(payload, cancellationToken);
   }
 
   public virtual async Task<Session> SignInAsync(SignInPayload payload, CancellationToken cancellationToken)

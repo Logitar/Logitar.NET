@@ -404,8 +404,8 @@ public class UserServiceTests : IntegrationTestingBase
       IsDisabled = false,
       Sort = new[]
       {
-        new UserSortOption(UserSort.UniqueName, isDescending: true),
-        new UserSortOption((UserSort)(-1))
+        new UserSortOption((UserSort)(-1)),
+        new UserSortOption(UserSort.UniqueName, isDescending: true)
       },
       Skip = 1,
       Limit = -10
