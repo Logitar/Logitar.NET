@@ -22,8 +22,8 @@ public class QueryBuilderTests
 
     IQuery query = _builder
       .Select(ColumnId.All(), id)
-      .Join(new Join(new ColumnId(id.Name, tasks), id, new OperatorCondition(new ColumnId("IsClosed", tasks), Operators.IsEqualTo(false))))
-      .Join(new Join(JoinKind.Full, new ColumnId("ProjectId", new TableId("MesProjets")), new ColumnId("ProjectId", _table)))
+      .Join(new ColumnId(id.Name, tasks), id, new OperatorCondition(new ColumnId("IsClosed", tasks), Operators.IsEqualTo(false)))
+      .FullJoin(new ColumnId("ProjectId", new TableId("MesProjets")), new ColumnId("ProjectId", _table))
       .Where(new OrCondition(
         new OperatorCondition(priority, Operators.IsBetween(2, 4)),
         new OperatorCondition(priority, Operators.IsNull())

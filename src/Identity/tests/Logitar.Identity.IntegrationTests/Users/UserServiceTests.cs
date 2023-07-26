@@ -326,6 +326,11 @@ public class UserServiceTests : IntegrationTestingBase
   [Fact(DisplayName = "DeleteAsync: it should delete the correct user.")]
   public async Task DeleteAsync_it_should_delete_the_correct_user()
   {
+    SessionAggregate session = _user.SignIn(_userSettings.Value);
+    await _sessionRepository.SaveAsync(session);
+
+    Assert.True(await IdentityContext.Sessions.AnyAsync());
+
     User? user = await _userService.DeleteAsync(_user.Id.Value, CancellationToken);
     Assert.NotNull(user);
     Assert.Equal(_user.Id.Value, user.Id);
@@ -333,6 +338,8 @@ public class UserServiceTests : IntegrationTestingBase
     UserEntity? entity = await IdentityContext.Users.AsNoTracking()
       .SingleOrDefaultAsync(x => x.AggregateId == _user.Id.Value);
     Assert.Null(entity);
+
+    Assert.False(await IdentityContext.Sessions.AnyAsync());
   }
 
   [Fact(DisplayName = "DeleteAsync: it should return null when user is not found.")]

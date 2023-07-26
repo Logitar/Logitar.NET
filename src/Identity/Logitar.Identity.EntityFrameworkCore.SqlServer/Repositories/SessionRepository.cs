@@ -20,11 +20,34 @@ public class SessionRepository : IdentityRepository, ISessionRepository
   {
   }
 
+  public async Task<IEnumerable<SessionAggregate>> LoadAsync(UserAggregate user, CancellationToken cancellationToken)
+  {
+    IQuery query = SqlServerQueryBuilder.From(Db.Events.Table)
+      .Join(Db.Sessions.AggregateId, Db.Events.AggregateId,
+        new OperatorCondition(Db.Events.AggregateType, Operators.IsEqualTo(_aggregateType))
+      )
+      .Join(Db.Users.UserId, Db.Sessions.UserId,
+        new OperatorCondition(Db.Users.AggregateId, Operators.IsEqualTo(user.Id.Value))
+      )
+      .SelectAll(Db.Events.Table)
+      .Build();
+
+    EventEntity[] events = await EventContext.Events.FromQuery(query)
+      .OrderBy(e => e.Version)
+      .AsNoTracking()
+      .ToArrayAsync(cancellationToken);
+
+    return Load<SessionAggregate>(events.Select(EventSerializer.Instance.Deserialize));
+  }
+
   public async Task<IEnumerable<SessionAggregate>> LoadActiveAsync(UserAggregate user, CancellationToken cancellationToken)
   {
     IQuery query = SqlServerQueryBuilder.From(Db.Events.Table)
-      .Join(new Join(Db.Sessions.AggregateId, Db.Events.AggregateId,
-        new OperatorCondition(Db.Events.AggregateType, Operators.IsEqualTo(_aggregateType)))
+      .Join(Db.Sessions.AggregateId, Db.Events.AggregateId,
+        new OperatorCondition(Db.Events.AggregateType, Operators.IsEqualTo(_aggregateType))
+      )
+      .Join(Db.Users.UserId, Db.Sessions.UserId,
+        new OperatorCondition(Db.Users.AggregateId, Operators.IsEqualTo(user.Id.Value))
       )
       .Where(Db.Sessions.IsActive, Operators.IsEqualTo(true))
       .SelectAll(Db.Events.Table)

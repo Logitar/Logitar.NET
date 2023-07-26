@@ -26,6 +26,31 @@ public static class QueryBuilderExtensions
   }
 
   /// <summary>
+  /// Applies the specified INNER JOIN to the query.
+  /// </summary>
+  /// <param name="builder">The query builder.</param>
+  /// <param name="left">The left column of the join.</param>
+  /// <param name="right">The right column of the join.</param>
+  /// <param name="condition">The condition of the join.</param>
+  /// <returns>The query builder.</returns>
+  public static IQueryBuilder Join(this IQueryBuilder builder, ColumnId left, ColumnId right, Condition? condition = null)
+  {
+    return builder.Join(new Join(left, right, condition));
+  }
+  /// <summary>
+  /// Applies the specified FULL JOIN to the query.
+  /// </summary>
+  /// <param name="builder">The query builder.</param>
+  /// <param name="left">The left column of the join.</param>
+  /// <param name="right">The right column of the join.</param>
+  /// <param name="condition">The condition of the join.</param>
+  /// <returns>The query builder.</returns>
+  public static IQueryBuilder FullJoin(this IQueryBuilder builder, ColumnId left, ColumnId right, Condition? condition = null)
+  {
+    return builder.Join(new Join(JoinKind.Full, left, right, condition));
+  }
+
+  /// <summary>
   /// Applies a condition on a column in the query.
   /// </summary>
   /// <param name="builder">The query builder.</param>

@@ -1,6 +1,7 @@
 ﻿using Logitar.EventSourcing;
 using Logitar.Identity.Core.Models;
 using Logitar.Identity.Core.Sessions;
+using Logitar.Identity.Core.Sessions.Commands;
 using Logitar.Identity.Core.Users.Models;
 using Logitar.Identity.Core.Users.Payloads;
 using Logitar.Identity.Domain;
@@ -13,14 +14,17 @@ namespace Logitar.Identity.Core.Users;
 
 public class UserService : IUserService
 {
+  private readonly IDeleteSessionsCommand _deleteSessionsCommand;
   private readonly ISessionRepository _sessionRepository;
   private readonly IUserQuerier _userQuerier;
   private readonly IUserRepository _userRepository;
   private readonly IOptions<UserSettings> _userSettings;
 
-  public UserService(ISessionRepository sessionRepository, IUserQuerier userQuerier,
-    IUserRepository userRepository, IOptions<UserSettings> userSettings)
+  public UserService(IDeleteSessionsCommand deleteSessionsCommand,
+    ISessionRepository sessionRepository, IUserQuerier userQuerier, IUserRepository userRepository,
+    IOptions<UserSettings> userSettings)
   {
+    _deleteSessionsCommand = deleteSessionsCommand;
     _sessionRepository = sessionRepository;
     _userQuerier = userQuerier;
     _userRepository = userRepository;
@@ -141,7 +145,7 @@ public class UserService : IUserService
 
     user.Delete();
 
-    // TODO(fpion): delete user sessions
+    await _deleteSessionsCommand.ExecuteAsync(user, cancellationToken);
 
     await _userRepository.SaveAsync(user, cancellationToken);
 
