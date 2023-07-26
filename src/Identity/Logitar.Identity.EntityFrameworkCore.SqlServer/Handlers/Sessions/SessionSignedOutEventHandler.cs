@@ -17,12 +17,6 @@ public class SessionSignedOutEventHandler : INotificationHandler<SessionSignedOu
     _context = context;
   }
 
-  /// <summary>
-  /// TODO(fpion): should be idempotent
-  /// </summary>
-  /// <param name="notification"></param>
-  /// <param name="cancellationToken"></param>
-  /// <returns></returns>
   public async Task Handle(SessionSignedOutEvent notification, CancellationToken cancellationToken)
   {
     SessionEntity session = await _context.Sessions

@@ -17,12 +17,6 @@ public class SessionRenewedEventHandler : INotificationHandler<SessionRenewedEve
     _context = context;
   }
 
-  /// <summary>
-  /// TODO(fpion): should be idempotent
-  /// </summary>
-  /// <param name="notification"></param>
-  /// <param name="cancellationToken"></param>
-  /// <returns></returns>
   public async Task Handle(SessionRenewedEvent notification, CancellationToken cancellationToken)
   {
     SessionEntity session = await _context.Sessions

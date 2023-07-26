@@ -17,12 +17,6 @@ public class UserPasswordChangedEventHandler : INotificationHandler<UserPassword
     _context = context;
   }
 
-  /// <summary>
-  /// TODO(fpion): should be idempotent
-  /// </summary>
-  /// <param name="notification"></param>
-  /// <param name="cancellationToken"></param>
-  /// <returns></returns>
   public async Task Handle(UserPasswordChangedEvent notification, CancellationToken cancellationToken)
   {
     UserEntity user = await _context.Users

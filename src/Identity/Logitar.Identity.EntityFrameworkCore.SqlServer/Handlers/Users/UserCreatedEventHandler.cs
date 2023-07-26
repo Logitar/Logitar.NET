@@ -2,6 +2,7 @@
 using Logitar.Identity.EntityFrameworkCore.SqlServer.Actors;
 using Logitar.Identity.EntityFrameworkCore.SqlServer.Entities;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Logitar.Identity.EntityFrameworkCore.SqlServer.Handlers.Users;
 
@@ -16,14 +17,14 @@ public class UserCreatedEventHandler : INotificationHandler<UserCreatedEvent>
     _context = context;
   }
 
-  /// <summary>
-  /// TODO(fpion): should be idempotent
-  /// </summary>
-  /// <param name="notification"></param>
-  /// <param name="cancellationToken"></param>
-  /// <returns></returns>
   public async Task Handle(UserCreatedEvent notification, CancellationToken cancellationToken)
   {
+    bool exists = await _context.Users.AnyAsync(x => x.AggregateId == notification.AggregateId.Value, cancellationToken);
+    if (exists)
+    {
+      return;
+    }
+
     ActorEntity actor = await _actorService.FindAsync(notification, cancellationToken);
     UserEntity user = new(notification, actor);
 

@@ -17,14 +17,14 @@ public class SessionCreatedEventHandler : INotificationHandler<SessionCreatedEve
     _context = context;
   }
 
-  /// <summary>
-  /// TODO(fpion): should be idempotent
-  /// </summary>
-  /// <param name="notification"></param>
-  /// <param name="cancellationToken"></param>
-  /// <returns></returns>
   public async Task Handle(SessionCreatedEvent notification, CancellationToken cancellationToken)
   {
+    bool exists = await _context.Sessions.AnyAsync(x => x.AggregateId == notification.AggregateId.Value, cancellationToken);
+    if (exists)
+    {
+      return;
+    }
+
     UserEntity user = await _context.Users
       .SingleOrDefaultAsync(x => x.AggregateId == notification.UserId.Value, cancellationToken)
       ?? throw new EntityNotFoundException<UserEntity>(notification.UserId.Value);
