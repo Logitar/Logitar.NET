@@ -27,5 +27,10 @@ public class UserUpdatedEventHandler : INotificationHandler<UserUpdatedEvent>
     user.Update(notification, actor);
 
     await _context.SaveChangesAsync(cancellationToken);
+
+    if (notification.FullName != null || notification.Email != null || notification.Picture != null)
+    {
+      await _actorService.UpdateAsync(user, cancellationToken);
+    }
   }
 }

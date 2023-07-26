@@ -32,6 +32,19 @@ public abstract record AggregateEntity
 
   public long Version { get; private set; }
 
+  public virtual void SetActor(string id, string json)
+  {
+    if (CreatedById == id)
+    {
+      CreatedBy = json;
+    }
+
+    if (UpdatedById == id)
+    {
+      UpdatedBy = json;
+    }
+  }
+
   protected void SetVersion(DomainEvent change) => Version = change.Version;
 
   protected void Update(DomainEvent change, ActorEntity actor)
