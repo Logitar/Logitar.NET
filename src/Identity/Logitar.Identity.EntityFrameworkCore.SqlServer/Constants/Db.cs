@@ -20,6 +20,7 @@ public static class Db
 
     public static readonly ColumnId AggregateId = new(nameof(SessionEntity.AggregateId), Table);
     public static readonly ColumnId IsActive = new(nameof(SessionEntity.IsActive), Table);
+    public static readonly ColumnId IsPersistent = new(nameof(SessionEntity.IsPersistent), Table);
     public static readonly ColumnId UserId = new(nameof(SessionEntity.UserId), Table);
   }
 

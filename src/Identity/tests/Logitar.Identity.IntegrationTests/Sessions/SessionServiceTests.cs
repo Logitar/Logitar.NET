@@ -1,4 +1,6 @@
 ﻿using Logitar.Identity.Core;
+using Logitar.Identity.Core.Models;
+using Logitar.Identity.Core.Payloads;
 using Logitar.Identity.Core.Sessions;
 using Logitar.Identity.Core.Sessions.Models;
 using Logitar.Identity.Core.Sessions.Payloads;
@@ -100,6 +102,24 @@ public class SessionServiceTests : IntegrationTestingBase
     Assert.Equal(_user.ToString(), exception.User);
   }
 
+  [Fact(DisplayName = "ReadAsync: it should read the correct session.")]
+  public async Task ReadAsync_it_should_read_the_correct_session()
+  {
+    SessionAggregate aggregate = _user.SignIn(_userSettings.Value);
+    await _sessionRepository.SaveAsync(aggregate);
+
+    Session? session = await _sessionService.ReadAsync(id: aggregate.Id.Value, cancellationToken: CancellationToken);
+    Assert.NotNull(session);
+    Assert.Equal(aggregate.Id.Value, session.Id);
+  }
+
+  [Fact(DisplayName = "ReadAsync: it should return null when session is not found.")]
+  public async Task ReadAsync_it_should_return_null_when_session_is_not_found()
+  {
+    Session? session = await _sessionService.ReadAsync(id: Guid.Empty.ToString(), cancellationToken: CancellationToken);
+    Assert.Null(session);
+  }
+
   [Fact(DisplayName = "RenewAsync: it should renew the correct session.")]
   public async Task RenewAsync_it_should_renew_the_correct_session()
   {
@@ -195,6 +215,57 @@ public class SessionServiceTests : IntegrationTestingBase
     var exception = await Assert.ThrowsAsync<SessionIsNotActiveException>(
       async () => await _sessionService.RenewAsync(payload, CancellationToken));
     Assert.Equal(session.ToString(), exception.Session);
+  }
+
+  [Fact(DisplayName = "SearchAsync: it should return the correct search results.")]
+  public async Task SearchAsync_it_should_return_the_correct_search_results()
+  {
+    UserSettings userSettings = _userSettings.Value;
+    string tenantId = Guid.NewGuid().ToString();
+
+    UserAggregate user = new(userSettings.UniqueNameSettings, "admin", tenantId)
+    {
+      Phone = new PhoneNumber("+15149322582", countryCode: "CA", extension: "4232", isVerified: true)
+    };
+    await _userRepository.SaveAsync(user);
+
+    SessionAggregate session = _user.SignIn(userSettings, isPersistent: true);
+    SessionAggregate session1 = user.SignIn(userSettings, isPersistent: true);
+    SessionAggregate session2 = user.SignIn(userSettings, isPersistent: true);
+    SessionAggregate session3 = user.SignIn(userSettings, isPersistent: true);
+    SessionAggregate notPersistent = user.SignIn(userSettings, isPersistent: false);
+    SessionAggregate notActive = user.SignIn(userSettings, isPersistent: true);
+    notActive.SignOut();
+    SessionAggregate[] sessions = new[] { session, session1, session2, session3, notPersistent, notActive };
+    await _sessionRepository.SaveAsync(sessions);
+
+    SessionAggregate other = user.SignIn(userSettings, isPersistent: true);
+    await _sessionRepository.SaveAsync(session);
+
+    SearchSessionPayload payload = new()
+    {
+      IsPersistent = true,
+      IsActive = true,
+      Sort = new[]
+      {
+        new SessionSortOption((SessionSort)(-1)),
+        new SessionSortOption(SessionSort.UpdatedOn, isDescending: true)
+      },
+      Skip = 1,
+      Limit = -10
+    };
+    payload.Id.Operator = SearchOperator.Or;
+    payload.Id.Terms = sessions.Select(session => new SearchTerm(session.Id.Value));
+    payload.Search.Terms = new[] { new SearchTerm("%ADMIN%") };
+    payload.TenantId.Terms = new[] { new SearchTerm(tenantId) };
+    payload.UserId.Operator = (SearchOperator)(-1);
+    payload.UserId.Terms = new[] { new SearchTerm(_user.Id.Value) };
+
+    SearchResults<Session> results = await _sessionService.SearchAsync(payload, CancellationToken);
+    Assert.Equal(3, results.Total);
+    Assert.Equal(2, results.Items.Count());
+    Assert.Equal(session2.Id.Value, results.Items.ElementAt(0).Id);
+    Assert.Equal(session1.Id.Value, results.Items.ElementAt(1).Id);
   }
 
   [Fact(DisplayName = "SignInAsync: it should sign in the correct user using EmailAddress.")]

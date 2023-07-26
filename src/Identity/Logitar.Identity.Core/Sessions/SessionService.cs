@@ -1,4 +1,5 @@
 ﻿using Logitar.EventSourcing;
+using Logitar.Identity.Core.Models;
 using Logitar.Identity.Core.Sessions.Models;
 using Logitar.Identity.Core.Sessions.Payloads;
 using Logitar.Identity.Domain;
@@ -34,6 +35,27 @@ public class SessionService : ISessionService
     return await SignInAsync(user, password: null, payload.IsPersistent, cancellationToken);
   }
 
+  public virtual async Task<Session?> ReadAsync(string? id, CancellationToken cancellationToken)
+  {
+    Dictionary<string, Session> sessions = new(capacity: 1);
+
+    if (id != null)
+    {
+      Session? session = await _sessionQuerier.ReadAsync(id, cancellationToken);
+      if (session != null)
+      {
+        sessions[session.Id] = session;
+      }
+    }
+
+    if (sessions.Count > 1)
+    {
+      throw new TooManyResultsException<Session>(expected: 1, actual: sessions.Count);
+    }
+
+    return sessions.Values.SingleOrDefault();
+  }
+
   public virtual async Task<Session> RenewAsync(RenewPayload payload, CancellationToken cancellationToken)
   {
     RefreshToken refreshToken;
@@ -60,6 +82,11 @@ public class SessionService : ISessionService
     }
 
     return result;
+  }
+
+  public virtual async Task<SearchResults<Session>> SearchAsync(SearchSessionPayload payload, CancellationToken cancellationToken)
+  {
+    return await _sessionQuerier.SearchAsync(payload, cancellationToken);
   }
 
   public virtual async Task<Session> SignInAsync(SignInPayload payload, CancellationToken cancellationToken)
