@@ -100,6 +100,24 @@ public class SessionServiceTests : IntegrationTestingBase
     Assert.Equal(_user.ToString(), exception.User);
   }
 
+  [Fact(DisplayName = "ReadAsync: it should read the correct session.")]
+  public async Task ReadAsync_it_should_read_the_correct_session()
+  {
+    SessionAggregate aggregate = _user.SignIn(_userSettings.Value);
+    await _sessionRepository.SaveAsync(aggregate);
+
+    Session? session = await _sessionService.ReadAsync(id: aggregate.Id.Value, cancellationToken: CancellationToken);
+    Assert.NotNull(session);
+    Assert.Equal(aggregate.Id.Value, session.Id);
+  }
+
+  [Fact(DisplayName = "ReadAsync: it should return null when session is not found.")]
+  public async Task ReadAsync_it_should_return_null_when_session_is_not_found()
+  {
+    Session? session = await _sessionService.ReadAsync(id: Guid.Empty.ToString(), cancellationToken: CancellationToken);
+    Assert.Null(session);
+  }
+
   [Fact(DisplayName = "RenewAsync: it should renew the correct session.")]
   public async Task RenewAsync_it_should_renew_the_correct_session()
   {
