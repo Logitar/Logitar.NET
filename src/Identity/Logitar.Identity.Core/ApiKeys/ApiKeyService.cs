@@ -16,7 +16,7 @@ public class ApiKeyService : IApiKeyService
     _apiKeyRepository = apiKeyRepository;
   }
 
-  public async Task<ApiKey> CreateAsync(CreateApiKeyPayload payload, CancellationToken cancellationToken)
+  public virtual async Task<ApiKey> CreateAsync(CreateApiKeyPayload payload, CancellationToken cancellationToken)
   {
     ApiKeyAggregate apiKey = new(payload.Title, payload.TenantId)
     {
@@ -35,7 +35,7 @@ public class ApiKeyService : IApiKeyService
     return result;
   }
 
-  public async Task<ApiKey?> DeleteAsync(string id, CancellationToken cancellationToken)
+  public virtual async Task<ApiKey?> DeleteAsync(string id, CancellationToken cancellationToken)
   {
 
     AggregateId apiKeyId = id.GetAggregateId(nameof(id));
@@ -51,5 +51,26 @@ public class ApiKeyService : IApiKeyService
     await _apiKeyRepository.SaveAsync(apiKey, cancellationToken);
 
     return result;
+  }
+
+  public virtual async Task<ApiKey?> ReadAsync(string? id, CancellationToken cancellationToken)
+  {
+    Dictionary<string, ApiKey> apiKeys = new(capacity: 1);
+
+    if (id != null)
+    {
+      ApiKey? apiKey = await _apiKeyQuerier.ReadAsync(id, cancellationToken);
+      if (apiKey != null)
+      {
+        apiKeys[apiKey.Id] = apiKey;
+      }
+    }
+
+    if (apiKeys.Count > 1)
+    {
+      throw new TooManyResultsException<ApiKey>(expected: 1, actual: apiKeys.Count);
+    }
+
+    return apiKeys.Values.SingleOrDefault();
   }
 }

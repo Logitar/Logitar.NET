@@ -67,6 +67,21 @@ public class ApiKeyServiceTests : IntegrationTestingBase
     Assert.Null(apiKey);
   }
 
+  [Fact(DisplayName = "ReadAsync: it should read the correct API key.")]
+  public async Task ReadAsync_it_should_read_the_correct_api_key()
+  {
+    ApiKey? apiKey = await _apiKeyService.ReadAsync(id: _apiKey.Id.Value, cancellationToken: CancellationToken);
+    Assert.NotNull(apiKey);
+    Assert.Equal(_apiKey.Id.Value, apiKey.Id);
+  }
+
+  [Fact(DisplayName = "ReadAsync: it should return null when API key is not found.")]
+  public async Task ReadAsync_it_should_return_null_when_api_key_is_not_found()
+  {
+    ApiKey? apiKey = await _apiKeyService.ReadAsync(id: Guid.Empty.ToString(), cancellationToken: CancellationToken);
+    Assert.Null(apiKey);
+  }
+
   public override async Task InitializeAsync()
   {
     await base.InitializeAsync();
