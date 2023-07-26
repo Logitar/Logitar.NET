@@ -17,12 +17,6 @@ public class UserUpdatedEventHandler : INotificationHandler<UserUpdatedEvent>
     _context = context;
   }
 
-  /// <summary>
-  /// TODO(fpion): should be idempotent
-  /// </summary>
-  /// <param name="notification"></param>
-  /// <param name="cancellationToken"></param>
-  /// <returns></returns>
   public async Task Handle(UserUpdatedEvent notification, CancellationToken cancellationToken)
   {
     ActorEntity actor = await _actorService.FindAsync(notification, cancellationToken);

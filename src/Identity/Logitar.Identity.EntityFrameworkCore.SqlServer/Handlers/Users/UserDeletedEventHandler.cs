@@ -14,17 +14,14 @@ public class UserDeletedEventHandler : INotificationHandler<UserDeletedEvent>
     _context = context;
   }
 
-  /// <summary>
-  /// TODO(fpion): should be idempotent
-  /// </summary>
-  /// <param name="notification"></param>
-  /// <param name="cancellationToken"></param>
-  /// <returns></returns>
   public async Task Handle(UserDeletedEvent notification, CancellationToken cancellationToken)
   {
-    UserEntity user = await _context.Users
-      .SingleOrDefaultAsync(x => x.AggregateId == notification.AggregateId.Value, cancellationToken)
-      ?? throw new EntityNotFoundException<UserEntity>(notification.AggregateId.Value);
+    UserEntity? user = await _context.Users
+      .SingleOrDefaultAsync(x => x.AggregateId == notification.AggregateId.Value, cancellationToken);
+    if (user == null)
+    {
+      return;
+    }
 
     _context.Users.Remove(user);
     await _context.SaveChangesAsync(cancellationToken);
