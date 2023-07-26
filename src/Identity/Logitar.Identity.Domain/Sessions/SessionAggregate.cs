@@ -42,6 +42,8 @@ public class SessionAggregate : AggregateRoot
 
   public byte[]? Secret { get; private set; }
 
+  public void Delete() => ApplyChange(new SessionDeletedEvent());
+
   public void Renew(byte[] secret)
   {
     if (!IsActive)

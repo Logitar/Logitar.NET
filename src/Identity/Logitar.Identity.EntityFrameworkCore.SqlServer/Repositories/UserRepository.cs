@@ -27,8 +27,8 @@ public class UserRepository : IdentityRepository, IUserRepository
     string uniqueNameNormalized = uniqueName.Trim().ToUpper();
 
     IQuery query = SqlServerQueryBuilder.From(Db.Events.Table)
-      .Join(new Join(Db.Users.AggregateId, Db.Events.AggregateId,
-        new OperatorCondition(Db.Events.AggregateType, Operators.IsEqualTo(_aggregateType)))
+      .Join(Db.Users.AggregateId, Db.Events.AggregateId,
+        new OperatorCondition(Db.Events.AggregateType, Operators.IsEqualTo(_aggregateType))
       )
       .WhereAnd(
         new OperatorCondition(Db.Users.TenantId, tenantId == null ? Operators.IsNull() : Operators.IsEqualTo(tenantId)),
@@ -50,8 +50,8 @@ public class UserRepository : IdentityRepository, IUserRepository
     string emailAddressNormalized = email.Address.ToUpper();
 
     IQuery query = SqlServerQueryBuilder.From(Db.Events.Table)
-      .Join(new Join(Db.Users.AggregateId, Db.Events.AggregateId,
-        new OperatorCondition(Db.Events.AggregateType, Operators.IsEqualTo(_aggregateType)))
+      .Join(Db.Users.AggregateId, Db.Events.AggregateId,
+        new OperatorCondition(Db.Events.AggregateType, Operators.IsEqualTo(_aggregateType))
       )
       .WhereAnd(
         new OperatorCondition(Db.Users.TenantId, tenantId == null ? Operators.IsNull() : Operators.IsEqualTo(tenantId)),

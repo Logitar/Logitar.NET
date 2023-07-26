@@ -20,6 +20,7 @@ public static class Db
 
     public static readonly ColumnId AggregateId = new(nameof(SessionEntity.AggregateId), Table);
     public static readonly ColumnId IsActive = new(nameof(SessionEntity.IsActive), Table);
+    public static readonly ColumnId UserId = new(nameof(SessionEntity.UserId), Table);
   }
 
   public static class Users
@@ -38,5 +39,6 @@ public static class Db
     public static readonly ColumnId TenantId = new(nameof(UserEntity.TenantId), Table);
     public static readonly ColumnId UniqueName = new(nameof(UserEntity.UniqueName), Table);
     public static readonly ColumnId UniqueNameNormalized = new(nameof(UserEntity.UniqueNameNormalized), Table);
+    public static readonly ColumnId UserId = new(nameof(UserEntity.UserId), Table);
   }
 }
