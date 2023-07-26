@@ -136,6 +136,36 @@ public record UserEntity : AggregateEntity
     IsDisabled = false;
   }
 
+  public override void SetActor(string id, string json)
+  {
+    base.SetActor(id, json);
+
+    if (PasswordChangedById == id)
+    {
+      PasswordChangedBy = json;
+    }
+
+    if (DisabledById == id)
+    {
+      DisabledBy = json;
+    }
+
+    if (AddressVerifiedById == id)
+    {
+      AddressVerifiedBy = json;
+    }
+
+    if (EmailVerifiedById == id)
+    {
+      EmailVerifiedBy = json;
+    }
+
+    if (PhoneVerifiedById == id)
+    {
+      PhoneVerifiedBy = json;
+    }
+  }
+
   public void SignIn(UserSignedInEvent signedIn)
   {
     SetVersion(signedIn);

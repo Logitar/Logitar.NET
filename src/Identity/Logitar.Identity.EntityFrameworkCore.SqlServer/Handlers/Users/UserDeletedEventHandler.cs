@@ -1,4 +1,5 @@
 ﻿using Logitar.Identity.Domain.Users.Events;
+using Logitar.Identity.EntityFrameworkCore.SqlServer.Actors;
 using Logitar.Identity.EntityFrameworkCore.SqlServer.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -7,10 +8,12 @@ namespace Logitar.Identity.EntityFrameworkCore.SqlServer.Handlers.Users;
 
 public class UserDeletedEventHandler : INotificationHandler<UserDeletedEvent>
 {
+  private readonly IActorService _actorService;
   private readonly IdentityContext _context;
 
-  public UserDeletedEventHandler(IdentityContext context)
+  public UserDeletedEventHandler(IActorService actorService, IdentityContext context)
   {
+    _actorService = actorService;
     _context = context;
   }
 
@@ -25,5 +28,7 @@ public class UserDeletedEventHandler : INotificationHandler<UserDeletedEvent>
 
     _context.Users.Remove(user);
     await _context.SaveChangesAsync(cancellationToken);
+
+    await _actorService.DeleteAsync(user, cancellationToken);
   }
 }

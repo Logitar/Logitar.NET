@@ -44,6 +44,16 @@ public record SessionEntity : AggregateEntity
     Secret = renewed.Secret.ToString();
   }
 
+  public override void SetActor(string id, string json)
+  {
+    base.SetActor(id, json);
+
+    if (SignedOutById == id)
+    {
+      SignedOutBy = json;
+    }
+  }
+
   public void SignOut(SessionSignedOutEvent signedOut, ActorEntity actor)
   {
     SetVersion(signedOut);

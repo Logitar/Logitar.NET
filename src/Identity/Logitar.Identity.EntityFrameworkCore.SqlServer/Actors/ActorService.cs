@@ -34,4 +34,31 @@ public class ActorService : IActorService
 
     throw new ActorNotFoundException(change.ActorId);
   }
+
+  public async Task DeleteAsync(UserEntity user, CancellationToken cancellationToken)
+    => await UpdateAsync(user.AggregateId, ActorEntity.From(user, isDeleted: true), cancellationToken);
+  public async Task UpdateAsync(UserEntity user, CancellationToken cancellationToken)
+    => await UpdateAsync(user.AggregateId, ActorEntity.From(user), cancellationToken);
+  private async Task UpdateAsync(string id, ActorEntity actor, CancellationToken cancellationToken)
+  {
+    string serialized = actor.Serialize();
+
+    SessionEntity[] sessions = await _context.Sessions
+      .Where(x => x.CreatedById == id || x.UpdatedById == id || x.SignedOutById == id)
+      .ToArrayAsync(cancellationToken);
+    foreach (SessionEntity session in sessions)
+    {
+      session.SetActor(id, serialized);
+    }
+
+    UserEntity[] users = await _context.Users
+      .Where(x => x.CreatedById == id || x.UpdatedById == id || x.PasswordChangedById == id
+        || x.DisabledById == id || x.AddressVerifiedById == id || x.EmailVerifiedById == id
+        || x.PhoneVerifiedById == id)
+      .ToArrayAsync(cancellationToken);
+    foreach (UserEntity user in users)
+    {
+      user.SetActor(id, serialized);
+    }
+  }
 }
