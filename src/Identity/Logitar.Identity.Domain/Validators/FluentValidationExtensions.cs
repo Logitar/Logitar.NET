@@ -23,6 +23,14 @@ public static class FluentValidationExtensions
       .WithMessage($"'{{PropertyName}}' must be one of the following: {string.Join(", ", PostalAddressHelper.SupportedCountries)}");
   }
 
+  public static IRuleBuilderOptions<T, DateTime> Future<T>(this IRuleBuilder<T, DateTime> ruleBuilder, DateTime? moment = null)
+  {
+    return ruleBuilder.Must(d => BeInTheFuture(d, moment))
+      .WithErrorCode("FutureValidator")
+      .WithMessage("'{PropertyName}' must be in the future.");
+  }
+  internal static bool BeInTheFuture(DateTime dateTime, DateTime? moment) => dateTime > (moment ?? DateTime.UtcNow);
+
   public static IRuleBuilderOptions<T, CultureInfo?> Locale<T>(this IRuleBuilder<T, CultureInfo?> ruleBuilder)
   {
     return ruleBuilder.Must(BeAValidLocale)

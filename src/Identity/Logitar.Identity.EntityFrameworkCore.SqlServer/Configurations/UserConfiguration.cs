@@ -13,6 +13,7 @@ public class UserConfiguration : AggregateConfiguration<UserEntity>, IEntityType
 
     builder.ToTable(nameof(IdentityContext.Users));
     builder.HasKey(x => x.UserId);
+
     builder.HasIndex(x => x.TenantId);
     builder.HasIndex(x => x.UniqueName);
     builder.HasIndex(x => x.HasPassword);

@@ -1,4 +1,5 @@
-﻿using Logitar.Identity.Core.Sessions;
+﻿using Logitar.Identity.Core.ApiKeys;
+using Logitar.Identity.Core.Sessions;
 using Logitar.Identity.Core.Sessions.Commands;
 using Logitar.Identity.Core.Tokens;
 using Logitar.Identity.Core.Users;
@@ -13,6 +14,7 @@ public static class DependencyInjectionExtensions
     JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
     return services
+      .AddTransient<IApiKeyService, ApiKeyService>()
       .AddTransient<IDeleteSessionsCommand, DeleteSessionsCommandHandler>()
       .AddTransient<ISessionService, SessionService>()
       .AddTransient<ITokenManager, JsonWebTokenManager>()
