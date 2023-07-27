@@ -1,6 +1,7 @@
 ﻿using Logitar.EventSourcing;
 using Logitar.Identity.Core.ApiKeys.Models;
 using Logitar.Identity.Core.ApiKeys.Payloads;
+using Logitar.Identity.Core.Models;
 using Logitar.Identity.Domain.ApiKeys;
 
 namespace Logitar.Identity.Core.ApiKeys;
@@ -72,5 +73,10 @@ public class ApiKeyService : IApiKeyService
     }
 
     return apiKeys.Values.SingleOrDefault();
+  }
+
+  public virtual async Task<SearchResults<ApiKey>> SearchAsync(SearchApiKeyPayload payload, CancellationToken cancellationToken)
+  {
+    return await _apiKeyQuerier.SearchAsync(payload, cancellationToken);
   }
 }

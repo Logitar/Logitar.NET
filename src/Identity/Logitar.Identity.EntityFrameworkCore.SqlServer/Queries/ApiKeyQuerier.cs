@@ -1,7 +1,12 @@
 ﻿using AutoMapper;
+using Logitar.Data;
+using Logitar.Data.SqlServer;
 using Logitar.Identity.Core.ApiKeys;
 using Logitar.Identity.Core.ApiKeys.Models;
+using Logitar.Identity.Core.ApiKeys.Payloads;
+using Logitar.Identity.Core.Models;
 using Logitar.Identity.Domain.ApiKeys;
+using Logitar.Identity.EntityFrameworkCore.SqlServer.Constants;
 using Logitar.Identity.EntityFrameworkCore.SqlServer.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,5 +34,57 @@ public class ApiKeyQuerier : IApiKeyQuerier
       .SingleOrDefaultAsync(x => x.AggregateId == id, cancellationToken);
 
     return _mapper.Map<ApiKey?>(apiKey);
+  }
+
+  public async Task<SearchResults<ApiKey>> SearchAsync(SearchApiKeyPayload payload, CancellationToken cancellationToken)
+  {
+    IQueryBuilder builder = SqlServerQueryBuilder.From(Db.ApiKeys.Table)
+      .SelectAll(Db.ApiKeys.Table)
+      .ApplyTextSearch(payload.Id, Db.ApiKeys.AggregateId)
+      .ApplyTextSearch(payload.Search, Db.ApiKeys.Title)
+      .ApplyTextSearch(payload.TenantId, Db.ApiKeys.TenantId);
+
+    DateTime now = DateTime.UtcNow;
+    switch (payload.IsExpired)
+    {
+      case true:
+        builder = builder.Where(new OperatorCondition(Db.ApiKeys.ExpiresOn, Operators.IsLessThanOrEqualTo(now)));
+        break;
+      case false:
+        builder = builder.WhereOr(new OperatorCondition(Db.ApiKeys.ExpiresOn, Operators.IsNull()),
+          new OperatorCondition(Db.ApiKeys.ExpiresOn, Operators.IsGreaterThan(now)));
+        break;
+    }
+
+    IQueryable<ApiKeyEntity> query = _apiKeys.FromQuery(builder.Build())
+      .AsNoTracking();
+
+    long total = await query.LongCountAsync(cancellationToken);
+
+    IOrderedQueryable<ApiKeyEntity>? ordered = null;
+    foreach (ApiKeySortOption sort in payload.Sort)
+    {
+      switch (sort.Field)
+      {
+        case ApiKeySort.ExpiresOn:
+          ordered = (ordered == null)
+            ? (sort.IsDescending ? query.OrderByDescending(x => x.ExpiresOn) : query.OrderBy(x => x.ExpiresOn))
+            : (sort.IsDescending ? ordered.ThenByDescending(x => x.ExpiresOn) : ordered.ThenBy(x => x.ExpiresOn));
+          break;
+        case ApiKeySort.Title:
+          ordered = (ordered == null)
+            ? (sort.IsDescending ? query.OrderByDescending(x => x.Title) : query.OrderBy(x => x.Title))
+            : (sort.IsDescending ? ordered.ThenByDescending(x => x.Title) : ordered.ThenBy(x => x.Title));
+          break;
+      }
+    }
+    query = ordered ?? query;
+
+    query = query.ApplyPaging(payload);
+
+    ApiKeyEntity[] users = await query.ToArrayAsync(cancellationToken);
+    IEnumerable<ApiKey> items = _mapper.Map<IEnumerable<ApiKey>>(users);
+
+    return new SearchResults<ApiKey>(items, total);
   }
 }
