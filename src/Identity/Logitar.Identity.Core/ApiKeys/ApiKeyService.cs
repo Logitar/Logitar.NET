@@ -38,7 +38,6 @@ public class ApiKeyService : IApiKeyService
 
   public virtual async Task<ApiKey?> DeleteAsync(string id, CancellationToken cancellationToken)
   {
-
     AggregateId apiKeyId = id.GetAggregateId(nameof(id));
     ApiKeyAggregate? apiKey = await _apiKeyRepository.LoadAsync(apiKeyId, cancellationToken);
     if (apiKey == null)
@@ -75,8 +74,61 @@ public class ApiKeyService : IApiKeyService
     return apiKeys.Values.SingleOrDefault();
   }
 
+  public virtual async Task<ApiKey?> ReplaceAsync(string id, ReplaceApiKeyPayload payload, CancellationToken cancellationToken)
+  {
+    AggregateId apiKeyId = id.GetAggregateId(nameof(id));
+    ApiKeyAggregate? apiKey = await _apiKeyRepository.LoadAsync(apiKeyId, cancellationToken);
+    if (apiKey == null)
+    {
+      return null;
+    }
+
+    if (payload.Title != null)
+    {
+      apiKey.Title = payload.Title;
+    }
+
+    apiKey.Description = payload.Description;
+
+    if (payload.ExpiresOn.HasValue)
+    {
+      apiKey.ExpiresOn = payload.ExpiresOn.Value;
+    }
+
+    await _apiKeyRepository.SaveAsync(apiKey, cancellationToken);
+
+    return await _apiKeyQuerier.ReadAsync(apiKey, cancellationToken);
+  }
+
   public virtual async Task<SearchResults<ApiKey>> SearchAsync(SearchApiKeyPayload payload, CancellationToken cancellationToken)
   {
     return await _apiKeyQuerier.SearchAsync(payload, cancellationToken);
+  }
+
+  public virtual async Task<ApiKey?> UpdateAsync(string id, UpdateApiKeyPayload payload, CancellationToken cancellationToken)
+  {
+    AggregateId apiKeyId = id.GetAggregateId(nameof(id));
+    ApiKeyAggregate? apiKey = await _apiKeyRepository.LoadAsync(apiKeyId, cancellationToken);
+    if (apiKey == null)
+    {
+      return null;
+    }
+
+    if (payload.Title != null)
+    {
+      apiKey.Title = payload.Title;
+    }
+    if (payload.Description != null)
+    {
+      apiKey.Description = payload.Description.Value;
+    }
+    if (payload.ExpiresOn.HasValue)
+    {
+      apiKey.ExpiresOn = payload.ExpiresOn.Value;
+    }
+
+    await _apiKeyRepository.SaveAsync(apiKey, cancellationToken);
+
+    return await _apiKeyQuerier.ReadAsync(apiKey, cancellationToken);
   }
 }

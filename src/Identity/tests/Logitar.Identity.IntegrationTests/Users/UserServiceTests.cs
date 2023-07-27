@@ -386,6 +386,102 @@ public class UserServiceTests : IntegrationTestingBase
     Assert.Equal(2, exception.Actual);
   }
 
+  [Fact(DisplayName = "ReplaceAsync: it should replace the correct user.")]
+  public async Task ReplaceAsync_it_should_replace_the_correct_user()
+  {
+    bool isDisabled = _user.IsDisabled;
+
+    ReplaceUserPayload payload = new()
+    {
+      UniqueName = $"{_user.UniqueName}2",
+      Phone = new UpdatePhonePayload
+      {
+        CountryCode = "CA",
+        Number = "+15149322582",
+        Extension = "4232",
+        IsVerified = true
+      },
+      FirstName = Faker.Person.FirstName,
+      MiddleName = "Edward",
+      LastName = Faker.Person.LastName,
+      Nickname = "Eddy",
+      Birthdate = DateTime.UtcNow.AddYears(-25),
+      Gender = Faker.Person.Gender.ToString(),
+      Locale = "en-US",
+      TimeZone = "America/New_York",
+      Picture = "https://www.test.com/assets/img/profile.jpg",
+      Profile = "   ",
+      Website = "https://www.test.com/"
+    };
+    User? user = await _userService.ReplaceAsync(_user.Id.Value, payload, CancellationToken);
+    Assert.NotNull(user);
+    Assert.Equal(payload.UniqueName, user.UniqueName);
+    Assert.False(user.HasPassword);
+    Assert.Equal(isDisabled, user.IsDisabled);
+    Assert.Null(user.Address);
+    Assert.Null(user.Email);
+    Assert.Equal(payload.Phone?.FormatToE164(), user.Phone?.FormatToE164());
+    Assert.True(user.IsConfirmed);
+    Assert.Equal(payload.FirstName, user.FirstName);
+    Assert.Equal(payload.MiddleName, user.MiddleName);
+    Assert.Equal(payload.LastName, user.LastName);
+    Assert.Equal(payload.Nickname, user.Nickname);
+    Assert.Equal(payload.Birthdate, user.Birthdate);
+    Assert.Equal(payload.Gender.ToLower(), user.Gender);
+    Assert.Equal(payload.Locale, user.Locale);
+    Assert.Equal(payload.TimeZone, user.TimeZone);
+    Assert.Equal(payload.Picture, user.Picture);
+    Assert.Null(user.Profile);
+    Assert.Equal(payload.Website, user.Website);
+  }
+
+  [Fact(DisplayName = "ReplaceAsync: it should return null when user is not found.")]
+  public async Task ReplaceAsync_it_should_return_null_when_user_is_not_found()
+  {
+    ReplaceUserPayload payload = new();
+    User? user = await _userService.ReplaceAsync(Guid.Empty.ToString(), payload, CancellationToken);
+    Assert.Null(user);
+  }
+
+  [Fact(DisplayName = "ReplaceAsync: it should throw EmailAddressAlreadyUsedException when unique name is already used.")]
+  public async Task ReplaceAsync_it_should_throw_EmailAddressAlreadyUsedException_when_unique_name_is_already_used()
+  {
+    UserAggregate other = new(_userSettings.Value.UniqueNameSettings, "test", _user.TenantId);
+    await _userRepository.SaveAsync(other);
+
+    Assert.NotNull(_user.Email);
+    ReplaceUserPayload payload = new()
+    {
+      Email = new UpdateEmailPayload
+      {
+        Address = _user.Email.Address,
+        IsVerified = _user.Email.IsVerified
+      }
+    };
+    var exception = await Assert.ThrowsAsync<EmailAddressAlreadyUsedException>(
+      async () => await _userService.ReplaceAsync(other.Id.Value, payload, CancellationToken));
+    Assert.Equal(other.TenantId, exception.TenantId);
+    Assert.Equal(payload.Email.Address, exception.EmailAddress);
+    Assert.Equal("Email", exception.PropertyName);
+  }
+
+  [Fact(DisplayName = "ReplaceAsync: it should throw UniqueNameAlreadyUsedException when unique name is already used.")]
+  public async Task ReplaceAsync_replace_it_should_throw_UniqueNameAlreadyUsedException_when_unique_name_is_already_used()
+  {
+    UserAggregate other = new(_userSettings.Value.UniqueNameSettings, "test", _user.TenantId);
+    await _userRepository.SaveAsync(other);
+
+    ReplaceUserPayload payload = new()
+    {
+      UniqueName = _user.UniqueName
+    };
+    var exception = await Assert.ThrowsAsync<UniqueNameAlreadyUsedException<UserAggregate>>(
+      async () => await _userService.ReplaceAsync(other.Id.Value, payload, CancellationToken));
+    Assert.Equal(other.TenantId, exception.TenantId);
+    Assert.Equal(payload.UniqueName, exception.UniqueName);
+    Assert.Equal("UniqueName", exception.PropertyName);
+  }
+
   [Fact(DisplayName = "SearchAsync: it should return the correct search results.")]
   public async Task SearchAsync_it_should_return_the_correct_search_results()
   {
@@ -453,102 +549,6 @@ public class UserServiceTests : IntegrationTestingBase
       .Where(x => x.User!.AggregateId == _user.Id.Value && x.IsActive)
       .ToArrayAsync();
     Assert.Empty(sessions);
-  }
-
-  [Fact(DisplayName = "UpdateAsync (replace): it should throw EmailAddressAlreadyUsedException when unique name is already used.")]
-  public async Task UpdateAsync_replace_it_should_throw_EmailAddressAlreadyUsedException_when_unique_name_is_already_used()
-  {
-    UserAggregate other = new(_userSettings.Value.UniqueNameSettings, "test", _user.TenantId);
-    await _userRepository.SaveAsync(other);
-
-    Assert.NotNull(_user.Email);
-    ReplaceUserPayload payload = new()
-    {
-      Email = new UpdateEmailPayload
-      {
-        Address = _user.Email.Address,
-        IsVerified = _user.Email.IsVerified
-      }
-    };
-    var exception = await Assert.ThrowsAsync<EmailAddressAlreadyUsedException>(
-      async () => await _userService.UpdateAsync(other.Id.Value, payload, CancellationToken));
-    Assert.Equal(other.TenantId, exception.TenantId);
-    Assert.Equal(payload.Email.Address, exception.EmailAddress);
-    Assert.Equal("Email", exception.PropertyName);
-  }
-
-  [Fact(DisplayName = "UpdateAsync (replace): it should throw UniqueNameAlreadyUsedException when unique name is already used.")]
-  public async Task UpdateAsync_replace_it_should_throw_UniqueNameAlreadyUsedException_when_unique_name_is_already_used()
-  {
-    UserAggregate other = new(_userSettings.Value.UniqueNameSettings, "test", _user.TenantId);
-    await _userRepository.SaveAsync(other);
-
-    ReplaceUserPayload payload = new()
-    {
-      UniqueName = _user.UniqueName
-    };
-    var exception = await Assert.ThrowsAsync<UniqueNameAlreadyUsedException<UserAggregate>>(
-      async () => await _userService.UpdateAsync(other.Id.Value, payload, CancellationToken));
-    Assert.Equal(other.TenantId, exception.TenantId);
-    Assert.Equal(payload.UniqueName, exception.UniqueName);
-    Assert.Equal("UniqueName", exception.PropertyName);
-  }
-
-  [Fact(DisplayName = "UpdateAsync (replace): it should return null when user is not found.")]
-  public async Task UpdateAsync_replace_it_should_return_null_when_user_is_not_found()
-  {
-    ReplaceUserPayload payload = new();
-    User? user = await _userService.UpdateAsync(Guid.Empty.ToString(), payload, CancellationToken);
-    Assert.Null(user);
-  }
-
-  [Fact(DisplayName = "UpdateAsync (replace): it should update the correct user.")]
-  public async Task UpdateAsync_replace_it_should_udpate_the_correct_user()
-  {
-    bool isDisabled = _user.IsDisabled;
-
-    ReplaceUserPayload payload = new()
-    {
-      UniqueName = $"{_user.UniqueName}2",
-      Phone = new UpdatePhonePayload
-      {
-        CountryCode = "CA",
-        Number = "+15149322582",
-        Extension = "4232",
-        IsVerified = true
-      },
-      FirstName = Faker.Person.FirstName,
-      MiddleName = "Edward",
-      LastName = Faker.Person.LastName,
-      Nickname = "Eddy",
-      Birthdate = DateTime.UtcNow.AddYears(-25),
-      Gender = Faker.Person.Gender.ToString(),
-      Locale = "en-US",
-      TimeZone = "America/New_York",
-      Picture = "https://www.test.com/assets/img/profile.jpg",
-      Profile = "   ",
-      Website = "https://www.test.com/"
-    };
-    User? user = await _userService.UpdateAsync(_user.Id.Value, payload, CancellationToken);
-    Assert.NotNull(user);
-    Assert.Equal(payload.UniqueName, user.UniqueName);
-    Assert.False(user.HasPassword);
-    Assert.Equal(isDisabled, user.IsDisabled);
-    Assert.Null(user.Address);
-    Assert.Null(user.Email);
-    Assert.Equal(payload.Phone?.FormatToE164(), user.Phone?.FormatToE164());
-    Assert.True(user.IsConfirmed);
-    Assert.Equal(payload.FirstName, user.FirstName);
-    Assert.Equal(payload.MiddleName, user.MiddleName);
-    Assert.Equal(payload.LastName, user.LastName);
-    Assert.Equal(payload.Nickname, user.Nickname);
-    Assert.Equal(payload.Birthdate, user.Birthdate);
-    Assert.Equal(payload.Gender.ToLower(), user.Gender);
-    Assert.Equal(payload.Locale, user.Locale);
-    Assert.Equal(payload.TimeZone, user.TimeZone);
-    Assert.Equal(payload.Picture, user.Picture);
-    Assert.Null(user.Profile);
-    Assert.Equal(payload.Website, user.Website);
   }
 
   [Fact(DisplayName = "UpdateAsync: it should return null when user is not found.")]

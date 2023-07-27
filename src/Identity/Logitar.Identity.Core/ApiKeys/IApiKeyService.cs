@@ -9,5 +9,7 @@ public interface IApiKeyService
   Task<ApiKey> CreateAsync(CreateApiKeyPayload payload, CancellationToken cancellationToken = default);
   Task<ApiKey?> DeleteAsync(string id, CancellationToken cancellationToken = default);
   Task<ApiKey?> ReadAsync(string? id = null, CancellationToken cancellationToken = default);
+  Task<ApiKey?> ReplaceAsync(string id, ReplaceApiKeyPayload payload, CancellationToken cancellationToken = default);
   Task<SearchResults<ApiKey>> SearchAsync(SearchApiKeyPayload payload, CancellationToken cancellationToken = default);
+  Task<ApiKey?> UpdateAsync(string id, UpdateApiKeyPayload payload, CancellationToken cancellationToken = default);
 }

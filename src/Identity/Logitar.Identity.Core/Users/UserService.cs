@@ -196,32 +196,7 @@ public class UserService : IUserService
     return users.Values.SingleOrDefault();
   }
 
-  public virtual async Task<SearchResults<User>> SearchAsync(SearchUserPayload payload, CancellationToken cancellationToken)
-  {
-    return await _userQuerier.SearchAsync(payload, cancellationToken);
-  }
-
-  public virtual async Task<User?> SignOutAsync(string id, CancellationToken cancellationToken)
-  {
-    AggregateId userId = id.GetAggregateId(nameof(id));
-    UserAggregate? user = await _userRepository.LoadAsync(userId, cancellationToken);
-    if (user == null)
-    {
-      return null;
-    }
-
-    IEnumerable<SessionAggregate> sessions = await _sessionRepository.LoadActiveAsync(user, cancellationToken);
-    foreach (SessionAggregate session in sessions)
-    {
-      session.SignOut();
-    }
-
-    await _sessionRepository.SaveAsync(sessions, cancellationToken);
-
-    return await _userQuerier.ReadAsync(user, cancellationToken);
-  }
-
-  public virtual async Task<User?> UpdateAsync(string id, ReplaceUserPayload payload, CancellationToken cancellationToken)
+  public virtual async Task<User?> ReplaceAsync(string id, ReplaceUserPayload payload, CancellationToken cancellationToken)
   {
     AggregateId userId = id.GetAggregateId(nameof(id));
     UserAggregate? user = await _userRepository.LoadAsync(userId, cancellationToken);
@@ -297,6 +272,31 @@ public class UserService : IUserService
     user.Website = payload.Website?.GetUri(nameof(payload.Website));
 
     await _userRepository.SaveAsync(user, cancellationToken);
+
+    return await _userQuerier.ReadAsync(user, cancellationToken);
+  }
+
+  public virtual async Task<SearchResults<User>> SearchAsync(SearchUserPayload payload, CancellationToken cancellationToken)
+  {
+    return await _userQuerier.SearchAsync(payload, cancellationToken);
+  }
+
+  public virtual async Task<User?> SignOutAsync(string id, CancellationToken cancellationToken)
+  {
+    AggregateId userId = id.GetAggregateId(nameof(id));
+    UserAggregate? user = await _userRepository.LoadAsync(userId, cancellationToken);
+    if (user == null)
+    {
+      return null;
+    }
+
+    IEnumerable<SessionAggregate> sessions = await _sessionRepository.LoadActiveAsync(user, cancellationToken);
+    foreach (SessionAggregate session in sessions)
+    {
+      session.SignOut();
+    }
+
+    await _sessionRepository.SaveAsync(sessions, cancellationToken);
 
     return await _userQuerier.ReadAsync(user, cancellationToken);
   }
