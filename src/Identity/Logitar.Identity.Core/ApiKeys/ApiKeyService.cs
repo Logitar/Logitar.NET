@@ -2,6 +2,7 @@
 using Logitar.Identity.Core.ApiKeys.Models;
 using Logitar.Identity.Core.ApiKeys.Payloads;
 using Logitar.Identity.Core.Models;
+using Logitar.Identity.Domain;
 using Logitar.Identity.Domain.ApiKeys;
 
 namespace Logitar.Identity.Core.ApiKeys;
@@ -15,6 +16,19 @@ public class ApiKeyService : IApiKeyService
   {
     _apiKeyQuerier = apiKeyQuerier;
     _apiKeyRepository = apiKeyRepository;
+  }
+
+  public virtual async Task<ApiKey> AuthenticateAsync(AuthenticateApiKeyPayload payload, CancellationToken cancellationToken)
+  {
+    AggregateId id = payload.Id.GetAggregateId(nameof(payload.Id));
+    ApiKeyAggregate apiKey = await _apiKeyRepository.LoadAsync(id, cancellationToken)
+      ?? throw new InvalidCredentialsException($"The API key 'Id={payload.Id}' could not be found.");
+
+    apiKey.Authenticate(payload.Secret);
+
+    await _apiKeyRepository.SaveAsync(apiKey, cancellationToken);
+
+    return await _apiKeyQuerier.ReadAsync(apiKey, cancellationToken);
   }
 
   public virtual async Task<ApiKey> CreateAsync(CreateApiKeyPayload payload, CancellationToken cancellationToken)

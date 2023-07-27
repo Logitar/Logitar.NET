@@ -15,7 +15,7 @@ public class SessionAggregate : AggregateRoot
   {
   }
 
-  public SessionAggregate(UserAggregate user, bool isPersistent = false, DateTime? createdOn = null)
+  public SessionAggregate(UserAggregate user, bool isPersistent = false, DateTime? createdOn = null) : base()
   {
     Secret = isPersistent ? RandomNumberGenerator.GetBytes(SecretLength) : null;
 

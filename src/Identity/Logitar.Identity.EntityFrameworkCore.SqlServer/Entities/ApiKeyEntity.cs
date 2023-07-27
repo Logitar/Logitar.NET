@@ -28,6 +28,10 @@ public record ApiKeyEntity : AggregateEntity
   public string? Description { get; private set; }
   public DateTime? ExpiresOn { get; private set; }
 
+  public DateTime? AuthenticatedOn { get; private set; }
+
+  public void Authenticate(ApiKeyAuthenticatedEvent authenticated) => AuthenticatedOn = authenticated.OccurredOn;
+
   public void Update(ApiKeyUpdatedEvent updated, ActorEntity actor)
   {
     base.Update(updated, actor);

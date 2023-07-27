@@ -36,6 +36,44 @@ public class ApiKeyServiceTests : IntegrationTestingBase
     };
   }
 
+  [Fact(DisplayName = "AuthenticateAsync: it authenticates the correct API key.")]
+  public async Task AuthenticateAsync_it_authenticates_the_correct_api_key()
+  {
+    Assert.NotNull(_apiKey.Secret);
+    AuthenticateApiKeyPayload payload = new()
+    {
+      Id = _apiKey.Id.Value,
+      Secret = _apiKey.Secret
+    };
+    ApiKey apiKey = await _apiKeyService.AuthenticateAsync(payload, CancellationToken);
+    Assert.Equal(_apiKey.Id.Value, apiKey.Id);
+  }
+
+  [Fact(DisplayName = "AuthenticateAsync: it should throw InvalidCredentialsException when API key is not found.")]
+  public async Task AuthenticateAsync_it_should_throw_InvalidCredentialsException_when_api_key_is_not_found()
+  {
+    AuthenticateApiKeyPayload payload = new()
+    {
+      Id = Guid.Empty.ToString()
+    };
+    var exception = await Assert.ThrowsAsync<InvalidCredentialsException>(
+      async () => await _apiKeyService.AuthenticateAsync(payload, CancellationToken));
+    Assert.StartsWith($"The API key 'Id={payload.Id}' could not be found.", exception.Message);
+  }
+
+  [Fact(DisplayName = "AuthenticateAsync: it should throw InvalidCredentialsException when secret is not a match.")]
+  public async Task AuthenticateAsync_it_should_throw_InvalidCredentialsException_when_secret_is_not_a_match()
+  {
+    AuthenticateApiKeyPayload payload = new()
+    {
+      Id = _apiKey.Id.Value,
+      Secret = new byte[32]
+    };
+    var exception = await Assert.ThrowsAsync<InvalidCredentialsException>(
+      async () => await _apiKeyService.AuthenticateAsync(payload, CancellationToken));
+    Assert.StartsWith("The specified secret does not match the API key.", exception.Message);
+  }
+
   [Fact(DisplayName = "CreateAsync: it should create the correct API key.")]
   public async Task CreateAsync_it_should_create_the_correct_api_key()
   {

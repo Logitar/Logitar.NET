@@ -20,7 +20,7 @@ public class ApiKeyAggregate : AggregateRoot
   {
   }
 
-  public ApiKeyAggregate(string title, string? tenantId = null)
+  public ApiKeyAggregate(string title, string? tenantId = null) : base()
   {
     Secret = RandomNumberGenerator.GetBytes(SecretLength);
 
@@ -101,7 +101,24 @@ public class ApiKeyAggregate : AggregateRoot
     }
   }
 
+  public DateTime? AuthenticatedOn { get; private set; }
+
   public byte[]? Secret { get; private set; }
+
+  public void Authenticate(byte[] secret)
+  {
+    if (!_secret.IsMatch(secret))
+    {
+      StringBuilder message = new();
+      message.AppendLine("The specified secret does not match the API key.");
+      message.Append("ApiKey: ").AppendLine(ToString());
+      message.Append("Secret: ").AppendLine(Convert.ToBase64String(secret));
+      throw new InvalidCredentialsException(message.ToString());
+    }
+
+    ApplyChange(new ApiKeyAuthenticatedEvent());
+  }
+  protected virtual void Apply(ApiKeyAuthenticatedEvent authenticated) => AuthenticatedOn = authenticated.OccurredOn;
 
   public void Delete() => ApplyChange(new ApiKeyDeletedEvent());
 
