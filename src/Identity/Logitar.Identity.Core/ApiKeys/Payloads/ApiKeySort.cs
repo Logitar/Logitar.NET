@@ -3,5 +3,6 @@
 public enum ApiKeySort
 {
   ExpiresOn,
-  Title
+  Title,
+  UpdatedOn
 }

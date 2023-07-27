@@ -24,6 +24,17 @@ public static class Db
     public static readonly ColumnId AggregateType = new(nameof(EventEntity.AggregateType), Table);
   }
 
+  public static class Roles
+  {
+    public static readonly TableId Table = new(nameof(IdentityContext.Roles));
+
+    public static readonly ColumnId AggregateId = new(nameof(RoleEntity.AggregateId), Table);
+    public static readonly ColumnId DisplayName = new(nameof(RoleEntity.DisplayName), Table);
+    public static readonly ColumnId TenantId = new(nameof(RoleEntity.TenantId), Table);
+    public static readonly ColumnId UniqueName = new(nameof(RoleEntity.UniqueName), Table);
+    public static readonly ColumnId UniqueNameNormalized = new(nameof(RoleEntity.UniqueNameNormalized), Table);
+  }
+
   public static class Sessions
   {
     public static readonly TableId Table = new(nameof(IdentityContext.Sessions));

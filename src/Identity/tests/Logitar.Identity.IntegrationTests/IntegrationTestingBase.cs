@@ -46,6 +46,7 @@ public abstract class IntegrationTestingBase : IAsyncLifetime
 
     await IdentityContext.Database.MigrateAsync();
     await IdentityContext.Database.ExecuteSqlRawAsync("DELETE FROM [dbo].[ApiKeys];");
+    await IdentityContext.Database.ExecuteSqlRawAsync("DELETE FROM [dbo].[Roles];");
     await IdentityContext.Database.ExecuteSqlRawAsync("DELETE FROM [dbo].[Sessions];");
     await IdentityContext.Database.ExecuteSqlRawAsync("DELETE FROM [dbo].[Tokenblacklist];");
     await IdentityContext.Database.ExecuteSqlRawAsync("DELETE FROM [dbo].[Users];");

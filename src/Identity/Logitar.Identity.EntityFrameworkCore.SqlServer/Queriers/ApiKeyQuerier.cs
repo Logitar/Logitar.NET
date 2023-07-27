@@ -10,7 +10,7 @@ using Logitar.Identity.EntityFrameworkCore.SqlServer.Constants;
 using Logitar.Identity.EntityFrameworkCore.SqlServer.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Logitar.Identity.EntityFrameworkCore.SqlServer.Queries;
+namespace Logitar.Identity.EntityFrameworkCore.SqlServer.Queriers;
 
 public class ApiKeyQuerier : IApiKeyQuerier
 {
@@ -75,6 +75,11 @@ public class ApiKeyQuerier : IApiKeyQuerier
           ordered = (ordered == null)
             ? (sort.IsDescending ? query.OrderByDescending(x => x.Title) : query.OrderBy(x => x.Title))
             : (sort.IsDescending ? ordered.ThenByDescending(x => x.Title) : ordered.ThenBy(x => x.Title));
+          break;
+        case ApiKeySort.UpdatedOn:
+          ordered = (ordered == null)
+            ? (sort.IsDescending ? query.OrderByDescending(x => x.UpdatedOn) : query.OrderBy(x => x.UpdatedOn))
+            : (sort.IsDescending ? ordered.ThenByDescending(x => x.UpdatedOn) : ordered.ThenBy(x => x.UpdatedOn));
           break;
       }
     }
