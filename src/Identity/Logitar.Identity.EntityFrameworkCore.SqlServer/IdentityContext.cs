@@ -9,6 +9,7 @@ public class IdentityContext : DbContext
   {
   }
 
+  public DbSet<ApiKeyEntity> ApiKeys { get; private set; } = null!;
   public DbSet<SessionEntity> Sessions { get; private set; } = null!;
   public DbSet<BlacklistedTokenEntity> TokenBlacklist { get; private set; } = null!;
   public DbSet<UserEntity> Users { get; private set; } = null!;

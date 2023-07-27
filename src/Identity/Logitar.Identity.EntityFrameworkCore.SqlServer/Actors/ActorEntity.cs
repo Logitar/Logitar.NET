@@ -40,6 +40,12 @@ public record ActorEntity
     EmailAddress = actor.EmailAddress,
     PictureUrl = actor.PictureUrl
   };
+  public static ActorEntity From(ApiKeyEntity apiKey, bool isDeleted = false) => new()
+  {
+    Type = "ApiKey",
+    IsDeleted = isDeleted,
+    DisplayName = apiKey.Title
+  };
   public static ActorEntity From(UserEntity user, bool isDeleted = false) => new()
   {
     Type = "User",

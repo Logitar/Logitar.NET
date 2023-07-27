@@ -6,6 +6,16 @@ namespace Logitar.Identity.EntityFrameworkCore.SqlServer.Constants;
 
 public static class Db
 {
+  public static class ApiKeys
+  {
+    public static readonly TableId Table = new(nameof(IdentityContext.ApiKeys));
+
+    public static readonly ColumnId AggregateId = new(nameof(ApiKeyEntity.AggregateId), Table);
+    public static readonly ColumnId ExpiresOn = new(nameof(ApiKeyEntity.ExpiresOn), Table);
+    public static readonly ColumnId TenantId = new(nameof(ApiKeyEntity.TenantId), Table);
+    public static readonly ColumnId Title = new(nameof(ApiKeyEntity.Title), Table);
+  }
+
   public static class Events
   {
     public static readonly TableId Table = new(nameof(EventContext.Events));
