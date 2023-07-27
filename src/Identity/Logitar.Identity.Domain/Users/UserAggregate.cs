@@ -356,10 +356,11 @@ public class UserAggregate : AggregateRoot
 
   public void SetUniqueName(IUniqueNameSettings uniqueNameSettings, string uniqueName)
   {
+    uniqueName = uniqueName.Trim();
     new UniqueNameValidator(uniqueNameSettings, nameof(UniqueName)).ValidateAndThrow(uniqueName);
 
     UserUpdatedEvent updated = GetLatestUpdatedEvent();
-    updated.UniqueName = uniqueName.Trim();
+    updated.UniqueName = uniqueName;
     Apply(updated);
   }
 

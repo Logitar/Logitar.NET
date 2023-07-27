@@ -1,4 +1,5 @@
 ﻿using Logitar.Identity.Core.ApiKeys;
+using Logitar.Identity.Core.Roles;
 using Logitar.Identity.Core.Sessions;
 using Logitar.Identity.Core.Sessions.Commands;
 using Logitar.Identity.Core.Tokens;
@@ -16,6 +17,7 @@ public static class DependencyInjectionExtensions
     return services
       .AddTransient<IApiKeyService, ApiKeyService>()
       .AddTransient<IDeleteSessionsCommand, DeleteSessionsCommandHandler>()
+      .AddTransient<IRoleService, RoleService>()
       .AddTransient<ISessionService, SessionService>()
       .AddTransient<ITokenManager, JsonWebTokenManager>()
       .AddTransient<ITokenService, TokenService>()

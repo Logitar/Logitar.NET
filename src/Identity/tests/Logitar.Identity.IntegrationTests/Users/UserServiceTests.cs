@@ -393,7 +393,7 @@ public class UserServiceTests : IntegrationTestingBase
 
     ReplaceUserPayload payload = new()
     {
-      UniqueName = $"{_user.UniqueName}2",
+      UniqueName = $" {_user.UniqueName}2 ",
       Phone = new UpdatePhonePayload
       {
         CountryCode = "CA",
@@ -415,7 +415,7 @@ public class UserServiceTests : IntegrationTestingBase
     };
     User? user = await _userService.ReplaceAsync(_user.Id.Value, payload, CancellationToken);
     Assert.NotNull(user);
-    Assert.Equal(payload.UniqueName, user.UniqueName);
+    Assert.Equal(payload.UniqueName.Trim(), user.UniqueName);
     Assert.False(user.HasPassword);
     Assert.Equal(isDisabled, user.IsDisabled);
     Assert.Null(user.Address);
@@ -595,7 +595,7 @@ public class UserServiceTests : IntegrationTestingBase
     var exception = await Assert.ThrowsAsync<UniqueNameAlreadyUsedException<UserAggregate>>(
       async () => await _userService.UpdateAsync(other.Id.Value, payload, CancellationToken));
     Assert.Equal(other.TenantId, exception.TenantId);
-    Assert.Equal(payload.UniqueName, exception.UniqueName);
+    Assert.Equal(payload.UniqueName.Trim(), exception.UniqueName);
     Assert.Equal("UniqueName", exception.PropertyName);
   }
 
@@ -606,7 +606,7 @@ public class UserServiceTests : IntegrationTestingBase
     Assert.NotNull(_user.Email);
     UpdateUserPayload payload = new()
     {
-      UniqueName = $"{_user.UniqueName}2",
+      UniqueName = $" {_user.UniqueName}2 ",
       Password = "Test123!",
       IsDisabled = true,
       Address = new MayBe<UpdateAddressPayload>(new UpdateAddressPayload
@@ -647,7 +647,7 @@ public class UserServiceTests : IntegrationTestingBase
     Assert.NotNull(user.Address);
     Assert.NotNull(user.Email);
     Assert.NotNull(user.Phone);
-    Assert.Equal(payload.UniqueName, user.UniqueName);
+    Assert.Equal(payload.UniqueName.Trim(), user.UniqueName);
     Assert.Equal(payload.IsDisabled, user.IsDisabled);
     Assert.Equal(payload.Address.Value.Street, user.Address.Street);
     Assert.Equal(payload.Address.Value.Locality, user.Address.Locality);

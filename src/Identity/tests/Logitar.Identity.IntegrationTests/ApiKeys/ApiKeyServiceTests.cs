@@ -226,13 +226,13 @@ public class ApiKeyServiceTests : IntegrationTestingBase
   {
     ReplaceApiKeyPayload payload = new()
     {
-      Title = "  Default  ",
+      Title = "  Default API Key  ",
       Description = "This is the default API key.",
       ExpiresOn = _apiKey.ExpiresOn?.AddMonths(-6)
     };
     ApiKey? apiKey = await _apiKeyService.ReplaceAsync(_apiKey.Id.Value, payload, CancellationToken);
     Assert.NotNull(apiKey);
-    Assert.Equal(_apiKey.Title, apiKey.Title);
+    Assert.Equal(payload.Title.Trim(), apiKey.Title);
     Assert.Equal(payload.Description, apiKey.Description);
     Assert.Equal(payload.ExpiresOn, apiKey.ExpiresOn);
   }
@@ -258,13 +258,13 @@ public class ApiKeyServiceTests : IntegrationTestingBase
   {
     UpdateApiKeyPayload payload = new()
     {
-      Title = "  Default  ",
+      Title = "  Default API Key  ",
       Description = new MayBe<string>("This is the default API key."),
       ExpiresOn = _apiKey.ExpiresOn?.AddMonths(-6)
     };
     ApiKey? apiKey = await _apiKeyService.UpdateAsync(_apiKey.Id.Value, payload, CancellationToken);
     Assert.NotNull(apiKey);
-    Assert.Equal(_apiKey.Title, apiKey.Title);
+    Assert.Equal(payload.Title.Trim(), apiKey.Title);
     Assert.Equal(payload.Description.Value, apiKey.Description);
     Assert.Equal(payload.ExpiresOn, apiKey.ExpiresOn);
   }

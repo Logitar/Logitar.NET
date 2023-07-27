@@ -2,13 +2,14 @@
 using Logitar.EventSourcing.Infrastructure;
 using Logitar.Identity.Core;
 using Logitar.Identity.Core.ApiKeys;
+using Logitar.Identity.Core.Roles;
 using Logitar.Identity.Core.Sessions;
 using Logitar.Identity.Core.Tokens;
 using Logitar.Identity.Core.Users;
 using Logitar.Identity.Domain.Users;
 using Logitar.Identity.EntityFrameworkCore.SqlServer.Actors;
 using Logitar.Identity.EntityFrameworkCore.SqlServer.Converters;
-using Logitar.Identity.EntityFrameworkCore.SqlServer.Queries;
+using Logitar.Identity.EntityFrameworkCore.SqlServer.Queriers;
 using Logitar.Identity.EntityFrameworkCore.SqlServer.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -43,6 +44,7 @@ public static class DependencyInjectionExtensions
   {
     return services
       .AddScoped<IApiKeyQuerier, ApiKeyQuerier>()
+      .AddScoped<IRoleQuerier, RoleQuerier>()
       .AddScoped<ISessionQuerier, SessionQuerier>()
       .AddScoped<IUserQuerier, UserQuerier>();
   }
@@ -51,6 +53,7 @@ public static class DependencyInjectionExtensions
   {
     return services
       .AddScoped<IApiKeyRepository, ApiKeyRepository>()
+      .AddScoped<IRoleRepository, RoleRepository>()
       .AddScoped<ISessionRepository, SessionRepository>()
       .AddScoped<IUserRepository, UserRepository>();
   }

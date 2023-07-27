@@ -10,7 +10,7 @@ using Logitar.Identity.EntityFrameworkCore.SqlServer.Constants;
 using Logitar.Identity.EntityFrameworkCore.SqlServer.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Logitar.Identity.EntityFrameworkCore.SqlServer.Queries;
+namespace Logitar.Identity.EntityFrameworkCore.SqlServer.Queriers;
 
 public class SessionQuerier : ISessionQuerier
 {

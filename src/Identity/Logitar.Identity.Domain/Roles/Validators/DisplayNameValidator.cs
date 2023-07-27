@@ -1,10 +1,10 @@
 ﻿using FluentValidation;
 
-namespace Logitar.Identity.Domain.Users.Validators;
+namespace Logitar.Identity.Domain.Roles.Validators;
 
-public class PersonNameValidator : AbstractValidator<string>
+public class DisplayNameValidator : AbstractValidator<string>
 {
-  public PersonNameValidator(string? propertyName = null)
+  public DisplayNameValidator(string? propertyName = null)
   {
     IRuleBuilderOptions<string, string> options = RuleFor(x => x).NotEmpty()
       .MaximumLength(byte.MaxValue);
