@@ -2,6 +2,7 @@
 
 /// <summary>
 /// TODO(fpion): move to Logitar.Security.Claims
+/// TODO(fpion): complete to spec https://www.iana.org/assignments/jwt/jwt.xhtml
 /// </summary>
 public static class Rfc7519ClaimTypes
 {

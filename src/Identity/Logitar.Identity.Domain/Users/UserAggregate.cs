@@ -373,6 +373,17 @@ public class UserAggregate : AggregateRoot
   }
   protected virtual void Apply(UserEnabledEvent _) => IsDisabled = false;
 
+  public void ResetPassword(IPasswordSettings passwordSettings, string password)
+  {
+    new PasswordValidator(passwordSettings, "Password").ValidateAndThrow(password);
+
+    ApplyChange(new UserPasswordResetEvent
+    {
+      Password = new Pbkdf2(password)
+    }, actorId: Id.Value);
+  }
+  protected virtual void Apply(UserPasswordResetEvent reset) => _password = reset.Password;
+
   public void SetPassword(IPasswordSettings passwordSettings, string password)
   {
     new PasswordValidator(passwordSettings, "Password").ValidateAndThrow(password);
