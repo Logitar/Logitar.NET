@@ -2,20 +2,22 @@
 using Logitar.Identity.Core.Tokens.Models;
 using Logitar.Identity.Core.Tokens.Payloads;
 using Logitar.Identity.Core.Tokens.Validators;
+using MediatR;
 
-namespace Logitar.Identity.Core.Tokens;
+namespace Logitar.Identity.Core.Tokens.Commands;
 
-public class TokenService : ITokenService
+public class CreateTokenCommandHandler : IRequestHandler<CreateTokenCommand, CreatedToken>
 {
   private readonly ITokenManager _tokenManager;
 
-  public TokenService(ITokenManager tokenManager)
+  public CreateTokenCommandHandler(ITokenManager tokenManager)
   {
     _tokenManager = tokenManager;
   }
 
-  public virtual Task<CreatedToken> CreateAsync(CreateTokenPayload payload, CancellationToken cancellationToken)
+  public Task<CreatedToken> Handle(CreateTokenCommand command, CancellationToken cancellationToken)
   {
+    CreateTokenPayload payload = command.Payload;
     new CreateTokenValidator().ValidateAndThrow(payload);
 
     ClaimsIdentity identity = new();
@@ -50,37 +52,6 @@ public class TokenService : ITokenService
     CreatedToken result = new(token);
 
     return Task.FromResult(result);
-  }
-
-  public virtual async Task<ValidatedToken> ValidateAsync(ValidateTokenPayload payload, bool consume, CancellationToken cancellationToken)
-  {
-    new ValidateTokenValidator().ValidateAndThrow(payload);
-
-    ClaimsPrincipal principal = await _tokenManager.ValidateAsync(payload.Token, payload.Secret,
-        payload.Audience, payload.Issuer, payload.Purpose, consume, cancellationToken);
-
-    ValidatedToken token = new();
-
-    List<TokenClaim> claims = new(capacity: principal.Claims.Count());
-    foreach (Claim claim in principal.Claims)
-    {
-      switch (claim.Type)
-      {
-        case Rfc7519ClaimTypes.EmailAddress:
-          token.EmailAddress = claim.Value;
-          break;
-        case Rfc7519ClaimTypes.Subject:
-          token.Subject = claim.Value;
-          break;
-        default:
-          claims.Add(new TokenClaim(claim.Type, claim.Value, claim.ValueType));
-          break;
-      }
-    }
-
-    token.Claims = claims;
-
-    return token;
   }
 
   private static Claim CreateClaim(TokenClaim claim)

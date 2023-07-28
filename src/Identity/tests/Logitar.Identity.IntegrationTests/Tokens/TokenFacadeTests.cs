@@ -10,9 +10,9 @@ using Microsoft.IdentityModel.Tokens;
 namespace Logitar.Identity.IntegrationTests.Tokens;
 
 [Trait(Traits.Category, Categories.Integration)]
-public class TokenServiceTests : IntegrationTestingBase
+public class TokenFacadeTests : IntegrationTestingBase
 {
-  private readonly ITokenService _tokenService;
+  private readonly ITokenFacade _tokenFacade;
 
   private readonly Guid _blacklistedTokenId = Guid.NewGuid();
   private readonly string _secret;
@@ -20,13 +20,15 @@ public class TokenServiceTests : IntegrationTestingBase
   private readonly SigningCredentials _signingCredentials;
   private readonly JwtSecurityTokenHandler _tokenHandler = new();
 
-  public TokenServiceTests() : base()
+  public TokenFacadeTests() : base()
   {
-    _tokenService = ServiceProvider.GetRequiredService<ITokenService>();
+    _tokenFacade = ServiceProvider.GetRequiredService<ITokenFacade>();
 
     _secret = Faker.Random.String(length: 32, minChar: '!', maxChar: '~');
     _securityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_secret));
     _signingCredentials = new(_securityKey, SecurityAlgorithms.HmacSha256);
+
+    _tokenHandler.InboundClaimTypeMap.Clear();
   }
 
   [Fact(DisplayName = "CreateAsync: it should create the correct token.")]
@@ -47,7 +49,7 @@ public class TokenServiceTests : IntegrationTestingBase
         new TokenClaim("claim_type", "claim_value", ClaimValueTypes.String)
       }
     };
-    CreatedToken createdToken = await _tokenService.CreateAsync(payload, CancellationToken);
+    CreatedToken createdToken = await _tokenFacade.CreateAsync(payload, CancellationToken);
 
     TokenValidationParameters parameters = new()
     {
@@ -83,7 +85,7 @@ public class TokenServiceTests : IntegrationTestingBase
       Secret = "n*sMkW<P{$/7hGq+"
     };
     var exception = await Assert.ThrowsAsync<ValidationException>(
-      async () => await _tokenService.CreateAsync(payload, CancellationToken));
+      async () => await _tokenFacade.CreateAsync(payload, CancellationToken));
     Assert.Contains(exception.Errors, e => e.ErrorCode == "GreaterThanValidator" && e.PropertyName == "Lifetime");
     Assert.Contains(exception.Errors, e => e.ErrorCode == "MinimumLengthValidator" && e.PropertyName == "Secret");
   }
@@ -110,7 +112,7 @@ public class TokenServiceTests : IntegrationTestingBase
       Purpose = "verify_email"
     };
     var exception = await Assert.ThrowsAsync<InvalidSecurityTokenPurposeException>(
-      async () => await _tokenService.ValidateAsync(validatePayload, consume: false, CancellationToken));
+      async () => await _tokenFacade.ValidateAsync(validatePayload, consume: false, CancellationToken));
     Assert.Equal(validatePayload.Purpose, exception.RequiredPurpose);
     Assert.Equal(new[] { purpose }, exception.ActualPurposes);
   }
@@ -134,7 +136,7 @@ public class TokenServiceTests : IntegrationTestingBase
       Secret = _secret
     };
     var exception = await Assert.ThrowsAsync<SecurityTokenBlacklistedException>(
-      async () => await _tokenService.ValidateAsync(validatePayload, consume: false, CancellationToken));
+      async () => await _tokenFacade.ValidateAsync(validatePayload, consume: false, CancellationToken));
     Assert.Equal(new[] { _blacklistedTokenId }, exception.BlacklistedIds);
   }
 
@@ -147,7 +149,7 @@ public class TokenServiceTests : IntegrationTestingBase
       Secret = "T!SL-W>he@GBf9Yz"
     };
     var exception = await Assert.ThrowsAsync<ValidationException>(
-      async () => await _tokenService.ValidateAsync(payload, consume: false, CancellationToken));
+      async () => await _tokenFacade.ValidateAsync(payload, consume: false, CancellationToken));
     Assert.Contains(exception.Errors, e => e.ErrorCode == "NotEmptyValidator" && e.PropertyName == "Token");
     Assert.Contains(exception.Errors, e => e.ErrorCode == "MinimumLengthValidator" && e.PropertyName == "Secret");
   }
@@ -182,7 +184,7 @@ public class TokenServiceTests : IntegrationTestingBase
       Issuer = "issuer",
       Purpose = "reset_password"
     };
-    ValidatedToken validatedToken = await _tokenService.ValidateAsync(payload, consume: true, CancellationToken);
+    ValidatedToken validatedToken = await _tokenFacade.ValidateAsync(payload, consume: true, CancellationToken);
     Assert.Equal(userId, validatedToken.Subject);
     Assert.Equal(emailAddress, validatedToken.EmailAddress);
     Assert.Contains(validatedToken.Claims, claim => claim.Type == Rfc7519ClaimTypes.TokenId && claim.Value == tokenId.ToString());

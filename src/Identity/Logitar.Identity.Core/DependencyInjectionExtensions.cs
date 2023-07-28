@@ -7,6 +7,7 @@ using Logitar.Identity.Core.Sessions.Commands;
 using Logitar.Identity.Core.Tokens;
 using Logitar.Identity.Core.Users;
 using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
 
 namespace Logitar.Identity.Core;
 
@@ -14,22 +15,27 @@ public static class DependencyInjectionExtensions
 {
   public static IServiceCollection AddLogitarIdentityCore(this IServiceCollection services)
   {
-    JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+    Assembly assembly = typeof(DependencyInjectionExtensions).Assembly;
 
     return services
+      .AddApplicationFacades()
       .AddApplicationServices()
       .AddCommands()
+      .AddMediatR(config => config.RegisterServicesFromAssembly(assembly))
       .AddQueries()
       .AddTransient<ITokenManager, JsonWebTokenManager>();
   }
 
+  private static IServiceCollection AddApplicationFacades(this IServiceCollection services)
+  {
+    return services.AddTransient<ITokenFacade, TokenFacade>();
+  }
   private static IServiceCollection AddApplicationServices(this IServiceCollection services)
   {
     return services
       .AddTransient<IApiKeyService, ApiKeyService>()
       .AddTransient<IRoleService, RoleService>()
       .AddTransient<ISessionService, SessionService>()
-      .AddTransient<ITokenService, TokenService>()
       .AddTransient<IUserService, UserService>();
   }
 
