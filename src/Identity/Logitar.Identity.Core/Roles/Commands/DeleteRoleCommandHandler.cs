@@ -1,35 +1,40 @@
-﻿using Logitar.Identity.Core.ApiKeys;
-using Logitar.Identity.Domain.ApiKeys;
+﻿using Logitar.EventSourcing;
+using Logitar.Identity.Core.Roles.Models;
 using Logitar.Identity.Domain.Roles;
-using Logitar.Identity.Domain.Users;
+using MediatR;
 
 namespace Logitar.Identity.Core.Roles.Commands;
 
-public class DeleteRoleCommandHandler : IDeleteRoleCommand
+public class DeleteRoleCommandHandler : IRequestHandler<DeleteRoleCommand, Role?>
 {
-  private readonly IApiKeyRepository _apiKeyRepository;
-  private readonly IUserRepository _userRepository;
+  private readonly IMediator _mediator;
+  private readonly IRoleQuerier _roleQuerier;
+  private readonly IRoleRepository _roleRepository;
 
-  public DeleteRoleCommandHandler(IApiKeyRepository apiKeyRepository, IUserRepository userRepository)
+  public DeleteRoleCommandHandler(IMediator mediator, IRoleQuerier roleQuerier,
+    IRoleRepository roleRepository)
   {
-    _apiKeyRepository = apiKeyRepository;
-    _userRepository = userRepository;
+    _mediator = mediator;
+    _roleQuerier = roleQuerier;
+    _roleRepository = roleRepository;
   }
 
-  public async Task ExecuteAsync(RoleAggregate role, CancellationToken cancellationToken)
+  public async Task<Role?> Handle(DeleteRoleCommand command, CancellationToken cancellationToken)
   {
-    IEnumerable<ApiKeyAggregate> apiKeys = await _apiKeyRepository.LoadAsync(role, cancellationToken);
-    foreach (ApiKeyAggregate apiKey in apiKeys)
+    AggregateId roleId = command.Id.GetAggregateId(nameof(command.Id));
+    RoleAggregate? role = await _roleRepository.LoadAsync(roleId, cancellationToken);
+    if (role == null)
     {
-      apiKey.RemoveRole(role);
+      return null;
     }
-    await _apiKeyRepository.SaveAsync(apiKeys, cancellationToken);
+    Role result = await _roleQuerier.ReadAsync(role, cancellationToken);
 
-    IEnumerable<UserAggregate> users = await _userRepository.LoadAsync(role, cancellationToken);
-    foreach (UserAggregate user in users)
-    {
-      user.RemoveRole(role);
-    }
-    await _userRepository.SaveAsync(users, cancellationToken);
+    await _mediator.Publish(new DeleteRoleAssociationsCommand(role), cancellationToken);
+
+    role.Delete();
+
+    await _roleRepository.SaveAsync(role, cancellationToken);
+
+    return result;
   }
 }

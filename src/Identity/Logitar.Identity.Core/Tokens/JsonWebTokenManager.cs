@@ -17,6 +17,8 @@ public class JsonWebTokenManager : ITokenManager
   public JsonWebTokenManager(ITokenBlacklist tokenBlacklist)
   {
     _tokenBlacklist = tokenBlacklist;
+
+    _tokenHandler.InboundClaimTypeMap.Clear();
   }
 
   public string Create(ClaimsIdentity subject, string secret, string? algorithm, DateTime? expires, string? audience, string? issuer)
