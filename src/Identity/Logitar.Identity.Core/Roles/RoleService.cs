@@ -1,5 +1,6 @@
 ﻿using Logitar.EventSourcing;
 using Logitar.Identity.Core.Models;
+using Logitar.Identity.Core.Roles.Commands;
 using Logitar.Identity.Core.Roles.Models;
 using Logitar.Identity.Core.Roles.Payloads;
 using Logitar.Identity.Domain.Roles;
@@ -10,13 +11,15 @@ namespace Logitar.Identity.Core.Roles;
 
 public class RoleService : IRoleService
 {
+  private readonly IDeleteRoleCommand _deleteRoleCommand;
   private readonly IRoleQuerier _roleQuerier;
   private readonly IRoleRepository _roleRepository;
   private readonly IOptions<RoleSettings> _roleSettings;
 
-  public RoleService(IRoleQuerier roleQuerier, IRoleRepository roleRepository,
-    IOptions<RoleSettings> roleSettings)
+  public RoleService(IDeleteRoleCommand deleteRoleCommand, IRoleQuerier roleQuerier,
+    IRoleRepository roleRepository, IOptions<RoleSettings> roleSettings)
   {
+    _deleteRoleCommand = deleteRoleCommand;
     _roleQuerier = roleQuerier;
     _roleRepository = roleRepository;
     _roleSettings = roleSettings;
@@ -51,6 +54,8 @@ public class RoleService : IRoleService
       return null;
     }
     Role result = await _roleQuerier.ReadAsync(role, cancellationToken);
+
+    await _deleteRoleCommand.ExecuteAsync(role, cancellationToken);
 
     role.Delete();
 

@@ -20,5 +20,11 @@ public class ApiKeyConfiguration : AggregateConfiguration<ApiKeyEntity>, IEntity
     builder.Property(x => x.TenantId).HasMaxLength(byte.MaxValue);
     builder.Property(x => x.Secret).HasMaxLength(byte.MaxValue);
     builder.Property(x => x.Title).HasMaxLength(byte.MaxValue);
+
+    builder.HasMany(x => x.Roles).WithMany(x => x.ApiKeys).UsingEntity<ApiKeyRoleEntity>(join =>
+    {
+      join.ToTable(nameof(IdentityContext.ApiKeyRoles));
+      join.HasKey(x => new { x.ApiKeyId, x.RoleId });
+    });
   }
 }

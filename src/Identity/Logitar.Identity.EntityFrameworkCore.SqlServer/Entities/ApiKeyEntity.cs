@@ -1,4 +1,5 @@
-﻿using Logitar.Identity.Domain.ApiKeys.Events;
+﻿using Logitar.Identity.Domain;
+using Logitar.Identity.Domain.ApiKeys.Events;
 using Logitar.Identity.EntityFrameworkCore.SqlServer.Actors;
 
 namespace Logitar.Identity.EntityFrameworkCore.SqlServer.Entities;
@@ -30,11 +31,13 @@ public record ApiKeyEntity : AggregateEntity
 
   public DateTime? AuthenticatedOn { get; private set; }
 
+  public List<RoleEntity> Roles { get; private set; } = new();
+
   public void Authenticate(ApiKeyAuthenticatedEvent authenticated) => AuthenticatedOn = authenticated.OccurredOn;
 
-  public void Update(ApiKeyUpdatedEvent updated, ActorEntity actor)
+  public void Update(ApiKeyUpdatedEvent updated, ActorEntity actor, IEnumerable<RoleEntity> roles)
   {
-    base.Update(updated, actor);
+    Update(updated, actor);
 
     if (updated.Title != null)
     {
@@ -47,6 +50,22 @@ public record ApiKeyEntity : AggregateEntity
     if (updated.ExpiresOn.HasValue)
     {
       ExpiresOn = updated.ExpiresOn.Value.ToUniversalTime();
+    }
+
+    Dictionary<string, RoleEntity> rolesById = roles.ToDictionary(x => x.AggregateId, x => x);
+    foreach (var (roleId, action) in updated.Roles)
+    {
+      RoleEntity role = rolesById[roleId];
+
+      switch (action)
+      {
+        case CollectionAction.Add:
+          Roles.Add(role);
+          break;
+        case CollectionAction.Remove:
+          Roles.Remove(role);
+          break;
+      }
     }
   }
 }
