@@ -31,6 +31,7 @@ public class ApiKeyQuerier : IApiKeyQuerier
   public async Task<ApiKey?> ReadAsync(string id, CancellationToken cancellationToken)
   {
     ApiKeyEntity? apiKey = await _apiKeys.AsNoTracking()
+      .Include(x => x.Roles)
       .SingleOrDefaultAsync(x => x.AggregateId == id, cancellationToken);
 
     return _mapper.Map<ApiKey?>(apiKey);
@@ -57,6 +58,7 @@ public class ApiKeyQuerier : IApiKeyQuerier
     }
 
     IQueryable<ApiKeyEntity> query = _apiKeys.FromQuery(builder.Build())
+      .Include(x => x.Roles)
       .AsNoTracking();
 
     long total = await query.LongCountAsync(cancellationToken);

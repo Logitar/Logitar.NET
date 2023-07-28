@@ -1,10 +1,12 @@
 ﻿using Logitar.Identity.Core;
+using Logitar.Identity.Core.ApiKeys;
 using Logitar.Identity.Core.Models;
 using Logitar.Identity.Core.Payloads;
 using Logitar.Identity.Core.Roles;
 using Logitar.Identity.Core.Roles.Models;
 using Logitar.Identity.Core.Roles.Payloads;
 using Logitar.Identity.Domain;
+using Logitar.Identity.Domain.ApiKeys;
 using Logitar.Identity.Domain.Roles;
 using Logitar.Identity.Domain.Settings;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +18,7 @@ namespace Logitar.Identity.IntegrationTests.Roles;
 [Trait(Traits.Category, Categories.Integration)]
 public class RoleServiceTests : IntegrationTestingBase
 {
+  private readonly IApiKeyRepository _apiKeyRepository;
   private readonly IRoleRepository _roleRepository;
   private readonly IRoleService _roleService;
   private readonly IOptions<RoleSettings> _roleSettings;
@@ -24,6 +27,7 @@ public class RoleServiceTests : IntegrationTestingBase
 
   public RoleServiceTests() : base()
   {
+    _apiKeyRepository = ServiceProvider.GetRequiredService<IApiKeyRepository>();
     _roleRepository = ServiceProvider.GetRequiredService<IRoleRepository>();
     _roleService = ServiceProvider.GetRequiredService<IRoleService>();
     _roleSettings = ServiceProvider.GetRequiredService<IOptions<RoleSettings>>();
@@ -68,12 +72,21 @@ public class RoleServiceTests : IntegrationTestingBase
   [Fact]
   public async Task DeleteAsync_it_should_delete_the_correct_role()
   {
+    ApiKeyAggregate apiKey = new("Default", _role.TenantId);
+    apiKey.AddRole(_role);
+    Assert.Contains(apiKey.Roles, roleId => roleId == _role.Id);
+    await _apiKeyRepository.SaveAsync(apiKey);
+
     Assert.True(await IdentityContext.Roles.AnyAsync(x => x.AggregateId == _role.Id.Value));
 
     Role? role = await _roleService.DeleteAsync(_role.Id.Value, CancellationToken);
     Assert.NotNull(role);
 
     Assert.False(await IdentityContext.Roles.AnyAsync(x => x.AggregateId == _role.Id.Value));
+
+    apiKey = (await _apiKeyRepository.LoadAsync(apiKey.Id))!;
+    Assert.NotNull(apiKey);
+    Assert.DoesNotContain(apiKey.Roles, roleId => roleId == _role.Id);
   }
 
   [Fact]

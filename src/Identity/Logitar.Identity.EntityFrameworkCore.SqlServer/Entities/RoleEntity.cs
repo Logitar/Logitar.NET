@@ -29,6 +29,8 @@ public record RoleEntity : AggregateEntity
   public string? DisplayName { get; private set; }
   public string? Description { get; private set; }
 
+  public List<ApiKeyEntity> ApiKeys { get; private set; } = new();
+
   public void Update(RoleUpdatedEvent updated, ActorEntity actor)
   {
     base.Update(updated, actor);

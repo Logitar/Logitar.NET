@@ -22,6 +22,26 @@ public class RoleRepository : IdentityRepository, IRoleRepository
   public async Task<RoleAggregate?> LoadAsync(AggregateId id, CancellationToken cancellationToken)
     => await base.LoadAsync<RoleAggregate>(id, cancellationToken);
 
+  public async Task<IEnumerable<RoleAggregate>> LoadAsync(string? tenantId, CancellationToken cancellationToken)
+  {
+    tenantId = tenantId?.CleanTrim();
+
+    IQuery query = SqlServerQueryBuilder.From(Db.Events.Table)
+      .Join(Db.Roles.AggregateId, Db.Events.AggregateId,
+        new OperatorCondition(Db.Events.AggregateType, Operators.IsEqualTo(_aggregateType))
+      )
+      .Where(new OperatorCondition(Db.Roles.TenantId,
+        tenantId == null ? Operators.IsNull() : Operators.IsEqualTo(tenantId)))
+      .SelectAll(Db.Events.Table)
+      .Build();
+
+    EventEntity[] events = await EventContext.Events.FromQuery(query)
+      .OrderBy(e => e.Version)
+      .AsNoTracking()
+      .ToArrayAsync(cancellationToken);
+
+    return Load<RoleAggregate>(events.Select(EventSerializer.Instance.Deserialize));
+  }
   public async Task<RoleAggregate?> LoadAsync(string? tenantId, string uniqueName, CancellationToken cancellationToken)
   {
     tenantId = tenantId?.CleanTrim();

@@ -2,7 +2,9 @@
 using Logitar.EventSourcing;
 using Logitar.Identity.Domain.ApiKeys.Events;
 using Logitar.Identity.Domain.ApiKeys.Validators;
+using Logitar.Identity.Domain.Roles;
 using Logitar.Security;
+using System.Collections.Immutable;
 
 namespace Logitar.Identity.Domain.ApiKeys;
 
@@ -15,6 +17,8 @@ public class ApiKeyAggregate : AggregateRoot
   private string _title = string.Empty;
   private string? _description = null;
   private DateTime? _expiresOn = null;
+
+  private readonly HashSet<AggregateId> _roles = new();
 
   public ApiKeyAggregate(AggregateId id) : base(id)
   {
@@ -103,7 +107,31 @@ public class ApiKeyAggregate : AggregateRoot
 
   public DateTime? AuthenticatedOn { get; private set; }
 
+  public IImmutableSet<AggregateId> Roles => ImmutableHashSet.Create(_roles.ToArray());
+
   public byte[]? Secret { get; private set; }
+
+  public void AddRole(RoleAggregate role)
+  {
+    if (!_roles.Contains(role.Id))
+    {
+      UpdateRole(role.Id, CollectionAction.Add);
+    }
+  }
+  public void RemoveRole(RoleAggregate role) => RemoveRole(role.Id);
+  public void RemoveRole(AggregateId roleId)
+  {
+    if (_roles.Contains(roleId))
+    {
+      UpdateRole(roleId, CollectionAction.Remove);
+    }
+  }
+  private void UpdateRole(AggregateId id, CollectionAction action)
+  {
+    ApiKeyUpdatedEvent updated = GetLatestUpdatedEvent();
+    updated.Roles[id.Value] = action;
+    Apply(updated);
+  }
 
   public void Authenticate(byte[] secret)
   {
@@ -135,6 +163,20 @@ public class ApiKeyAggregate : AggregateRoot
     if (updated.ExpiresOn.HasValue)
     {
       _expiresOn = updated.ExpiresOn.Value;
+    }
+
+    foreach (var (id, action) in updated.Roles)
+    {
+      AggregateId roleId = new(id);
+      switch (action)
+      {
+        case CollectionAction.Add:
+          _roles.Add(roleId);
+          break;
+        case CollectionAction.Remove:
+          _roles.Remove(roleId);
+          break;
+      }
     }
   }
   protected ApiKeyUpdatedEvent GetLatestUpdatedEvent()

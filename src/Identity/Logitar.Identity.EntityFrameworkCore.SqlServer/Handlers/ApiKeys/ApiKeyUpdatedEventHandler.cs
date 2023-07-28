@@ -24,7 +24,12 @@ public class ApiKeyUpdatedEventHandler : INotificationHandler<ApiKeyUpdatedEvent
       .SingleOrDefaultAsync(x => x.AggregateId == notification.AggregateId.Value, cancellationToken)
       ?? throw new EntityNotFoundException<ApiKeyEntity>(notification.AggregateId.Value);
 
-    apiKey.Update(notification, actor);
+    IEnumerable<string> roleIds = notification.Roles.Select(x => x.Key);
+    RoleEntity[] roles = await _context.Roles
+      .Where(x => roleIds.Contains(x.AggregateId))
+      .ToArrayAsync(cancellationToken);
+
+    apiKey.Update(notification, actor, roles);
 
     await _context.SaveChangesAsync(cancellationToken);
 

@@ -6,11 +6,20 @@ namespace Logitar.Identity.EntityFrameworkCore.SqlServer.Constants;
 
 public static class Db
 {
+  public static class ApiKeyRoles
+  {
+    public static readonly TableId Table = new(nameof(IdentityContext.ApiKeyRoles));
+
+    public static readonly ColumnId ApiKeyId = new(nameof(ApiKeyRoleEntity.ApiKeyId), Table);
+    public static readonly ColumnId RoleId = new(nameof(ApiKeyRoleEntity.RoleId), Table);
+  }
+
   public static class ApiKeys
   {
     public static readonly TableId Table = new(nameof(IdentityContext.ApiKeys));
 
     public static readonly ColumnId AggregateId = new(nameof(ApiKeyEntity.AggregateId), Table);
+    public static readonly ColumnId ApiKeyId = new(nameof(ApiKeyEntity.ApiKeyId), Table);
     public static readonly ColumnId ExpiresOn = new(nameof(ApiKeyEntity.ExpiresOn), Table);
     public static readonly ColumnId TenantId = new(nameof(ApiKeyEntity.TenantId), Table);
     public static readonly ColumnId Title = new(nameof(ApiKeyEntity.Title), Table);
@@ -30,6 +39,7 @@ public static class Db
 
     public static readonly ColumnId AggregateId = new(nameof(RoleEntity.AggregateId), Table);
     public static readonly ColumnId DisplayName = new(nameof(RoleEntity.DisplayName), Table);
+    public static readonly ColumnId RoleId = new(nameof(RoleEntity.RoleId), Table);
     public static readonly ColumnId TenantId = new(nameof(RoleEntity.TenantId), Table);
     public static readonly ColumnId UniqueName = new(nameof(RoleEntity.UniqueName), Table);
     public static readonly ColumnId UniqueNameNormalized = new(nameof(RoleEntity.UniqueNameNormalized), Table);
