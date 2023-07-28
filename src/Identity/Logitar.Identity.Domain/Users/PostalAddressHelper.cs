@@ -14,7 +14,7 @@ public static class PostalAddressHelper
     }
   };
 
-  public static ISet<string> SupportedCountries => _countries.Keys.ToHashSet();
+  public static IImmutableSet<string> SupportedCountries => ImmutableHashSet.Create(_countries.Keys.ToArray());
   public static bool IsSupported(string country) => _countries.ContainsKey(country);
 
   public static ICountrySettings? GetSettings(string country)

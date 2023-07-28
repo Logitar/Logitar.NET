@@ -4,7 +4,7 @@ namespace Logitar.Identity.Domain.Users;
 
 public record Gender
 {
-  public static ISet<string> KnownGenders { get; } = ImmutableHashSet.Create(new[] { "female", "male" });
+  public static IImmutableSet<string> KnownGenders { get; } = ImmutableHashSet.Create(new[] { "female", "male" });
 
   public Gender(string value)
   {

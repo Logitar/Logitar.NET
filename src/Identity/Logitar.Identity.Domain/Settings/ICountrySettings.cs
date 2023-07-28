@@ -1,7 +1,9 @@
-﻿namespace Logitar.Identity.Domain.Settings;
+﻿using System.Collections.Immutable;
+
+namespace Logitar.Identity.Domain.Settings;
 
 public interface ICountrySettings
 {
   string? PostalCode { get; }
-  ISet<string>? Regions { get; }
+  IImmutableSet<string>? Regions { get; }
 }
