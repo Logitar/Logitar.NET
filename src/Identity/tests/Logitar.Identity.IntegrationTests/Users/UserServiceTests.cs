@@ -3,11 +3,14 @@ using FluentValidation.Results;
 using Logitar.Identity.Core;
 using Logitar.Identity.Core.Models;
 using Logitar.Identity.Core.Payloads;
+using Logitar.Identity.Core.Roles;
+using Logitar.Identity.Core.Roles.Models;
 using Logitar.Identity.Core.Sessions;
 using Logitar.Identity.Core.Users;
 using Logitar.Identity.Core.Users.Models;
 using Logitar.Identity.Core.Users.Payloads;
 using Logitar.Identity.Domain;
+using Logitar.Identity.Domain.Roles;
 using Logitar.Identity.Domain.Sessions;
 using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.Domain.Users;
@@ -22,15 +25,22 @@ namespace Logitar.Identity.IntegrationTests.Users;
 [Trait(Traits.Category, Categories.Integration)]
 public class UserServiceTests : IntegrationTestingBase
 {
+  private readonly IRoleRepository _roleRepository;
+  private readonly IOptions<RoleSettings> _roleSettings;
   private readonly ISessionRepository _sessionRepository;
   private readonly IUserRepository _userRepository;
   private readonly IUserService _userService;
   private readonly IOptions<UserSettings> _userSettings;
 
   private readonly UserAggregate _user;
+  private readonly RoleAggregate _manageApp;
+  private readonly RoleAggregate _readUsers;
+  private readonly RoleAggregate _writeUsers;
 
   public UserServiceTests() : base()
   {
+    _roleRepository = ServiceProvider.GetRequiredService<IRoleRepository>();
+    _roleSettings = ServiceProvider.GetRequiredService<IOptions<RoleSettings>>();
     _sessionRepository = ServiceProvider.GetRequiredService<ISessionRepository>();
     _userRepository = ServiceProvider.GetRequiredService<IUserRepository>();
     _userService = ServiceProvider.GetRequiredService<IUserService>();
@@ -41,6 +51,11 @@ public class UserServiceTests : IntegrationTestingBase
     {
       Email = new(Faker.Person.Email, isVerified: true)
     };
+
+    RoleSettings roleSettings = _roleSettings.Value;
+    _manageApp = new(roleSettings.UniqueNameSettings, "manage_app", _user.TenantId);
+    _readUsers = new(roleSettings.UniqueNameSettings, "read_users", _user.TenantId);
+    _writeUsers = new(roleSettings.UniqueNameSettings, "write_users", _user.TenantId);
   }
 
   [Fact(DisplayName = "AuthenticateAsync: it authenticates the correct user.")]
@@ -244,7 +259,8 @@ public class UserServiceTests : IntegrationTestingBase
       TimeZone = "America/Toronto",
       Picture = "https://www.test.com/assets/img/profile.jpg",
       Profile = "    ",
-      Website = "https://www.test.com/"
+      Website = "https://www.test.com/",
+      Roles = new[] { $" {_readUsers.UniqueName.ToUpper()} " }
     };
     User user = await _userService.CreateAsync(payload, CancellationToken);
     Assert.NotNull(user.Address);
@@ -283,6 +299,9 @@ public class UserServiceTests : IntegrationTestingBase
     Assert.NotNull(user.DisabledOn);
     Assert.Null(user.Profile);
 
+    Role role = Assert.Single(user.Roles);
+    Assert.Equal(_readUsers.UniqueName, role.UniqueName);
+
     bool isConfirmed = payload.Email.IsVerified || payload.Phone.IsVerified;
     Assert.Equal(isConfirmed, user.IsConfirmed);
   }
@@ -306,6 +325,24 @@ public class UserServiceTests : IntegrationTestingBase
     Assert.Equal(payload.TenantId, exception.TenantId);
     Assert.Equal(payload.Email.Address, exception.EmailAddress);
     Assert.Equal("Email", exception.PropertyName);
+  }
+
+  [Fact(DisplayName = "CreateAsync: it should throw RolesNotFoundException when a role is missing.")]
+  public async Task CreateAsync_it_should_throw_RolesNotFoundException_when_a_role_is_missing()
+  {
+    RoleAggregate role = new(_roleSettings.Value.UniqueNameSettings, _manageApp.UniqueName, tenantId: null);
+    await _roleRepository.SaveAsync(role);
+
+    CreateUserPayload payload = new()
+    {
+      TenantId = _user.TenantId,
+      UniqueName = $"{_user.UniqueName}2",
+      Roles = new[] { role.Id.Value }
+    };
+    var exception = await Assert.ThrowsAsync<RolesNotFoundException>(
+      async () => await _userService.CreateAsync(payload, CancellationToken));
+    Assert.Equal(payload.Roles, exception.Ids);
+    Assert.Equal("Roles", exception.PropertyName);
   }
 
   [Fact(DisplayName = "CreateAsync: it should throw UniqueNameAlreadyUsedException when unique name is already used.")]
@@ -389,6 +426,9 @@ public class UserServiceTests : IntegrationTestingBase
   [Fact(DisplayName = "ReplaceAsync: it should replace the correct user.")]
   public async Task ReplaceAsync_it_should_replace_the_correct_user()
   {
+    _user.AddRole(_readUsers);
+    await _userRepository.SaveAsync(_user);
+
     bool isDisabled = _user.IsDisabled;
 
     ReplaceUserPayload payload = new()
@@ -411,7 +451,8 @@ public class UserServiceTests : IntegrationTestingBase
       TimeZone = "America/New_York",
       Picture = "https://www.test.com/assets/img/profile.jpg",
       Profile = "   ",
-      Website = "https://www.test.com/"
+      Website = "https://www.test.com/",
+      Roles = new[] { _writeUsers.Id.Value, _manageApp.UniqueName }
     };
     User? user = await _userService.ReplaceAsync(_user.Id.Value, payload, CancellationToken);
     Assert.NotNull(user);
@@ -433,6 +474,10 @@ public class UserServiceTests : IntegrationTestingBase
     Assert.Equal(payload.Picture, user.Picture);
     Assert.Null(user.Profile);
     Assert.Equal(payload.Website, user.Website);
+
+    Assert.Equal(2, user.Roles.Count());
+    Assert.Contains(user.Roles, role => role.Id == _writeUsers.Id.Value);
+    Assert.Contains(user.Roles, role => role.UniqueName == _manageApp.UniqueName);
   }
 
   [Fact(DisplayName = "ReplaceAsync: it should return null when user is not found.")]
@@ -463,6 +508,22 @@ public class UserServiceTests : IntegrationTestingBase
     Assert.Equal(other.TenantId, exception.TenantId);
     Assert.Equal(payload.Email.Address, exception.EmailAddress);
     Assert.Equal("Email", exception.PropertyName);
+  }
+
+  [Fact(DisplayName = "ReplaceAsync: it should throw RolesNotFoundException when a role is missing.")]
+  public async Task ReplaceAsync_it_should_throw_RolesNotFoundException_when_a_role_is_missing()
+  {
+    RoleAggregate role = new(_roleSettings.Value.UniqueNameSettings, _manageApp.UniqueName, tenantId: null);
+    await _roleRepository.SaveAsync(role);
+
+    ReplaceUserPayload payload = new()
+    {
+      Roles = new[] { role.Id.Value }
+    };
+    var exception = await Assert.ThrowsAsync<RolesNotFoundException>(
+      async () => await _userService.ReplaceAsync(_user.Id.Value, payload, CancellationToken));
+    Assert.Equal(payload.Roles, exception.Ids);
+    Assert.Equal("Roles", exception.PropertyName);
   }
 
   [Fact(DisplayName = "ReplaceAsync: it should throw UniqueNameAlreadyUsedException when unique name is already used.")]
@@ -582,6 +643,25 @@ public class UserServiceTests : IntegrationTestingBase
     Assert.Equal("Email", exception.PropertyName);
   }
 
+  [Fact(DisplayName = "UpdateAsync: it should throw RolesNotFoundException when a role is missing.")]
+  public async Task UpdateAsync_it_should_throw_RolesNotFoundException_when_a_role_is_missing()
+  {
+    RoleAggregate role = new(_roleSettings.Value.UniqueNameSettings, _manageApp.UniqueName, tenantId: null);
+    await _roleRepository.SaveAsync(role);
+
+    UpdateUserPayload payload = new()
+    {
+      Roles = new[]
+      {
+        new RoleModification(role.Id.Value, CollectionAction.Add)
+      }
+    };
+    var exception = await Assert.ThrowsAsync<RolesNotFoundException>(
+      async () => await _userService.UpdateAsync(_user.Id.Value, payload, CancellationToken));
+    Assert.Equal(payload.Roles.Select(x => x.Role), exception.Ids);
+    Assert.Equal("Roles", exception.PropertyName);
+  }
+
   [Fact(DisplayName = "UpdateAsync: it should throw UniqueNameAlreadyUsedException when unique name is already used.")]
   public async Task UpdateAsync_it_should_throw_UniqueNameAlreadyUsedException_when_unique_name_is_already_used()
   {
@@ -602,6 +682,9 @@ public class UserServiceTests : IntegrationTestingBase
   [Fact(DisplayName = "UpdateAsync: it should update the correct user.")]
   public async Task UpdateAsync_it_should_update_the_correct_user()
   {
+    _user.AddRole(_manageApp);
+    await _userRepository.SaveAsync(_user);
+
     Assert.False(_user.HasPassword);
     Assert.NotNull(_user.Email);
     UpdateUserPayload payload = new()
@@ -637,7 +720,13 @@ public class UserServiceTests : IntegrationTestingBase
       TimeZone = new MayBe<string>("America/New_York"),
       Picture = new MayBe<string>("https://www.test.com/assets/img/profile.jpg"),
       Profile = new MayBe<string>("   "),
-      Website = new MayBe<string>("https://www.test.com/")
+      Website = new MayBe<string>("https://www.test.com/"),
+      Roles = new[]
+      {
+        new RoleModification(_manageApp.Id.Value, CollectionAction.Remove),
+        new RoleModification($" {_readUsers.UniqueName.ToUpper()} ", CollectionAction.Add),
+        new RoleModification(_writeUsers.Id.Value, CollectionAction.Remove)
+      }
     };
     Assert.NotNull(payload.Address.Value);
     Assert.NotNull(payload.Email.Value);
@@ -676,6 +765,9 @@ public class UserServiceTests : IntegrationTestingBase
       payload.LastName.Value), user.FullName);
     Assert.Null(user.Profile);
     Assert.True(user.HasPassword);
+
+    Role role = Assert.Single(user.Roles);
+    Assert.Equal(_readUsers.UniqueName, role.UniqueName);
   }
 
   public override async Task InitializeAsync()
@@ -683,5 +775,7 @@ public class UserServiceTests : IntegrationTestingBase
     await base.InitializeAsync();
 
     await _userRepository.SaveAsync(_user);
+
+    await _roleRepository.SaveAsync(new[] { _manageApp, _readUsers, _writeUsers });
   }
 }

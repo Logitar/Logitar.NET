@@ -1,4 +1,5 @@
 ﻿using Logitar.Identity.Core.Models;
+using Logitar.Identity.Core.Roles.Models;
 
 namespace Logitar.Identity.Core.Users.Models;
 
@@ -38,4 +39,6 @@ public record User : Aggregate
   public string? Picture { get; set; }
   public string? Profile { get; set; }
   public string? Website { get; set; }
+
+  public IEnumerable<Role> Roles { get; set; } = Enumerable.Empty<Role>();
 }

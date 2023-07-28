@@ -1,4 +1,5 @@
-﻿using Logitar.Identity.Domain;
+﻿using Logitar.Identity.Core.Payloads;
+using Logitar.Identity.Domain;
 
 namespace Logitar.Identity.Core.Users.Payloads;
 
@@ -26,4 +27,6 @@ public record UpdateUserPayload
   public MayBe<string>? Picture { get; set; }
   public MayBe<string>? Profile { get; set; }
   public MayBe<string>? Website { get; set; }
+
+  public IEnumerable<RoleModification> Roles { get; set; } = Enumerable.Empty<RoleModification>();
 }

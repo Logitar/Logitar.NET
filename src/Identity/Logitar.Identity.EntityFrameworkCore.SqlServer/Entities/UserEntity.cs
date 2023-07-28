@@ -1,4 +1,5 @@
-﻿using Logitar.Identity.Domain.Users.Events;
+﻿using Logitar.Identity.Domain;
+using Logitar.Identity.Domain.Users.Events;
 using Logitar.Identity.EntityFrameworkCore.SqlServer.Actors;
 using Logitar.Identity.EntityFrameworkCore.SqlServer.Constants;
 
@@ -97,6 +98,7 @@ public record UserEntity : AggregateEntity
   public string? Picture { get; private set; }
   public string? Website { get; private set; }
 
+  public List<RoleEntity> Roles { get; private set; } = new();
   public List<SessionEntity> Sessions { get; private set; } = new();
 
   public void Authenticate(UserAuthenticatedEvent authenticated)
@@ -173,9 +175,9 @@ public record UserEntity : AggregateEntity
     AuthenticatedOn = signedIn.OccurredOn;
   }
 
-  public void Update(UserUpdatedEvent updated, ActorEntity actor)
+  public void Update(UserUpdatedEvent updated, ActorEntity actor, IEnumerable<RoleEntity> roles)
   {
-    base.Update(updated, actor);
+    Update(updated, actor);
 
     if (updated.UniqueName != null)
     {
@@ -304,6 +306,22 @@ public record UserEntity : AggregateEntity
     if (updated.Website != null)
     {
       Website = updated.Website.Value?.ToString();
+    }
+
+    Dictionary<string, RoleEntity> rolesById = roles.ToDictionary(x => x.AggregateId, x => x);
+    foreach (var (roleId, action) in updated.Roles)
+    {
+      RoleEntity role = rolesById[roleId];
+
+      switch (action)
+      {
+        case CollectionAction.Add:
+          Roles.Add(role);
+          break;
+        case CollectionAction.Remove:
+          Roles.Remove(role);
+          break;
+      }
     }
   }
 }

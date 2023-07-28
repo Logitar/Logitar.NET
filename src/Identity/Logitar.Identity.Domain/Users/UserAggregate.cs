@@ -1,11 +1,13 @@
 ﻿using FluentValidation;
 using Logitar.EventSourcing;
+using Logitar.Identity.Domain.Roles;
 using Logitar.Identity.Domain.Sessions;
 using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.Domain.Users.Events;
 using Logitar.Identity.Domain.Users.Validators;
 using Logitar.Identity.Domain.Validators;
 using Logitar.Security;
+using System.Collections.Immutable;
 
 namespace Logitar.Identity.Domain.Users;
 
@@ -30,6 +32,8 @@ public class UserAggregate : AggregateRoot
   private Uri? _picture = null;
   private Uri? _profile = null;
   private Uri? _website = null;
+
+  private readonly HashSet<AggregateId> _roles = new();
 
   public UserAggregate(AggregateId id) : base(id)
   {
@@ -303,6 +307,30 @@ public class UserAggregate : AggregateRoot
     }
   }
 
+  public IImmutableSet<AggregateId> Roles => ImmutableHashSet.Create(_roles.ToArray());
+
+  public void AddRole(RoleAggregate role)
+  {
+    if (!_roles.Contains(role.Id))
+    {
+      UpdateRole(role.Id, CollectionAction.Add);
+    }
+  }
+  public void RemoveRole(RoleAggregate role) => RemoveRole(role.Id);
+  public void RemoveRole(AggregateId roleId)
+  {
+    if (_roles.Contains(roleId))
+    {
+      UpdateRole(roleId, CollectionAction.Remove);
+    }
+  }
+  private void UpdateRole(AggregateId id, CollectionAction action)
+  {
+    UserUpdatedEvent updated = GetLatestUpdatedEvent();
+    updated.Roles[id.Value] = action;
+    Apply(updated);
+  }
+
   public void Authenticate(IUserSettings userSettings, string password)
   {
     CheckStatus(userSettings);
@@ -456,6 +484,20 @@ public class UserAggregate : AggregateRoot
     if (updated.Website != null)
     {
       _website = updated.Website.Value;
+    }
+
+    foreach (var (id, action) in updated.Roles)
+    {
+      AggregateId roleId = new(id);
+      switch (action)
+      {
+        case CollectionAction.Add:
+          _roles.Add(roleId);
+          break;
+        case CollectionAction.Remove:
+          _roles.Remove(roleId);
+          break;
+      }
     }
   }
   protected UserUpdatedEvent GetLatestUpdatedEvent()

@@ -24,7 +24,12 @@ public class UserUpdatedEventHandler : INotificationHandler<UserUpdatedEvent>
       .SingleOrDefaultAsync(x => x.AggregateId == notification.AggregateId.Value, cancellationToken)
       ?? throw new EntityNotFoundException<UserEntity>(notification.AggregateId.Value);
 
-    user.Update(notification, actor);
+    IEnumerable<string> roleIds = notification.Roles.Select(x => x.Key);
+    RoleEntity[] roles = await _context.Roles
+      .Where(x => roleIds.Contains(x.AggregateId))
+      .ToArrayAsync(cancellationToken);
+
+    user.Update(notification, actor, roles);
 
     await _context.SaveChangesAsync(cancellationToken);
 
