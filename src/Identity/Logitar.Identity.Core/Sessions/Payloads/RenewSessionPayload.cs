@@ -1,6 +1,6 @@
 ﻿namespace Logitar.Identity.Core.Sessions.Payloads;
 
-public record RenewPayload
+public record RenewSessionPayload
 {
   public string RefreshToken { get; set; } = string.Empty;
 }

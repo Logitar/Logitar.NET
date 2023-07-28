@@ -17,21 +17,21 @@ using Microsoft.Extensions.Options;
 namespace Logitar.Identity.IntegrationTests.Sessions;
 
 [Trait(Traits.Category, Categories.Integration)]
-public class SessionServiceTests : IntegrationTestingBase
+public class SessionFacadeTests : IntegrationTestingBase
 {
   private const string Password = "G_rw)XW5?Z7>C$~9";
 
+  private readonly ISessionFacade _sessionFacade;
   private readonly ISessionRepository _sessionRepository;
-  private readonly ISessionService _sessionService;
   private readonly IUserRepository _userRepository;
   private readonly IOptions<UserSettings> _userSettings;
 
   private readonly UserAggregate _user;
 
-  public SessionServiceTests() : base()
+  public SessionFacadeTests() : base()
   {
+    _sessionFacade = ServiceProvider.GetRequiredService<ISessionFacade>();
     _sessionRepository = ServiceProvider.GetRequiredService<ISessionRepository>();
-    _sessionService = ServiceProvider.GetRequiredService<ISessionService>();
     _userRepository = ServiceProvider.GetRequiredService<IUserRepository>();
     _userSettings = ServiceProvider.GetRequiredService<IOptions<UserSettings>>();
 
@@ -50,7 +50,7 @@ public class SessionServiceTests : IntegrationTestingBase
       UserId = _user.Id.Value,
       IsPersistent = true
     };
-    Session session = await _sessionService.CreateAsync(payload, CancellationToken);
+    Session session = await _sessionFacade.CreateAsync(payload, CancellationToken);
     Assert.Equal(payload.UserId, session.User.Id);
     Assert.Equal(payload.IsPersistent, session.IsPersistent);
     Assert.Equal(session.User.Id, session.CreatedBy.Id);
@@ -67,7 +67,7 @@ public class SessionServiceTests : IntegrationTestingBase
       UserId = Guid.Empty.ToString()
     };
     var exception = await Assert.ThrowsAsync<AggregateNotFoundException<UserAggregate>>(
-      async () => await _sessionService.CreateAsync(payload, CancellationToken));
+      async () => await _sessionFacade.CreateAsync(payload, CancellationToken));
     Assert.Equal(payload.UserId, exception.Id);
     Assert.Equal("UserId", exception.PropertyName);
   }
@@ -83,7 +83,7 @@ public class SessionServiceTests : IntegrationTestingBase
       UserId = _user.Id.Value,
     };
     var exception = await Assert.ThrowsAsync<UserIsDisabledException>(
-      async () => await _sessionService.CreateAsync(payload, CancellationToken));
+      async () => await _sessionFacade.CreateAsync(payload, CancellationToken));
     Assert.Equal(_user.ToString(), exception.User);
   }
 
@@ -98,7 +98,7 @@ public class SessionServiceTests : IntegrationTestingBase
       UserId = _user.Id.Value,
     };
     var exception = await Assert.ThrowsAsync<UserIsNotConfirmedException>(
-      async () => await _sessionService.CreateAsync(payload, CancellationToken));
+      async () => await _sessionFacade.CreateAsync(payload, CancellationToken));
     Assert.Equal(_user.ToString(), exception.User);
   }
 
@@ -108,7 +108,7 @@ public class SessionServiceTests : IntegrationTestingBase
     SessionAggregate aggregate = _user.SignIn(_userSettings.Value);
     await _sessionRepository.SaveAsync(aggregate);
 
-    Session? session = await _sessionService.ReadAsync(id: aggregate.Id.Value, cancellationToken: CancellationToken);
+    Session? session = await _sessionFacade.ReadAsync(id: aggregate.Id.Value, cancellationToken: CancellationToken);
     Assert.NotNull(session);
     Assert.Equal(aggregate.Id.Value, session.Id);
   }
@@ -116,7 +116,7 @@ public class SessionServiceTests : IntegrationTestingBase
   [Fact(DisplayName = "ReadAsync: it should return null when session is not found.")]
   public async Task ReadAsync_it_should_return_null_when_session_is_not_found()
   {
-    Session? session = await _sessionService.ReadAsync(id: Guid.Empty.ToString(), cancellationToken: CancellationToken);
+    Session? session = await _sessionFacade.ReadAsync(id: Guid.Empty.ToString(), cancellationToken: CancellationToken);
     Assert.Null(session);
   }
 
@@ -126,11 +126,11 @@ public class SessionServiceTests : IntegrationTestingBase
     SessionAggregate aggregate = new(_user, isPersistent: true);
     await _sessionRepository.SaveAsync(aggregate);
 
-    RenewPayload payload = new()
+    RenewSessionPayload payload = new()
     {
       RefreshToken = new RefreshToken(aggregate).ToString()
     };
-    Session session = await _sessionService.RenewAsync(payload, CancellationToken);
+    Session session = await _sessionFacade.RenewAsync(payload, CancellationToken);
     Assert.Equal(_user.Id.Value, session.User.Id);
     Assert.Equal(session.User.Id, session.UpdatedBy.Id);
     Assert.True(session.IsPersistent);
@@ -141,12 +141,12 @@ public class SessionServiceTests : IntegrationTestingBase
   [Fact(DisplayName = "RenewAsync: it should throw InvalidCredentialsException when refresh token is not valid.")]
   public async Task RenewAsync_it_should_throw_InvalidCredentialsException_when_refresh_token_is_not_valid()
   {
-    RenewPayload payload = new()
+    RenewSessionPayload payload = new()
     {
       RefreshToken = "ID.abc.123"
     };
     var exception = await Assert.ThrowsAsync<InvalidCredentialsException>(
-      async () => await _sessionService.RenewAsync(payload, CancellationToken));
+      async () => await _sessionFacade.RenewAsync(payload, CancellationToken));
     Assert.StartsWith($"The refresh token '{payload.RefreshToken}' is not valid.", exception.Message);
   }
 
@@ -154,12 +154,12 @@ public class SessionServiceTests : IntegrationTestingBase
   public async Task RenewAsync_it_should_throw_InvalidCredentialsException_when_session_is_not_found()
   {
     SessionAggregate session = new(_user, isPersistent: true);
-    RenewPayload payload = new()
+    RenewSessionPayload payload = new()
     {
       RefreshToken = new RefreshToken(session).ToString()
     };
     var exception = await Assert.ThrowsAsync<InvalidCredentialsException>(
-      async () => await _sessionService.RenewAsync(payload, CancellationToken));
+      async () => await _sessionFacade.RenewAsync(payload, CancellationToken));
     Assert.StartsWith($"The session '{session.Id}' could not be found.", exception.Message);
   }
 
@@ -173,12 +173,12 @@ public class SessionServiceTests : IntegrationTestingBase
     session.GetType().GetProperty("Secret")?.SetValue(session, secret);
     Assert.NotNull(session.Secret);
 
-    RenewPayload payload = new()
+    RenewSessionPayload payload = new()
     {
       RefreshToken = new RefreshToken(session).ToString()
     };
     var exception = await Assert.ThrowsAsync<InvalidCredentialsException>(
-      async () => await _sessionService.RenewAsync(payload, CancellationToken));
+      async () => await _sessionFacade.RenewAsync(payload, CancellationToken));
     Assert.StartsWith("The specified secret does not match the session.", exception.Message);
   }
 
@@ -192,12 +192,12 @@ public class SessionServiceTests : IntegrationTestingBase
     session.GetType().GetProperty("Secret")?.SetValue(session, secret);
     Assert.NotNull(session.Secret);
 
-    RenewPayload payload = new()
+    RenewSessionPayload payload = new()
     {
       RefreshToken = new RefreshToken(session).ToString()
     };
     var exception = await Assert.ThrowsAsync<InvalidCredentialsException>(
-      async () => await _sessionService.RenewAsync(payload, CancellationToken));
+      async () => await _sessionFacade.RenewAsync(payload, CancellationToken));
     Assert.StartsWith("The specified secret does not match the session.", exception.Message);
   }
 
@@ -208,12 +208,12 @@ public class SessionServiceTests : IntegrationTestingBase
     session.SignOut();
     await _sessionRepository.SaveAsync(session);
 
-    RenewPayload payload = new()
+    RenewSessionPayload payload = new()
     {
       RefreshToken = new RefreshToken(session).ToString()
     };
     var exception = await Assert.ThrowsAsync<SessionIsNotActiveException>(
-      async () => await _sessionService.RenewAsync(payload, CancellationToken));
+      async () => await _sessionFacade.RenewAsync(payload, CancellationToken));
     Assert.Equal(session.ToString(), exception.Session);
   }
 
@@ -261,7 +261,7 @@ public class SessionServiceTests : IntegrationTestingBase
     payload.UserId.Operator = (SearchOperator)(-1);
     payload.UserId.Terms = new[] { new SearchTerm(_user.Id.Value) };
 
-    SearchResults<Session> results = await _sessionService.SearchAsync(payload, CancellationToken);
+    SearchResults<Session> results = await _sessionFacade.SearchAsync(payload, CancellationToken);
     Assert.Equal(3, results.Total);
     Assert.Equal(2, results.Items.Count());
     Assert.Equal(session2.Id.Value, results.Items.ElementAt(0).Id);
@@ -283,7 +283,7 @@ public class SessionServiceTests : IntegrationTestingBase
       UniqueName = emailAddress,
       Password = Password
     };
-    Session session = await _sessionService.SignInAsync(payload, CancellationToken);
+    Session session = await _sessionFacade.SignInAsync(payload, CancellationToken);
     Assert.Equal(_user.Id.Value, session.User.Id);
     Assert.Equal(payload.IsPersistent, session.IsPersistent);
     Assert.Equal(session.User.Id, session.CreatedBy.Id);
@@ -304,7 +304,7 @@ public class SessionServiceTests : IntegrationTestingBase
       Password = Password,
       IsPersistent = true
     };
-    Session session = await _sessionService.SignInAsync(payload, CancellationToken);
+    Session session = await _sessionFacade.SignInAsync(payload, CancellationToken);
     Assert.Equal(_user.Id.Value, session.User.Id);
     Assert.Equal(payload.IsPersistent, session.IsPersistent);
     Assert.Equal(session.User.Id, session.CreatedBy.Id);
@@ -326,7 +326,7 @@ public class SessionServiceTests : IntegrationTestingBase
       Password = "AAaa!!11"
     };
     var exception = await Assert.ThrowsAsync<InvalidCredentialsException>(
-      async () => await _sessionService.SignInAsync(payload, CancellationToken));
+      async () => await _sessionFacade.SignInAsync(payload, CancellationToken));
     Assert.StartsWith("The specified password does not match the user.", exception.Message);
   }
 
@@ -340,7 +340,7 @@ public class SessionServiceTests : IntegrationTestingBase
       Password = Password
     };
     var exception = await Assert.ThrowsAsync<InvalidCredentialsException>(
-      async () => await _sessionService.SignInAsync(payload, CancellationToken));
+      async () => await _sessionFacade.SignInAsync(payload, CancellationToken));
     Assert.StartsWith("The specified password does not match the user.", exception.Message);
   }
 
@@ -353,7 +353,7 @@ public class SessionServiceTests : IntegrationTestingBase
       UniqueName = _user.UniqueName
     };
     var exception = await Assert.ThrowsAsync<InvalidCredentialsException>(
-      async () => await _sessionService.SignInAsync(payload, CancellationToken));
+      async () => await _sessionFacade.SignInAsync(payload, CancellationToken));
     Assert.StartsWith("The specified user could not be found.", exception.Message);
   }
 
@@ -369,7 +369,7 @@ public class SessionServiceTests : IntegrationTestingBase
       UniqueName = _user.UniqueName
     };
     var exception = await Assert.ThrowsAsync<UserIsDisabledException>(
-      async () => await _sessionService.SignInAsync(payload, CancellationToken));
+      async () => await _sessionFacade.SignInAsync(payload, CancellationToken));
     Assert.Equal(_user.ToString(), exception.User);
   }
 
@@ -385,14 +385,14 @@ public class SessionServiceTests : IntegrationTestingBase
       UniqueName = _user.UniqueName
     };
     var exception = await Assert.ThrowsAsync<UserIsNotConfirmedException>(
-      async () => await _sessionService.SignInAsync(payload, CancellationToken));
+      async () => await _sessionFacade.SignInAsync(payload, CancellationToken));
     Assert.Equal(_user.ToString(), exception.User);
   }
 
   [Fact(DisplayName = "SignOutAsync: it return null when session is not found.")]
   public async Task SignOutAsync_it_return_null_when_session_is_not_found()
   {
-    Session? session = await _sessionService.SignOutAsync(Guid.Empty.ToString(), CancellationToken);
+    Session? session = await _sessionFacade.SignOutAsync(Guid.Empty.ToString(), CancellationToken);
     Assert.Null(session);
   }
 
@@ -402,7 +402,7 @@ public class SessionServiceTests : IntegrationTestingBase
     SessionAggregate aggregate = new(_user);
     await _sessionRepository.SaveAsync(aggregate);
 
-    Session? session = await _sessionService.SignOutAsync(aggregate.Id.Value, CancellationToken);
+    Session? session = await _sessionFacade.SignOutAsync(aggregate.Id.Value, CancellationToken);
     Assert.NotNull(session);
     Assert.Equal(aggregate.Id.Value, session.Id);
     Assert.False(session.IsActive);

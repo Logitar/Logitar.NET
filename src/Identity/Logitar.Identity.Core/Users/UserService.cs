@@ -11,25 +11,26 @@ using Logitar.Identity.Domain.Roles;
 using Logitar.Identity.Domain.Sessions;
 using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.Domain.Users;
+using MediatR;
 using Microsoft.Extensions.Options;
 
 namespace Logitar.Identity.Core.Users;
 
 public class UserService : IUserService
 {
-  private readonly IDeleteSessionsCommand _deleteSessionsCommand;
   private readonly IFindRolesQuery _findRolesQuery;
+  private readonly IMediator _mediator;
   private readonly ISessionRepository _sessionRepository;
   private readonly IUserQuerier _userQuerier;
   private readonly IUserRepository _userRepository;
   private readonly IOptions<UserSettings> _userSettings;
 
-  public UserService(IDeleteSessionsCommand deleteSessionsCommand, IFindRolesQuery findRolesQuery,
+  public UserService(IFindRolesQuery findRolesQuery, IMediator mediator,
     ISessionRepository sessionRepository, IUserQuerier userQuerier, IUserRepository userRepository,
     IOptions<UserSettings> userSettings)
   {
-    _deleteSessionsCommand = deleteSessionsCommand;
     _findRolesQuery = findRolesQuery;
+    _mediator = mediator;
     _sessionRepository = sessionRepository;
     _userQuerier = userQuerier;
     _userRepository = userRepository;
@@ -156,7 +157,7 @@ public class UserService : IUserService
 
     user.Delete();
 
-    await _deleteSessionsCommand.ExecuteAsync(user, cancellationToken);
+    await _mediator.Send(new DeleteUserSessionsCommand(user), cancellationToken);
 
     await _userRepository.SaveAsync(user, cancellationToken);
 

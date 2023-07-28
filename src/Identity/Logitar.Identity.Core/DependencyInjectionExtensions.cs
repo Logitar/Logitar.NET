@@ -3,7 +3,6 @@ using Logitar.Identity.Core.Roles;
 using Logitar.Identity.Core.Roles.Commands;
 using Logitar.Identity.Core.Roles.Queries;
 using Logitar.Identity.Core.Sessions;
-using Logitar.Identity.Core.Sessions.Commands;
 using Logitar.Identity.Core.Tokens;
 using Logitar.Identity.Core.Users;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,22 +27,21 @@ public static class DependencyInjectionExtensions
 
   private static IServiceCollection AddApplicationFacades(this IServiceCollection services)
   {
-    return services.AddTransient<ITokenFacade, TokenFacade>();
+    return services
+      .AddTransient<ISessionFacade, SessionFacade>()
+      .AddTransient<ITokenFacade, TokenFacade>();
   }
   private static IServiceCollection AddApplicationServices(this IServiceCollection services)
   {
     return services
       .AddTransient<IApiKeyService, ApiKeyService>()
       .AddTransient<IRoleService, RoleService>()
-      .AddTransient<ISessionService, SessionService>()
       .AddTransient<IUserService, UserService>();
   }
 
   private static IServiceCollection AddCommands(this IServiceCollection services)
   {
-    return services
-      .AddTransient<IDeleteRoleCommand, DeleteRoleCommandHandler>()
-      .AddTransient<IDeleteSessionsCommand, DeleteSessionsCommandHandler>();
+    return services.AddTransient<IDeleteRoleCommand, DeleteRoleCommandHandler>();
   }
 
   private static IServiceCollection AddQueries(this IServiceCollection services)
