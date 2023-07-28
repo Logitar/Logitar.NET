@@ -14,7 +14,7 @@ public class TokenFacade : ITokenFacade
     _mediator = mediator;
   }
 
-  public async Task<CreatedToken> CreateAsync(CreateTokenPayload payload, CancellationToken cancellationToken)
+  public virtual async Task<CreatedToken> CreateAsync(CreateTokenPayload payload, CancellationToken cancellationToken)
   {
     return await _mediator.Send(new CreateTokenCommand(payload), cancellationToken);
   }
