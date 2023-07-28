@@ -4,7 +4,7 @@ using Logitar.Identity.Core.Users.Payloads;
 
 namespace Logitar.Identity.Core.Users;
 
-public interface IUserService
+public interface IUserFacade
 {
   Task<User> AuthenticateAsync(AuthenticateUserPayload payload, CancellationToken cancellationToken = default);
   Task<User?> ChangePasswordAsync(string id, ChangePasswordPayload payload, CancellationToken cancellationToken = default);

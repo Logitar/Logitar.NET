@@ -15,22 +15,12 @@ public static class DependencyInjectionExtensions
     Assembly assembly = typeof(DependencyInjectionExtensions).Assembly;
 
     return services
-      .AddApplicationFacades()
-      .AddApplicationServices()
       .AddMediatR(config => config.RegisterServicesFromAssembly(assembly))
-      .AddTransient<ITokenManager, JsonWebTokenManager>();
-  }
-
-  private static IServiceCollection AddApplicationFacades(this IServiceCollection services)
-  {
-    return services
+      .AddTransient<ITokenManager, JsonWebTokenManager>()
       .AddTransient<IApiKeyFacade, ApiKeyFacade>()
       .AddTransient<IRoleFacade, RoleFacade>()
       .AddTransient<ISessionFacade, SessionFacade>()
-      .AddTransient<ITokenFacade, TokenFacade>();
-  }
-  private static IServiceCollection AddApplicationServices(this IServiceCollection services)
-  {
-    return services.AddTransient<IUserService, UserService>();
+      .AddTransient<ITokenFacade, TokenFacade>()
+      .AddTransient<IUserFacade, UserFacade>();
   }
 }

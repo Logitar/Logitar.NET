@@ -23,13 +23,13 @@ using Microsoft.Extensions.Options;
 namespace Logitar.Identity.IntegrationTests.Users;
 
 [Trait(Traits.Category, Categories.Integration)]
-public class UserServiceTests : IntegrationTestingBase
+public class UserFacadeTests : IntegrationTestingBase
 {
   private readonly IRoleRepository _roleRepository;
   private readonly IOptions<RoleSettings> _roleSettings;
   private readonly ISessionRepository _sessionRepository;
+  private readonly IUserFacade _userFacade;
   private readonly IUserRepository _userRepository;
-  private readonly IUserService _userService;
   private readonly IOptions<UserSettings> _userSettings;
 
   private readonly UserAggregate _user;
@@ -37,13 +37,13 @@ public class UserServiceTests : IntegrationTestingBase
   private readonly RoleAggregate _readUsers;
   private readonly RoleAggregate _writeUsers;
 
-  public UserServiceTests() : base()
+  public UserFacadeTests() : base()
   {
     _roleRepository = ServiceProvider.GetRequiredService<IRoleRepository>();
     _roleSettings = ServiceProvider.GetRequiredService<IOptions<RoleSettings>>();
     _sessionRepository = ServiceProvider.GetRequiredService<ISessionRepository>();
+    _userFacade = ServiceProvider.GetRequiredService<IUserFacade>();
     _userRepository = ServiceProvider.GetRequiredService<IUserRepository>();
-    _userService = ServiceProvider.GetRequiredService<IUserService>();
     _userSettings = ServiceProvider.GetRequiredService<IOptions<UserSettings>>();
 
     UserSettings userSettings = _userSettings.Value;
@@ -73,7 +73,7 @@ public class UserServiceTests : IntegrationTestingBase
 
     Assert.Null(_user.AuthenticatedOn);
 
-    User user = await _userService.AuthenticateAsync(payload, CancellationToken);
+    User user = await _userFacade.AuthenticateAsync(payload, CancellationToken);
     Assert.Equal(_user.Id.Value, user.Id);
     Assert.NotNull(user.AuthenticatedOn);
   }
@@ -88,7 +88,7 @@ public class UserServiceTests : IntegrationTestingBase
       Password = "Test123!"
     };
     var exception = await Assert.ThrowsAsync<InvalidCredentialsException>(
-      async () => await _userService.AuthenticateAsync(payload, CancellationToken));
+      async () => await _userFacade.AuthenticateAsync(payload, CancellationToken));
     Assert.StartsWith("The specified password does not match the user.", exception.Message);
   }
 
@@ -101,7 +101,7 @@ public class UserServiceTests : IntegrationTestingBase
       UniqueName = $"{_user.UniqueName}2"
     };
     var exception = await Assert.ThrowsAsync<InvalidCredentialsException>(
-      async () => await _userService.AuthenticateAsync(payload, CancellationToken));
+      async () => await _userFacade.AuthenticateAsync(payload, CancellationToken));
     Assert.StartsWith("The specified user could not be found.", exception.Message);
   }
 
@@ -118,7 +118,7 @@ public class UserServiceTests : IntegrationTestingBase
       Password = "Test123!"
     };
     var exception = await Assert.ThrowsAsync<UserIsDisabledException>(
-      async () => await _userService.AuthenticateAsync(payload, CancellationToken));
+      async () => await _userFacade.AuthenticateAsync(payload, CancellationToken));
     Assert.Equal(_user.ToString(), exception.User);
   }
 
@@ -135,7 +135,7 @@ public class UserServiceTests : IntegrationTestingBase
       Password = "Test123!"
     };
     var exception = await Assert.ThrowsAsync<UserIsNotConfirmedException>(
-      async () => await _userService.AuthenticateAsync(payload, CancellationToken));
+      async () => await _userFacade.AuthenticateAsync(payload, CancellationToken));
     Assert.Equal(_user.ToString(), exception.User);
   }
 
@@ -151,7 +151,7 @@ public class UserServiceTests : IntegrationTestingBase
       Current = "Test123!",
       Password = "yEmZS(C@W39+"
     };
-    User? user = await _userService.ChangePasswordAsync(_user.Id.Value, payload, CancellationToken);
+    User? user = await _userFacade.ChangePasswordAsync(_user.Id.Value, payload, CancellationToken);
     Assert.NotNull(user);
     Assert.NotNull(user.PasswordChangedOn);
     Assert.True(user.HasPassword);
@@ -170,7 +170,7 @@ public class UserServiceTests : IntegrationTestingBase
   public async Task ChangePasswordAsync_it_should_return_null_when_user_is_not_found()
   {
     ChangePasswordPayload payload = new();
-    User? user = await _userService.ChangePasswordAsync(Guid.Empty.ToString(), payload, CancellationToken);
+    User? user = await _userFacade.ChangePasswordAsync(Guid.Empty.ToString(), payload, CancellationToken);
     Assert.Null(user);
   }
 
@@ -186,7 +186,7 @@ public class UserServiceTests : IntegrationTestingBase
       Current = "AAaa!!11"
     };
     await Assert.ThrowsAsync<InvalidCredentialsException>(
-      async () => await _userService.ChangePasswordAsync(_user.Id.Value, payload, CancellationToken));
+      async () => await _userFacade.ChangePasswordAsync(_user.Id.Value, payload, CancellationToken));
   }
 
   [Fact(DisplayName = "ChangePasswordAsync: it should throw InvalidCredentialsException when user has no password.")]
@@ -194,7 +194,7 @@ public class UserServiceTests : IntegrationTestingBase
   {
     ChangePasswordPayload payload = new();
     await Assert.ThrowsAsync<InvalidCredentialsException>(
-      async () => await _userService.ChangePasswordAsync(_user.Id.Value, payload, CancellationToken));
+      async () => await _userFacade.ChangePasswordAsync(_user.Id.Value, payload, CancellationToken));
   }
 
   [Fact(DisplayName = "ChangePasswordAsync: it should throw ValidationException when new password is not valid.")]
@@ -210,7 +210,7 @@ public class UserServiceTests : IntegrationTestingBase
       Password = "AAaa!!11"
     };
     var exception = await Assert.ThrowsAsync<ValidationException>(
-      async () => await _userService.ChangePasswordAsync(_user.Id.Value, payload, CancellationToken));
+      async () => await _userFacade.ChangePasswordAsync(_user.Id.Value, payload, CancellationToken));
     ValidationFailure failure = exception.Errors.Single();
     Assert.Equal("PasswordRequiresUniqueChars", failure.ErrorCode);
     Assert.Equal("Password", failure.PropertyName);
@@ -262,7 +262,7 @@ public class UserServiceTests : IntegrationTestingBase
       Website = "https://www.test.com/",
       Roles = new[] { $" {_readUsers.UniqueName.ToUpper()} " }
     };
-    User user = await _userService.CreateAsync(payload, CancellationToken);
+    User user = await _userFacade.CreateAsync(payload, CancellationToken);
     Assert.NotNull(user.Address);
     Assert.NotNull(user.Email);
     Assert.NotNull(user.Phone);
@@ -321,7 +321,7 @@ public class UserServiceTests : IntegrationTestingBase
       }
     };
     var exception = await Assert.ThrowsAsync<EmailAddressAlreadyUsedException>(
-      async () => await _userService.CreateAsync(payload, CancellationToken));
+      async () => await _userFacade.CreateAsync(payload, CancellationToken));
     Assert.Equal(payload.TenantId, exception.TenantId);
     Assert.Equal(payload.Email.Address, exception.EmailAddress);
     Assert.Equal("Email", exception.PropertyName);
@@ -340,7 +340,7 @@ public class UserServiceTests : IntegrationTestingBase
       Roles = new[] { role.Id.Value }
     };
     var exception = await Assert.ThrowsAsync<RolesNotFoundException>(
-      async () => await _userService.CreateAsync(payload, CancellationToken));
+      async () => await _userFacade.CreateAsync(payload, CancellationToken));
     Assert.Equal(payload.Roles, exception.Ids);
     Assert.Equal("Roles", exception.PropertyName);
   }
@@ -354,7 +354,7 @@ public class UserServiceTests : IntegrationTestingBase
       UniqueName = _user.UniqueName
     };
     var exception = await Assert.ThrowsAsync<UniqueNameAlreadyUsedException<UserAggregate>>(
-      async () => await _userService.CreateAsync(payload, CancellationToken));
+      async () => await _userFacade.CreateAsync(payload, CancellationToken));
     Assert.Equal(payload.TenantId, exception.TenantId);
     Assert.Equal(payload.UniqueName, exception.UniqueName);
     Assert.Equal("UniqueName", exception.PropertyName);
@@ -368,7 +368,7 @@ public class UserServiceTests : IntegrationTestingBase
 
     Assert.True(await IdentityContext.Sessions.AnyAsync());
 
-    User? user = await _userService.DeleteAsync(_user.Id.Value, CancellationToken);
+    User? user = await _userFacade.DeleteAsync(_user.Id.Value, CancellationToken);
     Assert.NotNull(user);
     Assert.Equal(_user.Id.Value, user.Id);
 
@@ -382,14 +382,14 @@ public class UserServiceTests : IntegrationTestingBase
   [Fact(DisplayName = "DeleteAsync: it should return null when user is not found.")]
   public async Task DeleteAsync_it_should_return_null_when_user_is_not_found()
   {
-    User? user = await _userService.DeleteAsync(Guid.Empty.ToString(), CancellationToken);
+    User? user = await _userFacade.DeleteAsync(Guid.Empty.ToString(), CancellationToken);
     Assert.Null(user);
   }
 
   [Fact(DisplayName = "ReadAsync: it should read the correct user.")]
   public async Task ReadAsync_it_should_read_the_correct_user()
   {
-    User? user = await _userService.ReadAsync(_user.Id.Value, _user.TenantId, _user.UniqueName, CancellationToken);
+    User? user = await _userFacade.ReadAsync(_user.Id.Value, _user.TenantId, _user.UniqueName, CancellationToken);
     Assert.NotNull(user);
     Assert.Equal(_user.Id.Value, user.Id);
   }
@@ -398,7 +398,7 @@ public class UserServiceTests : IntegrationTestingBase
   public async Task ReadAsync_it_should_read_the_correct_user_by_EmailAddress()
   {
     Assert.NotNull(_user.Email);
-    User? user = await _userService.ReadAsync(id: null, _user.TenantId, _user.Email.Address, CancellationToken);
+    User? user = await _userFacade.ReadAsync(id: null, _user.TenantId, _user.Email.Address, CancellationToken);
     Assert.NotNull(user);
     Assert.Equal(_user.Id.Value, user.Id);
   }
@@ -406,7 +406,7 @@ public class UserServiceTests : IntegrationTestingBase
   [Fact(DisplayName = "ReadAsync: it should return null when user is not found.")]
   public async Task ReadAsync_it_should_return_null_when_user_is_not_found()
   {
-    User? user = await _userService.ReadAsync(id: Guid.Empty.ToString(), cancellationToken: CancellationToken);
+    User? user = await _userFacade.ReadAsync(id: Guid.Empty.ToString(), cancellationToken: CancellationToken);
     Assert.Null(user);
   }
 
@@ -418,7 +418,7 @@ public class UserServiceTests : IntegrationTestingBase
     await _userRepository.SaveAsync(other);
 
     var exception = await Assert.ThrowsAsync<TooManyResultsException<User>>(
-      async () => await _userService.ReadAsync(_user.Id.Value, tenantId: null, other.UniqueName, CancellationToken));
+      async () => await _userFacade.ReadAsync(_user.Id.Value, tenantId: null, other.UniqueName, CancellationToken));
     Assert.Equal(1, exception.Expected);
     Assert.Equal(2, exception.Actual);
   }
@@ -454,7 +454,7 @@ public class UserServiceTests : IntegrationTestingBase
       Website = "https://www.test.com/",
       Roles = new[] { _writeUsers.Id.Value, _manageApp.UniqueName }
     };
-    User? user = await _userService.ReplaceAsync(_user.Id.Value, payload, CancellationToken);
+    User? user = await _userFacade.ReplaceAsync(_user.Id.Value, payload, CancellationToken);
     Assert.NotNull(user);
     Assert.Equal(payload.UniqueName.Trim(), user.UniqueName);
     Assert.False(user.HasPassword);
@@ -484,7 +484,7 @@ public class UserServiceTests : IntegrationTestingBase
   public async Task ReplaceAsync_it_should_return_null_when_user_is_not_found()
   {
     ReplaceUserPayload payload = new();
-    User? user = await _userService.ReplaceAsync(Guid.Empty.ToString(), payload, CancellationToken);
+    User? user = await _userFacade.ReplaceAsync(Guid.Empty.ToString(), payload, CancellationToken);
     Assert.Null(user);
   }
 
@@ -504,7 +504,7 @@ public class UserServiceTests : IntegrationTestingBase
       }
     };
     var exception = await Assert.ThrowsAsync<EmailAddressAlreadyUsedException>(
-      async () => await _userService.ReplaceAsync(other.Id.Value, payload, CancellationToken));
+      async () => await _userFacade.ReplaceAsync(other.Id.Value, payload, CancellationToken));
     Assert.Equal(other.TenantId, exception.TenantId);
     Assert.Equal(payload.Email.Address, exception.EmailAddress);
     Assert.Equal("Email", exception.PropertyName);
@@ -521,7 +521,7 @@ public class UserServiceTests : IntegrationTestingBase
       Roles = new[] { role.Id.Value }
     };
     var exception = await Assert.ThrowsAsync<RolesNotFoundException>(
-      async () => await _userService.ReplaceAsync(_user.Id.Value, payload, CancellationToken));
+      async () => await _userFacade.ReplaceAsync(_user.Id.Value, payload, CancellationToken));
     Assert.Equal(payload.Roles, exception.Ids);
     Assert.Equal("Roles", exception.PropertyName);
   }
@@ -537,7 +537,7 @@ public class UserServiceTests : IntegrationTestingBase
       UniqueName = _user.UniqueName
     };
     var exception = await Assert.ThrowsAsync<UniqueNameAlreadyUsedException<UserAggregate>>(
-      async () => await _userService.ReplaceAsync(other.Id.Value, payload, CancellationToken));
+      async () => await _userFacade.ReplaceAsync(other.Id.Value, payload, CancellationToken));
     Assert.Equal(other.TenantId, exception.TenantId);
     Assert.Equal(payload.UniqueName, exception.UniqueName);
     Assert.Equal("UniqueName", exception.PropertyName);
@@ -572,7 +572,7 @@ public class UserServiceTests : IntegrationTestingBase
     payload.Search.Terms = new[] { new SearchTerm("%ADMIN%") };
     payload.TenantId.Terms = new[] { new SearchTerm(tenantId) };
 
-    SearchResults<User> results = await _userService.SearchAsync(payload, CancellationToken);
+    SearchResults<User> results = await _userFacade.SearchAsync(payload, CancellationToken);
     Assert.Equal(3, results.Total);
     Assert.Equal(2, results.Items.Count());
     Assert.Equal(user2.Id.Value, results.Items.ElementAt(0).Id);
@@ -582,7 +582,7 @@ public class UserServiceTests : IntegrationTestingBase
   [Fact(DisplayName = "SignOutAsync: it should return null when user is not found.")]
   public async Task SignOutAsync_it_should_return_null_when_user_is_not_found()
   {
-    User? user = await _userService.SignOutAsync(Guid.Empty.ToString(), CancellationToken);
+    User? user = await _userFacade.SignOutAsync(Guid.Empty.ToString(), CancellationToken);
     Assert.Null(user);
   }
 
@@ -601,7 +601,7 @@ public class UserServiceTests : IntegrationTestingBase
       .ToArrayAsync();
     Assert.NotEmpty(sessions);
 
-    User? user = await _userService.SignOutAsync(_user.Id.Value, CancellationToken);
+    User? user = await _userFacade.SignOutAsync(_user.Id.Value, CancellationToken);
     Assert.NotNull(user);
     Assert.Equal(_user.Id.Value, user.Id);
 
@@ -616,7 +616,7 @@ public class UserServiceTests : IntegrationTestingBase
   public async Task UpdateAsync_it_should_return_null_when_user_is_not_found()
   {
     UpdateUserPayload payload = new();
-    User? user = await _userService.UpdateAsync(Guid.Empty.ToString(), payload, CancellationToken);
+    User? user = await _userFacade.UpdateAsync(Guid.Empty.ToString(), payload, CancellationToken);
     Assert.Null(user);
   }
 
@@ -637,7 +637,7 @@ public class UserServiceTests : IntegrationTestingBase
     };
     Assert.NotNull(payload.Email.Value);
     var exception = await Assert.ThrowsAsync<EmailAddressAlreadyUsedException>(
-      async () => await _userService.UpdateAsync(other.Id.Value, payload, CancellationToken));
+      async () => await _userFacade.UpdateAsync(other.Id.Value, payload, CancellationToken));
     Assert.Equal(other.TenantId, exception.TenantId);
     Assert.Equal(payload.Email.Value.Address, exception.EmailAddress);
     Assert.Equal("Email", exception.PropertyName);
@@ -657,7 +657,7 @@ public class UserServiceTests : IntegrationTestingBase
       }
     };
     var exception = await Assert.ThrowsAsync<RolesNotFoundException>(
-      async () => await _userService.UpdateAsync(_user.Id.Value, payload, CancellationToken));
+      async () => await _userFacade.UpdateAsync(_user.Id.Value, payload, CancellationToken));
     Assert.Equal(payload.Roles.Select(x => x.Role), exception.Ids);
     Assert.Equal("Roles", exception.PropertyName);
   }
@@ -673,7 +673,7 @@ public class UserServiceTests : IntegrationTestingBase
       UniqueName = _user.UniqueName.ToUpper()
     };
     var exception = await Assert.ThrowsAsync<UniqueNameAlreadyUsedException<UserAggregate>>(
-      async () => await _userService.UpdateAsync(other.Id.Value, payload, CancellationToken));
+      async () => await _userFacade.UpdateAsync(other.Id.Value, payload, CancellationToken));
     Assert.Equal(other.TenantId, exception.TenantId);
     Assert.Equal(payload.UniqueName.Trim(), exception.UniqueName);
     Assert.Equal("UniqueName", exception.PropertyName);
@@ -731,7 +731,7 @@ public class UserServiceTests : IntegrationTestingBase
     Assert.NotNull(payload.Address.Value);
     Assert.NotNull(payload.Email.Value);
     Assert.NotNull(payload.Phone.Value);
-    User? user = await _userService.UpdateAsync(_user.Id.Value, payload, CancellationToken);
+    User? user = await _userFacade.UpdateAsync(_user.Id.Value, payload, CancellationToken);
     Assert.NotNull(user);
     Assert.NotNull(user.Address);
     Assert.NotNull(user.Email);
