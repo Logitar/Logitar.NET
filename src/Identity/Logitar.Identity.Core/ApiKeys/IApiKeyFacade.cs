@@ -4,7 +4,7 @@ using Logitar.Identity.Core.Models;
 
 namespace Logitar.Identity.Core.ApiKeys;
 
-public interface IApiKeyService
+public interface IApiKeyFacade
 {
   Task<ApiKey> AuthenticateAsync(AuthenticateApiKeyPayload payload, CancellationToken cancellationToken = default);
   Task<ApiKey> CreateAsync(CreateApiKeyPayload payload, CancellationToken cancellationToken = default);

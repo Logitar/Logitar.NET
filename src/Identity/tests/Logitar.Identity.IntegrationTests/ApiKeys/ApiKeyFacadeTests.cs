@@ -23,10 +23,10 @@ using Microsoft.Extensions.Options;
 namespace Logitar.Identity.IntegrationTests.ApiKeys;
 
 [Trait(Traits.Category, Categories.Integration)]
-public class ApiKeyServiceTests : IntegrationTestingBase
+public class ApiKeyFacadeTests : IntegrationTestingBase
 {
+  private readonly IApiKeyFacade _apiKeyFacade;
   private readonly IApiKeyRepository _apiKeyRepository;
-  private readonly IApiKeyService _apiKeyService;
   private readonly IRoleRepository _roleRepository;
   private readonly IOptions<RoleSettings> _roleSettings;
 
@@ -35,10 +35,10 @@ public class ApiKeyServiceTests : IntegrationTestingBase
   private readonly RoleAggregate _readUsers;
   private readonly RoleAggregate _writeUsers;
 
-  public ApiKeyServiceTests() : base()
+  public ApiKeyFacadeTests() : base()
   {
+    _apiKeyFacade = ServiceProvider.GetRequiredService<IApiKeyFacade>();
     _apiKeyRepository = ServiceProvider.GetRequiredService<IApiKeyRepository>();
-    _apiKeyService = ServiceProvider.GetRequiredService<IApiKeyService>();
     _roleRepository = ServiceProvider.GetRequiredService<IRoleRepository>();
     _roleSettings = ServiceProvider.GetRequiredService<IOptions<RoleSettings>>();
 
@@ -62,7 +62,7 @@ public class ApiKeyServiceTests : IntegrationTestingBase
       Id = _apiKey.Id.Value,
       Secret = _apiKey.Secret
     };
-    ApiKey apiKey = await _apiKeyService.AuthenticateAsync(payload, CancellationToken);
+    ApiKey apiKey = await _apiKeyFacade.AuthenticateAsync(payload, CancellationToken);
     Assert.Equal(_apiKey.Id.Value, apiKey.Id);
   }
 
@@ -74,7 +74,7 @@ public class ApiKeyServiceTests : IntegrationTestingBase
       Id = Guid.Empty.ToString()
     };
     var exception = await Assert.ThrowsAsync<InvalidCredentialsException>(
-      async () => await _apiKeyService.AuthenticateAsync(payload, CancellationToken));
+      async () => await _apiKeyFacade.AuthenticateAsync(payload, CancellationToken));
     Assert.StartsWith($"The API key 'Id={payload.Id}' could not be found.", exception.Message);
   }
 
@@ -87,7 +87,7 @@ public class ApiKeyServiceTests : IntegrationTestingBase
       Secret = new byte[32]
     };
     var exception = await Assert.ThrowsAsync<InvalidCredentialsException>(
-      async () => await _apiKeyService.AuthenticateAsync(payload, CancellationToken));
+      async () => await _apiKeyFacade.AuthenticateAsync(payload, CancellationToken));
     Assert.StartsWith("The specified secret does not match the API key.", exception.Message);
   }
 
@@ -102,7 +102,7 @@ public class ApiKeyServiceTests : IntegrationTestingBase
       ExpiresOn = DateTime.UtcNow.AddYears(1),
       Roles = new[] { $" {_readUsers.UniqueName.ToUpper()} " }
     };
-    ApiKey apiKey = await _apiKeyService.CreateAsync(payload, CancellationToken);
+    ApiKey apiKey = await _apiKeyFacade.CreateAsync(payload, CancellationToken);
     Assert.Equal(payload.TenantId, apiKey.TenantId);
     Assert.Equal(payload.Title.Trim(), apiKey.Title);
     Assert.Equal(payload.ExpiresOn, apiKey.ExpiresOn);
@@ -131,7 +131,7 @@ public class ApiKeyServiceTests : IntegrationTestingBase
       Roles = new[] { role.Id.Value }
     };
     var exception = await Assert.ThrowsAsync<RolesNotFoundException>(
-      async () => await _apiKeyService.CreateAsync(payload, CancellationToken));
+      async () => await _apiKeyFacade.CreateAsync(payload, CancellationToken));
     Assert.Equal(payload.Roles, exception.Ids);
     Assert.Equal("Roles", exception.PropertyName);
   }
@@ -139,7 +139,7 @@ public class ApiKeyServiceTests : IntegrationTestingBase
   [Fact(DisplayName = "DeleteAsync: it should delete the correct API key.")]
   public async Task DeleteAsync_it_should_delete_the_correct_api_key()
   {
-    ApiKey? apiKey = await _apiKeyService.DeleteAsync(_apiKey.Id.Value, CancellationToken);
+    ApiKey? apiKey = await _apiKeyFacade.DeleteAsync(_apiKey.Id.Value, CancellationToken);
     Assert.NotNull(apiKey);
     Assert.Equal(_apiKey.Id.Value, apiKey.Id);
 
@@ -151,7 +151,7 @@ public class ApiKeyServiceTests : IntegrationTestingBase
   [Fact(DisplayName = "DeleteAsync: it should return null when API key is not found.")]
   public async Task DeleteAsync_it_should_return_null_when_api_key_is_not_found()
   {
-    ApiKey? apiKey = await _apiKeyService.DeleteAsync(Guid.Empty.ToString(), CancellationToken);
+    ApiKey? apiKey = await _apiKeyFacade.DeleteAsync(Guid.Empty.ToString(), CancellationToken);
     Assert.Null(apiKey);
   }
 
@@ -164,7 +164,7 @@ public class ApiKeyServiceTests : IntegrationTestingBase
       ExpiresOn = _apiKey.ExpiresOn.Value.AddMonths(6)
     };
     var exception = await Assert.ThrowsAsync<CannotPostponeApiKeyExpirationException>(
-      async () => await _apiKeyService.UpdateAsync(_apiKey.Id.Value, payload, CancellationToken));
+      async () => await _apiKeyFacade.UpdateAsync(_apiKey.Id.Value, payload, CancellationToken));
     Assert.Equal(_apiKey.ToString(), exception.ApiKey);
     Assert.Equal(payload.ExpiresOn, exception.ExpiresOn);
     Assert.Equal("ExpiresOn", exception.PropertyName);
@@ -181,7 +181,7 @@ public class ApiKeyServiceTests : IntegrationTestingBase
       ExpiresOn = DateTime.UtcNow.AddDays(-10)
     };
     var exception = await Assert.ThrowsAsync<ValidationException>(
-      async () => await _apiKeyService.CreateAsync(payload, CancellationToken));
+      async () => await _apiKeyFacade.CreateAsync(payload, CancellationToken));
     ValidationFailure failure = exception.Errors.Single();
     Assert.Equal("FutureValidator", failure.ErrorCode);
     Assert.Equal("ExpiresOn", failure.PropertyName);
@@ -190,7 +190,7 @@ public class ApiKeyServiceTests : IntegrationTestingBase
   [Fact(DisplayName = "ReadAsync: it should read the correct API key.")]
   public async Task ReadAsync_it_should_read_the_correct_api_key()
   {
-    ApiKey? apiKey = await _apiKeyService.ReadAsync(id: _apiKey.Id.Value, cancellationToken: CancellationToken);
+    ApiKey? apiKey = await _apiKeyFacade.ReadAsync(id: _apiKey.Id.Value, cancellationToken: CancellationToken);
     Assert.NotNull(apiKey);
     Assert.Equal(_apiKey.Id.Value, apiKey.Id);
   }
@@ -198,7 +198,7 @@ public class ApiKeyServiceTests : IntegrationTestingBase
   [Fact(DisplayName = "ReadAsync: it should return null when API key is not found.")]
   public async Task ReadAsync_it_should_return_null_when_api_key_is_not_found()
   {
-    ApiKey? apiKey = await _apiKeyService.ReadAsync(id: Guid.Empty.ToString(), cancellationToken: CancellationToken);
+    ApiKey? apiKey = await _apiKeyFacade.ReadAsync(id: Guid.Empty.ToString(), cancellationToken: CancellationToken);
     Assert.Null(apiKey);
   }
 
@@ -213,7 +213,7 @@ public class ApiKeyServiceTests : IntegrationTestingBase
       Roles = new[] { role.Id.Value }
     };
     var exception = await Assert.ThrowsAsync<RolesNotFoundException>(
-      async () => await _apiKeyService.ReplaceAsync(_apiKey.Id.Value, payload, CancellationToken));
+      async () => await _apiKeyFacade.ReplaceAsync(_apiKey.Id.Value, payload, CancellationToken));
     Assert.Equal(payload.Roles, exception.Ids);
     Assert.Equal("Roles", exception.PropertyName);
   }
@@ -269,7 +269,7 @@ public class ApiKeyServiceTests : IntegrationTestingBase
     payload.Search.Terms = new[] { new SearchTerm("%API Key%") };
     payload.TenantId.Terms = new[] { new SearchTerm(tenantId) };
 
-    SearchResults<ApiKey> results = await _apiKeyService.SearchAsync(payload, CancellationToken);
+    SearchResults<ApiKey> results = await _apiKeyFacade.SearchAsync(payload, CancellationToken);
     Assert.Equal(3, results.Total);
     Assert.Equal(2, results.Items.Count());
     Assert.Equal(apiKey1.Id.Value, results.Items.ElementAt(0).Id);
@@ -289,7 +289,7 @@ public class ApiKeyServiceTests : IntegrationTestingBase
       ExpiresOn = _apiKey.ExpiresOn?.AddMonths(-6),
       Roles = new[] { _writeUsers.Id.Value, _manageApp.UniqueName }
     };
-    ApiKey? apiKey = await _apiKeyService.ReplaceAsync(_apiKey.Id.Value, payload, CancellationToken);
+    ApiKey? apiKey = await _apiKeyFacade.ReplaceAsync(_apiKey.Id.Value, payload, CancellationToken);
     Assert.NotNull(apiKey);
     Assert.Equal(payload.Title.Trim(), apiKey.Title);
     Assert.Equal(payload.Description, apiKey.Description);
@@ -304,7 +304,7 @@ public class ApiKeyServiceTests : IntegrationTestingBase
   public async Task ReplaceAsync_it_should_return_null_when_api_key_is_not_found()
   {
     ReplaceApiKeyPayload payload = new();
-    ApiKey? apiKey = await _apiKeyService.ReplaceAsync(Guid.Empty.ToString(), payload, CancellationToken);
+    ApiKey? apiKey = await _apiKeyFacade.ReplaceAsync(Guid.Empty.ToString(), payload, CancellationToken);
     Assert.Null(apiKey);
   }
 
@@ -312,7 +312,7 @@ public class ApiKeyServiceTests : IntegrationTestingBase
   public async Task UpdateAsync_it_should_return_null_when_api_key_is_not_found()
   {
     UpdateApiKeyPayload payload = new();
-    ApiKey? apiKey = await _apiKeyService.UpdateAsync(Guid.Empty.ToString(), payload, CancellationToken);
+    ApiKey? apiKey = await _apiKeyFacade.UpdateAsync(Guid.Empty.ToString(), payload, CancellationToken);
     Assert.Null(apiKey);
   }
 
@@ -330,7 +330,7 @@ public class ApiKeyServiceTests : IntegrationTestingBase
       }
     };
     var exception = await Assert.ThrowsAsync<RolesNotFoundException>(
-      async () => await _apiKeyService.UpdateAsync(_apiKey.Id.Value, payload, CancellationToken));
+      async () => await _apiKeyFacade.UpdateAsync(_apiKey.Id.Value, payload, CancellationToken));
     Assert.Equal(payload.Roles.Select(x => x.Role), exception.Ids);
     Assert.Equal("Roles", exception.PropertyName);
   }
@@ -353,7 +353,7 @@ public class ApiKeyServiceTests : IntegrationTestingBase
         new RoleModification(_writeUsers.Id.Value, CollectionAction.Remove)
       }
     };
-    ApiKey? apiKey = await _apiKeyService.UpdateAsync(_apiKey.Id.Value, payload, CancellationToken);
+    ApiKey? apiKey = await _apiKeyFacade.UpdateAsync(_apiKey.Id.Value, payload, CancellationToken);
     Assert.NotNull(apiKey);
     Assert.Equal(payload.Title.Trim(), apiKey.Title);
     Assert.Equal(payload.Description.Value, apiKey.Description);

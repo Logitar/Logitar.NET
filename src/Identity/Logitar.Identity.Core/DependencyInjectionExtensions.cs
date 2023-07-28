@@ -24,14 +24,13 @@ public static class DependencyInjectionExtensions
   private static IServiceCollection AddApplicationFacades(this IServiceCollection services)
   {
     return services
+      .AddTransient<IApiKeyFacade, ApiKeyFacade>()
       .AddTransient<IRoleFacade, RoleFacade>()
       .AddTransient<ISessionFacade, SessionFacade>()
       .AddTransient<ITokenFacade, TokenFacade>();
   }
   private static IServiceCollection AddApplicationServices(this IServiceCollection services)
   {
-    return services
-      .AddTransient<IApiKeyService, ApiKeyService>()
-      .AddTransient<IUserService, UserService>();
+    return services.AddTransient<IUserService, UserService>();
   }
 }
