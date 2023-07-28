@@ -1,7 +1,5 @@
 ﻿using Logitar.Identity.Core.ApiKeys;
 using Logitar.Identity.Core.Roles;
-using Logitar.Identity.Core.Roles.Commands;
-using Logitar.Identity.Core.Roles.Queries;
 using Logitar.Identity.Core.Sessions;
 using Logitar.Identity.Core.Tokens;
 using Logitar.Identity.Core.Users;
@@ -19,15 +17,14 @@ public static class DependencyInjectionExtensions
     return services
       .AddApplicationFacades()
       .AddApplicationServices()
-      .AddCommands()
       .AddMediatR(config => config.RegisterServicesFromAssembly(assembly))
-      .AddQueries()
       .AddTransient<ITokenManager, JsonWebTokenManager>();
   }
 
   private static IServiceCollection AddApplicationFacades(this IServiceCollection services)
   {
     return services
+      .AddTransient<IRoleFacade, RoleFacade>()
       .AddTransient<ISessionFacade, SessionFacade>()
       .AddTransient<ITokenFacade, TokenFacade>();
   }
@@ -35,17 +32,6 @@ public static class DependencyInjectionExtensions
   {
     return services
       .AddTransient<IApiKeyService, ApiKeyService>()
-      .AddTransient<IRoleService, RoleService>()
       .AddTransient<IUserService, UserService>();
-  }
-
-  private static IServiceCollection AddCommands(this IServiceCollection services)
-  {
-    return services.AddTransient<IDeleteRoleCommand, DeleteRoleCommandHandler>();
-  }
-
-  private static IServiceCollection AddQueries(this IServiceCollection services)
-  {
-    return services.AddTransient<IFindRolesQuery, FindRolesQueryHandler>();
   }
 }

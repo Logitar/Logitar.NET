@@ -18,18 +18,15 @@ namespace Logitar.Identity.Core.Users;
 
 public class UserService : IUserService
 {
-  private readonly IFindRolesQuery _findRolesQuery;
   private readonly IMediator _mediator;
   private readonly ISessionRepository _sessionRepository;
   private readonly IUserQuerier _userQuerier;
   private readonly IUserRepository _userRepository;
   private readonly IOptions<UserSettings> _userSettings;
 
-  public UserService(IFindRolesQuery findRolesQuery, IMediator mediator,
-    ISessionRepository sessionRepository, IUserQuerier userQuerier, IUserRepository userRepository,
-    IOptions<UserSettings> userSettings)
+  public UserService(IMediator mediator, ISessionRepository sessionRepository,
+    IUserQuerier userQuerier, IUserRepository userRepository, IOptions<UserSettings> userSettings)
   {
-    _findRolesQuery = findRolesQuery;
     _mediator = mediator;
     _sessionRepository = sessionRepository;
     _userQuerier = userQuerier;
@@ -134,7 +131,7 @@ public class UserService : IUserService
     user.Profile = payload.Profile?.GetUri(nameof(payload.Profile));
     user.Website = payload.Website?.GetUri(nameof(payload.Website));
 
-    IEnumerable<RoleAggregate> roles = await _findRolesQuery.ExecuteAsync(user.TenantId, payload.Roles, nameof(payload.Roles), cancellationToken);
+    IEnumerable<RoleAggregate> roles = await _mediator.Send(new FindRolesQuery(user.TenantId, payload.Roles, nameof(payload.Roles)), cancellationToken);
     foreach (RoleAggregate role in roles)
     {
       user.AddRole(role);
@@ -283,7 +280,7 @@ public class UserService : IUserService
     user.Profile = payload.Profile?.GetUri(nameof(payload.Profile));
     user.Website = payload.Website?.GetUri(nameof(payload.Website));
 
-    Dictionary<AggregateId, RoleAggregate> roles = (await _findRolesQuery.ExecuteAsync(user.TenantId, payload.Roles, nameof(payload.Roles), cancellationToken))
+    Dictionary<AggregateId, RoleAggregate> roles = (await _mediator.Send(new FindRolesQuery(user.TenantId, payload.Roles, nameof(payload.Roles)), cancellationToken))
       .ToDictionary(x => x.Id, x => x);
     foreach (AggregateId roleId in user.Roles)
     {
@@ -447,7 +444,7 @@ public class UserService : IUserService
     }
 
     IEnumerable<string> roleIds = payload.Roles.Select(role => role.Role);
-    IEnumerable<RoleAggregate> roles = await _findRolesQuery.ExecuteAsync(user.TenantId, roleIds, nameof(payload.Roles), cancellationToken);
+    IEnumerable<RoleAggregate> roles = await _mediator.Send(new FindRolesQuery(user.TenantId, roleIds, nameof(payload.Roles)), cancellationToken);
     Dictionary<string, RoleAggregate> rolesById = roles.ToDictionary(x => x.Id.Value, x => x);
     Dictionary<string, RoleAggregate> rolesByUniqueName = roles.ToDictionary(x => x.UniqueName.ToUpper(), x => x);
     foreach (RoleModification modification in payload.Roles)

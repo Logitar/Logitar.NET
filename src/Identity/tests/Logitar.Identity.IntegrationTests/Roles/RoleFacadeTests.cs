@@ -17,22 +17,22 @@ using Microsoft.Extensions.Options;
 namespace Logitar.Identity.IntegrationTests.Roles;
 
 [Trait(Traits.Category, Categories.Integration)]
-public class RoleServiceTests : IntegrationTestingBase
+public class RoleFacadeTests : IntegrationTestingBase
 {
   private readonly IApiKeyRepository _apiKeyRepository;
+  private readonly IRoleFacade _roleFacade;
   private readonly IRoleRepository _roleRepository;
-  private readonly IRoleService _roleService;
   private readonly IOptions<RoleSettings> _roleSettings;
   private readonly IUserRepository _userRepository;
   private readonly IOptions<UserSettings> _userSettings;
 
   private readonly RoleAggregate _role;
 
-  public RoleServiceTests() : base()
+  public RoleFacadeTests() : base()
   {
     _apiKeyRepository = ServiceProvider.GetRequiredService<IApiKeyRepository>();
+    _roleFacade = ServiceProvider.GetRequiredService<IRoleFacade>();
     _roleRepository = ServiceProvider.GetRequiredService<IRoleRepository>();
-    _roleService = ServiceProvider.GetRequiredService<IRoleService>();
     _roleSettings = ServiceProvider.GetRequiredService<IOptions<RoleSettings>>();
     _userRepository = ServiceProvider.GetRequiredService<IUserRepository>();
     _userSettings = ServiceProvider.GetRequiredService<IOptions<UserSettings>>();
@@ -51,7 +51,7 @@ public class RoleServiceTests : IntegrationTestingBase
       DisplayName = "  Administrator  ",
       Description = "    "
     };
-    Role? role = await _roleService.CreateAsync(payload, CancellationToken);
+    Role? role = await _roleFacade.CreateAsync(payload, CancellationToken);
     Assert.NotNull(role);
     Assert.Equal(payload.TenantId, role.TenantId);
     Assert.Equal(payload.UniqueName, role.UniqueName);
@@ -68,7 +68,7 @@ public class RoleServiceTests : IntegrationTestingBase
       UniqueName = _role.UniqueName
     };
     var exception = await Assert.ThrowsAsync<UniqueNameAlreadyUsedException<RoleAggregate>>(
-      async () => await _roleService.CreateAsync(payload, CancellationToken));
+      async () => await _roleFacade.CreateAsync(payload, CancellationToken));
     Assert.Equal(payload.TenantId, exception.TenantId);
     Assert.Equal(payload.UniqueName, exception.UniqueName);
     Assert.Equal("UniqueName", exception.PropertyName);
@@ -89,7 +89,7 @@ public class RoleServiceTests : IntegrationTestingBase
 
     Assert.True(await IdentityContext.Roles.AnyAsync(x => x.AggregateId == _role.Id.Value));
 
-    Role? role = await _roleService.DeleteAsync(_role.Id.Value, CancellationToken);
+    Role? role = await _roleFacade.DeleteAsync(_role.Id.Value, CancellationToken);
     Assert.NotNull(role);
 
     Assert.False(await IdentityContext.Roles.AnyAsync(x => x.AggregateId == _role.Id.Value));
@@ -106,14 +106,14 @@ public class RoleServiceTests : IntegrationTestingBase
   [Fact(DisplayName = "DeleteAsync: it should return null when role is not found.")]
   public async Task DeleteAsync_it_should_return_null_when_role_is_not_found()
   {
-    Role? role = await _roleService.DeleteAsync(Guid.Empty.ToString(), CancellationToken);
+    Role? role = await _roleFacade.DeleteAsync(Guid.Empty.ToString(), CancellationToken);
     Assert.Null(role);
   }
 
   [Fact(DisplayName = "ReadAsync: it should read the correct role by ID.")]
   public async Task ReadAsync_it_should_read_the_correct_role_by_Id()
   {
-    Role? role = await _roleService.ReadAsync(_role.Id.Value, _role.TenantId, "admin2", CancellationToken);
+    Role? role = await _roleFacade.ReadAsync(_role.Id.Value, _role.TenantId, "admin2", CancellationToken);
     Assert.NotNull(role);
     Assert.Equal(_role.Id.Value, role.Id);
   }
@@ -121,7 +121,7 @@ public class RoleServiceTests : IntegrationTestingBase
   [Fact(DisplayName = "ReadAsync: it should read the correct role by unique name.")]
   public async Task ReadAsync_it_should_read_the_correct_role_by_unique_name()
   {
-    Role? role = await _roleService.ReadAsync(id: Guid.Empty.ToString(), _role.TenantId, _role.UniqueName, CancellationToken);
+    Role? role = await _roleFacade.ReadAsync(id: Guid.Empty.ToString(), _role.TenantId, _role.UniqueName, CancellationToken);
     Assert.NotNull(role);
     Assert.Equal(_role.Id.Value, role.Id);
   }
@@ -129,7 +129,7 @@ public class RoleServiceTests : IntegrationTestingBase
   [Fact(DisplayName = "ReadAsync: it should return null when no role is a match.")]
   public async Task ReadAsync_it_should_return_null_when_no_role_is_a_match()
   {
-    Role? role = await _roleService.ReadAsync(id: Guid.Empty.ToString(), _role.TenantId, "admin2", CancellationToken);
+    Role? role = await _roleFacade.ReadAsync(id: Guid.Empty.ToString(), _role.TenantId, "admin2", CancellationToken);
     Assert.Null(role);
   }
 
@@ -141,7 +141,7 @@ public class RoleServiceTests : IntegrationTestingBase
     await _roleRepository.SaveAsync(guest);
 
     var exception = await Assert.ThrowsAsync<TooManyResultsException<Role>>(
-      async () => await _roleService.ReadAsync(_role.Id.Value, guest.TenantId, guest.UniqueName, CancellationToken));
+      async () => await _roleFacade.ReadAsync(_role.Id.Value, guest.TenantId, guest.UniqueName, CancellationToken));
     Assert.Equal(2, exception.Actual);
   }
 
@@ -154,7 +154,7 @@ public class RoleServiceTests : IntegrationTestingBase
       DisplayName = "  Administrator  ",
       Description = "    "
     };
-    Role? role = await _roleService.ReplaceAsync(_role.Id.Value, payload, CancellationToken);
+    Role? role = await _roleFacade.ReplaceAsync(_role.Id.Value, payload, CancellationToken);
     Assert.NotNull(role);
     Assert.Equal(payload.UniqueName.Trim(), role.UniqueName);
     Assert.Equal(payload.DisplayName.Trim(), role.DisplayName);
@@ -165,7 +165,7 @@ public class RoleServiceTests : IntegrationTestingBase
   public async Task ReplaceAsync_it_should_return_null_when_role_is_not_found()
   {
     ReplaceRolePayload payload = new();
-    Role? role = await _roleService.ReplaceAsync(Guid.Empty.ToString(), payload, CancellationToken);
+    Role? role = await _roleFacade.ReplaceAsync(Guid.Empty.ToString(), payload, CancellationToken);
     Assert.Null(role);
   }
 
@@ -181,7 +181,7 @@ public class RoleServiceTests : IntegrationTestingBase
       UniqueName = _role.UniqueName
     };
     var exception = await Assert.ThrowsAsync<UniqueNameAlreadyUsedException<RoleAggregate>>(
-      async () => await _roleService.ReplaceAsync(guest.Id.Value, payload, CancellationToken));
+      async () => await _roleFacade.ReplaceAsync(guest.Id.Value, payload, CancellationToken));
     Assert.Equal(_role.TenantId, exception.TenantId);
     Assert.Equal(_role.UniqueName, exception.UniqueName);
     Assert.Equal("UniqueName", exception.PropertyName);
@@ -214,7 +214,7 @@ public class RoleServiceTests : IntegrationTestingBase
     payload.Search.Terms = new[] { new SearchTerm("%UsEr%") };
     payload.TenantId.Terms = new[] { new SearchTerm(tenantId) };
 
-    SearchResults<Role> roles = await _roleService.SearchAsync(payload, CancellationToken);
+    SearchResults<Role> roles = await _roleFacade.SearchAsync(payload, CancellationToken);
     Assert.Equal(3, roles.Total);
     Assert.Equal(2, roles.Items.Count());
     Assert.Equal(readUsers.Id.Value, roles.Items.ElementAt(0).Id);
@@ -233,7 +233,7 @@ public class RoleServiceTests : IntegrationTestingBase
       DisplayName = new MayBe<string>("    "),
       Description = new MayBe<string>("    ")
     };
-    Role? role = await _roleService.UpdateAsync(_role.Id.Value, payload, CancellationToken);
+    Role? role = await _roleFacade.UpdateAsync(_role.Id.Value, payload, CancellationToken);
     Assert.NotNull(role);
     Assert.Equal(payload.UniqueName.Trim(), role.UniqueName);
     Assert.Null(role.DisplayName);
@@ -244,7 +244,7 @@ public class RoleServiceTests : IntegrationTestingBase
   public async Task UpdateAsync_it_should_return_null_when_role_is_not_found()
   {
     UpdateRolePayload payload = new();
-    Role? role = await _roleService.UpdateAsync(Guid.Empty.ToString(), payload, CancellationToken);
+    Role? role = await _roleFacade.UpdateAsync(Guid.Empty.ToString(), payload, CancellationToken);
     Assert.Null(role);
   }
 
@@ -260,7 +260,7 @@ public class RoleServiceTests : IntegrationTestingBase
       UniqueName = _role.UniqueName
     };
     var exception = await Assert.ThrowsAsync<UniqueNameAlreadyUsedException<RoleAggregate>>(
-      async () => await _roleService.UpdateAsync(guest.Id.Value, payload, CancellationToken));
+      async () => await _roleFacade.UpdateAsync(guest.Id.Value, payload, CancellationToken));
     Assert.Equal(_role.TenantId, exception.TenantId);
     Assert.Equal(_role.UniqueName, exception.UniqueName);
     Assert.Equal("UniqueName", exception.PropertyName);

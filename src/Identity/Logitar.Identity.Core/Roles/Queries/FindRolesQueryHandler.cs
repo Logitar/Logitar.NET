@@ -1,8 +1,9 @@
 ﻿using Logitar.Identity.Domain.Roles;
+using MediatR;
 
 namespace Logitar.Identity.Core.Roles.Queries;
 
-public class FindRolesQueryHandler : IFindRolesQuery
+public class FindRolesQueryHandler : IRequestHandler<FindRolesQuery, IEnumerable<RoleAggregate>>
 {
   private readonly IRoleRepository _roleRepository;
 
@@ -11,10 +12,9 @@ public class FindRolesQueryHandler : IFindRolesQuery
     _roleRepository = roleRepository;
   }
 
-  public async Task<IEnumerable<RoleAggregate>> ExecuteAsync(string? tenantId,
-    IEnumerable<string> ids, string propertyName, CancellationToken cancellationToken)
+  public async Task<IEnumerable<RoleAggregate>> Handle(FindRolesQuery query, CancellationToken cancellationToken)
   {
-    int count = ids.Count();
+    int count = query.Ids.Count();
     if (count == 0)
     {
       return Enumerable.Empty<RoleAggregate>();
@@ -23,10 +23,10 @@ public class FindRolesQueryHandler : IFindRolesQuery
     List<RoleAggregate> roles = new(capacity: count);
     List<string> missing = new(capacity: count);
 
-    IEnumerable<RoleAggregate> tenantRoles = await _roleRepository.LoadAsync(tenantId, cancellationToken);
+    IEnumerable<RoleAggregate> tenantRoles = await _roleRepository.LoadAsync(query.TenantId, cancellationToken);
     Dictionary<string, RoleAggregate> rolesById = tenantRoles.ToDictionary(x => x.Id.Value, x => x);
     Dictionary<string, RoleAggregate> rolesByUniqueName = tenantRoles.ToDictionary(x => x.UniqueName.ToUpper(), x => x);
-    foreach (string id in ids)
+    foreach (string id in query.Ids)
     {
       if (rolesById.TryGetValue(id.Trim(), out RoleAggregate? role)
         || rolesByUniqueName.TryGetValue(id.Trim().ToUpper(), out role))
@@ -41,7 +41,7 @@ public class FindRolesQueryHandler : IFindRolesQuery
 
     if (missing.Any())
     {
-      throw new RolesNotFoundException(missing, propertyName);
+      throw new RolesNotFoundException(missing, query.PropertyName);
     }
 
     return roles.AsReadOnly();

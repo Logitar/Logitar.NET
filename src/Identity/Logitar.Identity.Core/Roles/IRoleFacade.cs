@@ -4,7 +4,7 @@ using Logitar.Identity.Core.Roles.Payloads;
 
 namespace Logitar.Identity.Core.Roles;
 
-public interface IRoleService
+public interface IRoleFacade
 {
   Task<Role> CreateAsync(CreateRolePayload payload, CancellationToken cancellationToken = default);
   Task<Role?> DeleteAsync(string id, CancellationToken cancellationToken = default);

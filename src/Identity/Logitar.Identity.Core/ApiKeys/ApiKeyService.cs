@@ -7,6 +7,7 @@ using Logitar.Identity.Core.Roles.Queries;
 using Logitar.Identity.Domain;
 using Logitar.Identity.Domain.ApiKeys;
 using Logitar.Identity.Domain.Roles;
+using MediatR;
 
 namespace Logitar.Identity.Core.ApiKeys;
 
@@ -14,14 +15,14 @@ public class ApiKeyService : IApiKeyService
 {
   private readonly IApiKeyQuerier _apiKeyQuerier;
   private readonly IApiKeyRepository _apiKeyRepository;
-  private readonly IFindRolesQuery _findRolesQuery;
+  private readonly IMediator _mediator;
 
   public ApiKeyService(IApiKeyQuerier apiKeyQuerier, IApiKeyRepository apiKeyRepository,
-    IFindRolesQuery findRolesQuery)
+    IMediator mediator)
   {
     _apiKeyQuerier = apiKeyQuerier;
     _apiKeyRepository = apiKeyRepository;
-    _findRolesQuery = findRolesQuery;
+    _mediator = mediator;
   }
 
   public virtual async Task<ApiKey> AuthenticateAsync(AuthenticateApiKeyPayload payload, CancellationToken cancellationToken)
@@ -45,7 +46,7 @@ public class ApiKeyService : IApiKeyService
       ExpiresOn = payload.ExpiresOn
     };
 
-    IEnumerable<RoleAggregate> roles = await _findRolesQuery.ExecuteAsync(apiKey.TenantId, payload.Roles, nameof(payload.Roles), cancellationToken);
+    IEnumerable<RoleAggregate> roles = await _mediator.Send(new FindRolesQuery(apiKey.TenantId, payload.Roles, nameof(payload.Roles)), cancellationToken);
     foreach (RoleAggregate role in roles)
     {
       apiKey.AddRole(role);
@@ -121,7 +122,7 @@ public class ApiKeyService : IApiKeyService
       apiKey.ExpiresOn = payload.ExpiresOn.Value;
     }
 
-    Dictionary<AggregateId, RoleAggregate> roles = (await _findRolesQuery.ExecuteAsync(apiKey.TenantId, payload.Roles, nameof(payload.Roles), cancellationToken))
+    Dictionary<AggregateId, RoleAggregate> roles = (await _mediator.Send(new FindRolesQuery(apiKey.TenantId, payload.Roles, nameof(payload.Roles)), cancellationToken))
       .ToDictionary(x => x.Id, x => x);
     foreach (AggregateId roleId in apiKey.Roles)
     {
@@ -168,7 +169,7 @@ public class ApiKeyService : IApiKeyService
     }
 
     IEnumerable<string> roleIds = payload.Roles.Select(role => role.Role);
-    IEnumerable<RoleAggregate> roles = await _findRolesQuery.ExecuteAsync(apiKey.TenantId, roleIds, nameof(payload.Roles), cancellationToken);
+    IEnumerable<RoleAggregate> roles = await _mediator.Send(new FindRolesQuery(apiKey.TenantId, roleIds, nameof(payload.Roles)), cancellationToken);
     Dictionary<string, RoleAggregate> rolesById = roles.ToDictionary(x => x.Id.Value, x => x);
     Dictionary<string, RoleAggregate> rolesByUniqueName = roles.ToDictionary(x => x.UniqueName.ToUpper(), x => x);
     foreach (RoleModification modification in payload.Roles)
