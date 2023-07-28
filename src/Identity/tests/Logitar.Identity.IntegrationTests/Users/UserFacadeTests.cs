@@ -1,11 +1,15 @@
 ﻿using FluentValidation;
-using FluentValidation.Results;
+using Logitar.EventSourcing;
+using Logitar.EventSourcing.EntityFrameworkCore.Relational;
 using Logitar.Identity.Core;
 using Logitar.Identity.Core.Models;
 using Logitar.Identity.Core.Payloads;
 using Logitar.Identity.Core.Roles;
 using Logitar.Identity.Core.Roles.Models;
 using Logitar.Identity.Core.Sessions;
+using Logitar.Identity.Core.Tokens;
+using Logitar.Identity.Core.Tokens.Models;
+using Logitar.Identity.Core.Tokens.Payloads;
 using Logitar.Identity.Core.Users;
 using Logitar.Identity.Core.Users.Models;
 using Logitar.Identity.Core.Users.Payloads;
@@ -14,6 +18,7 @@ using Logitar.Identity.Domain.Roles;
 using Logitar.Identity.Domain.Sessions;
 using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.Domain.Users;
+using Logitar.Identity.Domain.Users.Events;
 using Logitar.Identity.EntityFrameworkCore.SqlServer.Entities;
 using Logitar.Security;
 using Microsoft.EntityFrameworkCore;
@@ -27,7 +32,9 @@ public class UserFacadeTests : IntegrationTestingBase
 {
   private readonly IRoleRepository _roleRepository;
   private readonly IOptions<RoleSettings> _roleSettings;
+  private readonly string _secret;
   private readonly ISessionRepository _sessionRepository;
+  private readonly ITokenFacade _tokenFacade;
   private readonly IUserFacade _userFacade;
   private readonly IUserRepository _userRepository;
   private readonly IOptions<UserSettings> _userSettings;
@@ -42,9 +49,12 @@ public class UserFacadeTests : IntegrationTestingBase
     _roleRepository = ServiceProvider.GetRequiredService<IRoleRepository>();
     _roleSettings = ServiceProvider.GetRequiredService<IOptions<RoleSettings>>();
     _sessionRepository = ServiceProvider.GetRequiredService<ISessionRepository>();
+    _tokenFacade = ServiceProvider.GetRequiredService<ITokenFacade>();
     _userFacade = ServiceProvider.GetRequiredService<IUserFacade>();
     _userRepository = ServiceProvider.GetRequiredService<IUserRepository>();
     _userSettings = ServiceProvider.GetRequiredService<IOptions<UserSettings>>();
+
+    _secret = Faker.Random.String(length: 32, minChar: '!', maxChar: '~');
 
     UserSettings userSettings = _userSettings.Value;
     _user = new(userSettings.UniqueNameSettings, uniqueName: "admin", tenantId: Guid.NewGuid().ToString())
@@ -211,7 +221,7 @@ public class UserFacadeTests : IntegrationTestingBase
     };
     var exception = await Assert.ThrowsAsync<ValidationException>(
       async () => await _userFacade.ChangePasswordAsync(_user.Id.Value, payload, CancellationToken));
-    ValidationFailure failure = exception.Errors.Single();
+    FluentValidation.Results.ValidationFailure failure = exception.Errors.Single();
     Assert.Equal("PasswordRequiresUniqueChars", failure.ErrorCode);
     Assert.Equal("Password", failure.PropertyName);
   }
@@ -423,6 +433,81 @@ public class UserFacadeTests : IntegrationTestingBase
     Assert.Equal(2, exception.Actual);
   }
 
+  [Fact(DisplayName = "RecoverPasswordAsync: it should create a token when user found by email address.")]
+  public async Task RecoverPasswordAsync_it_should_create_a_token_when_user_found_by_email_address()
+  {
+    Assert.NotNull(_user.Email);
+    RecoverPasswordPayload payload = new()
+    {
+      Secret = _secret,
+      Audience = "audience",
+      Issuer = "issuer",
+      TenantId = _user.TenantId,
+      UniqueName = $" {_user.Email.Address.ToUpper()} "
+    };
+    CreatedToken? createdToken = await _userFacade.RecoverPasswordAsync(payload, CancellationToken);
+    Assert.NotNull(createdToken);
+
+    ValidateTokenPayload validateToken = new()
+    {
+      Token = createdToken.Token,
+      Secret = _secret,
+      Audience = payload.Audience,
+      Issuer = payload.Issuer,
+      Purpose = "reset_password"
+    };
+    ValidatedToken validatedToken = await _tokenFacade.ValidateAsync(validateToken);
+    Assert.Contains(validatedToken.Claims, claim => claim.Type == Rfc7519ClaimTypes.TokenId);
+    Assert.Equal(_user.Id.Value, validatedToken.Subject);
+
+    TokenClaim expires = validatedToken.Claims.Single(claim => claim.Type == Rfc7519ClaimTypes.ExpiresOn);
+    DateTime expiresOn = DateTimeOffset.FromUnixTimeSeconds(long.Parse(expires.Value)).UtcDateTime;
+    Assert.True((expiresOn - DateTime.UtcNow.AddHours(1)) < TimeSpan.FromMinutes(1));
+  }
+
+  [Fact(DisplayName = "RecoverPasswordAsync: it should create a token when user found by unique name.")]
+  public async Task RecoverPasswordAsync_it_should_create_a_token_when_user_found_by_unique_name()
+  {
+    RecoverPasswordPayload payload = new()
+    {
+      Secret = _secret,
+      Audience = "audience",
+      Issuer = "issuer",
+      TenantId = _user.TenantId,
+      UniqueName = $" {_user.UniqueName.ToUpper()} "
+    };
+    CreatedToken? createdToken = await _userFacade.RecoverPasswordAsync(payload, CancellationToken);
+    Assert.NotNull(createdToken);
+
+    ValidateTokenPayload validateToken = new()
+    {
+      Token = createdToken.Token,
+      Secret = _secret,
+      Audience = payload.Audience,
+      Issuer = payload.Issuer,
+      Purpose = "reset_password"
+    };
+    ValidatedToken validatedToken = await _tokenFacade.ValidateAsync(validateToken);
+    Assert.Contains(validatedToken.Claims, claim => claim.Type == Rfc7519ClaimTypes.TokenId);
+    Assert.Equal(_user.Id.Value, validatedToken.Subject);
+
+    TokenClaim expires = validatedToken.Claims.Single(claim => claim.Type == Rfc7519ClaimTypes.ExpiresOn);
+    DateTime expiresOn = DateTimeOffset.FromUnixTimeSeconds(long.Parse(expires.Value)).UtcDateTime;
+    Assert.True((expiresOn - DateTime.UtcNow.AddHours(1)) < TimeSpan.FromMinutes(1));
+  }
+
+  [Fact(DisplayName = "RecoverPasswordAsync: it should return null when user is not found.")]
+  public async Task RecoverPasswordAsync_it_should_return_null_when_user_is_not_found()
+  {
+    RecoverPasswordPayload payload = new()
+    {
+      TenantId = _user.TenantId,
+      UniqueName = $"{_user.UniqueName}2"
+    };
+    CreatedToken? createdToken = await _userFacade.RecoverPasswordAsync(payload, CancellationToken);
+    Assert.Null(createdToken);
+  }
+
   [Fact(DisplayName = "ReplaceAsync: it should replace the correct user.")]
   public async Task ReplaceAsync_it_should_replace_the_correct_user()
   {
@@ -541,6 +626,177 @@ public class UserFacadeTests : IntegrationTestingBase
     Assert.Equal(other.TenantId, exception.TenantId);
     Assert.Equal(payload.UniqueName, exception.UniqueName);
     Assert.Equal("UniqueName", exception.PropertyName);
+  }
+
+  [Fact(DisplayName = "ResetPasswordAsync: it should reset the correct user password and consume the token.")]
+  public async Task ResetPasswordAsync_it_should_reset_the_correct_user_password_and_consume_the_token()
+  {
+    RecoverPasswordPayload recoverPayload = new()
+    {
+      Secret = _secret,
+      Audience = "audience",
+      Issuer = "issuer",
+      TenantId = _user.TenantId,
+      UniqueName = _user.UniqueName
+    };
+    CreatedToken? createdToken = await _userFacade.RecoverPasswordAsync(recoverPayload);
+    Assert.NotNull(createdToken);
+
+    ResetPasswordPayload resetPayload = new()
+    {
+      Secret = recoverPayload.Secret,
+      Audience = recoverPayload.Audience,
+      Issuer = recoverPayload.Issuer,
+      Token = createdToken.Token,
+      Password = "Test123!"
+    };
+    User? user = await _userFacade.ResetPasswordAsync(resetPayload, CancellationToken);
+    Assert.NotNull(user);
+    Assert.Equal(_user.Id.Value, user.Id);
+    Assert.True(user.HasPassword);
+
+    EventEntity[] events = await EventContext.Events.AsNoTracking()
+      .Where(e => e.AggregateId == _user.Id.Value && e.AggregateType == typeof(UserAggregate).GetName())
+      .OrderBy(e => e.Version)
+      .ToArrayAsync();
+    Assert.Contains(events, e => e.EventType == typeof(UserPasswordResetEvent).GetName());
+
+    UserEntity? entity = await IdentityContext.Users.AsNoTracking()
+      .SingleOrDefaultAsync(x => x.AggregateId == _user.Id.Value);
+    Assert.NotNull(entity);
+    Assert.NotNull(entity.Password);
+    Pbkdf2 password = Pbkdf2.Parse(entity.Password);
+    Assert.True(password.IsMatch(resetPayload.Password));
+
+    await Assert.ThrowsAsync<SecurityTokenBlacklistedException>(
+      async () => await _userFacade.ResetPasswordAsync(resetPayload));
+  }
+
+  [Fact(DisplayName = "ResetPasswordAsync: it should return null when there are no subject.")]
+  public async Task ResetPasswordAsync_it_should_return_null_when_there_are_no_subject()
+  {
+    Assert.NotNull(_user.Email);
+    CreateTokenPayload createToken = new()
+    {
+      Purpose = "reset_password",
+      Secret = _secret,
+      EmailAddress = _user.Email.Address
+    };
+    CreatedToken createdToken = await _tokenFacade.CreateAsync(createToken);
+
+    ResetPasswordPayload payload = new()
+    {
+      Secret = createToken.Secret,
+      Token = createdToken.Token,
+      Password = "Test123!"
+    };
+    User? user = await _userFacade.ResetPasswordAsync(payload, CancellationToken);
+    Assert.Null(user);
+  }
+
+  [Fact(DisplayName = "ResetPasswordAsync: it should return null when user is not found.")]
+  public async Task ResetPasswordAsync_it_should_return_null_when_user_is_not_found()
+  {
+    Assert.NotNull(_user.Email);
+    CreateTokenPayload createToken = new()
+    {
+      Purpose = "reset_password",
+      Secret = _secret,
+      Subject = Guid.Empty.ToString()
+    };
+    CreatedToken createdToken = await _tokenFacade.CreateAsync(createToken);
+
+    ResetPasswordPayload payload = new()
+    {
+      Secret = createToken.Secret,
+      Token = createdToken.Token,
+      Password = "Test123!"
+    };
+    User? user = await _userFacade.ResetPasswordAsync(payload, CancellationToken);
+    Assert.Null(user);
+  }
+
+  [Fact(DisplayName = "ResetPasswordAsync: it should throw InvalidSecurityTokenPurposeException when purpose is not served.")]
+  public async Task ResetPasswordAsync_it_should_throw_InvalidSecurityTokenPurposeException_when_purpose_is_not_served()
+  {
+    Assert.NotNull(_user.Email);
+    CreateTokenPayload createToken = new()
+    {
+      IsConsumable = true,
+      Purpose = "create_user",
+      Secret = _secret,
+      EmailAddress = _user.Email.Address
+    };
+    CreatedToken createdToken = await _tokenFacade.CreateAsync(createToken);
+
+    ResetPasswordPayload payload = new()
+    {
+      Secret = createToken.Secret,
+      Token = createdToken.Token,
+      Password = "Test123!"
+    };
+    await Assert.ThrowsAsync<InvalidSecurityTokenPurposeException>(
+      async () => await _userFacade.ResetPasswordAsync(payload, CancellationToken));
+  }
+
+  [Fact(DisplayName = "ResetPasswordAsync: it should throw SecurityTokenBlacklistedException when token has been consumed.")]
+  public async Task ResetPasswordAsync_it_should_throw_SecurityTokenBlacklistedException_when_token_has_been_consumed()
+  {
+    CreateTokenPayload createToken = new()
+    {
+      IsConsumable = true,
+      Purpose = "reset_password",
+      Secret = _secret,
+      Subject = _user.Id.Value
+    };
+    CreatedToken createdToken = await _tokenFacade.CreateAsync(createToken);
+
+    ValidateTokenPayload validateToken = new()
+    {
+      Secret = createToken.Secret,
+      Token = createdToken.Token
+    };
+    _ = await _tokenFacade.ValidateAsync(validateToken, consume: true);
+
+    ResetPasswordPayload payload = new()
+    {
+      Secret = validateToken.Secret,
+      Token = createdToken.Token,
+      Password = "Test123!"
+    };
+    await Assert.ThrowsAsync<SecurityTokenBlacklistedException>(
+      async () => await _userFacade.ResetPasswordAsync(payload, CancellationToken));
+  }
+
+  [Fact(DisplayName = "ResetPasswordAsync: it should throw ValidationException when password is not valid without consuming token.")]
+  public async Task ResetPasswordAsync_it_should_throw_ValidationException_when_password_is_not_valid()
+  {
+    RecoverPasswordPayload recoverPayload = new()
+    {
+      Secret = _secret,
+      Audience = "audience",
+      Issuer = "issuer",
+      TenantId = _user.TenantId,
+      UniqueName = _user.UniqueName
+    };
+    CreatedToken? createdToken = await _userFacade.RecoverPasswordAsync(recoverPayload);
+    Assert.NotNull(createdToken);
+
+    ResetPasswordPayload resetPayload = new()
+    {
+      Secret = recoverPayload.Secret,
+      Audience = recoverPayload.Audience,
+      Issuer = recoverPayload.Issuer,
+      Token = createdToken.Token,
+      Password = "AAaa!!11"
+    };
+    var exception = await Assert.ThrowsAsync<ValidationException>(
+      async () => await _userFacade.ResetPasswordAsync(resetPayload, CancellationToken));
+    FluentValidation.Results.ValidationFailure failure = exception.Errors.Single();
+    Assert.Equal("PasswordRequiresUniqueChars", failure.ErrorCode);
+    Assert.Equal("Password", failure.PropertyName);
+
+    Assert.False(await IdentityContext.TokenBlacklist.AnyAsync());
   }
 
   [Fact(DisplayName = "SearchAsync: it should return the correct search results.")]

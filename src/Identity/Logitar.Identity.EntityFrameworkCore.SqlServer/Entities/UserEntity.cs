@@ -138,6 +138,16 @@ public record UserEntity : AggregateEntity
     IsDisabled = false;
   }
 
+  public void ResetPassword(UserPasswordResetEvent change, ActorEntity actor)
+  {
+    SetVersion(change);
+
+    Password = change.Password.ToString();
+    PasswordChangedById = change.ActorId ?? Actor.DefaultId;
+    PasswordChangedBy = actor.Serialize();
+    PasswordChangedOn = change.OccurredOn;
+  }
+
   public override void SetActor(string id, string json)
   {
     base.SetActor(id, json);

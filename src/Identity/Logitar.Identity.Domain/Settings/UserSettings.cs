@@ -18,4 +18,6 @@ public record UserSettings : IUserSettings
     RequireUppercase = true,
     RequireDigit = true
   };
+
+  public IPasswordResetSettings PasswordResetSettings { get; set; } = new PasswordResetSettings();
 }

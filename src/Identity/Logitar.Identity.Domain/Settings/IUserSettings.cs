@@ -7,4 +7,6 @@ public interface IUserSettings
 
   IUniqueNameSettings UniqueNameSettings { get; }
   IPasswordSettings PasswordSettings { get; }
+
+  IPasswordResetSettings PasswordResetSettings { get; }
 }

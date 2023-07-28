@@ -1,4 +1,5 @@
 ﻿using Logitar.Identity.Core.Models;
+using Logitar.Identity.Core.Tokens.Models;
 using Logitar.Identity.Core.Users.Commands;
 using Logitar.Identity.Core.Users.Models;
 using Logitar.Identity.Core.Users.Payloads;
@@ -41,9 +42,19 @@ public class UserFacade : IUserFacade
     return await _mediator.Send(new ReadUserQuery(id, tenantId, uniqueName), cancellationToken);
   }
 
+  public virtual async Task<CreatedToken?> RecoverPasswordAsync(RecoverPasswordPayload payload, CancellationToken cancellationToken)
+  {
+    return await _mediator.Send(new RecoverPasswordCommand(payload), cancellationToken);
+  }
+
   public virtual async Task<User?> ReplaceAsync(string id, ReplaceUserPayload payload, CancellationToken cancellationToken)
   {
     return await _mediator.Send(new ReplaceUserCommand(id, payload), cancellationToken);
+  }
+
+  public virtual async Task<User?> ResetPasswordAsync(ResetPasswordPayload payload, CancellationToken cancellationToken)
+  {
+    return await _mediator.Send(new ResetPasswordCommand(payload), cancellationToken);
   }
 
   public virtual async Task<SearchResults<User>> SearchAsync(SearchUserPayload payload, CancellationToken cancellationToken)
