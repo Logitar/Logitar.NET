@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Logitar.Identity.Domain.Users;
+using System.Collections.Immutable;
 
 namespace Logitar.Identity.Domain.Validators;
 
@@ -62,7 +63,7 @@ public static class FluentValidationExtensions
       .WithMessage(x => $"'{{PropertyName}}' must match the following expression: {expression}");
   }
 
-  public static IRuleBuilderOptions<T, string?> Region<T>(this IRuleBuilder<T, string?> ruleBuilder, ISet<string> regions)
+  public static IRuleBuilderOptions<T, string?> Region<T>(this IRuleBuilder<T, string?> ruleBuilder, IImmutableSet<string> regions)
   {
     return ruleBuilder.Must(region => region == null || regions.Contains(region))
       .WithErrorCode("RegionValidator")
