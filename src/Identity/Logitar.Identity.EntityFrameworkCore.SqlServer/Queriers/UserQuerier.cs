@@ -31,6 +31,7 @@ public class UserQuerier : IUserQuerier
   public async Task<User?> ReadAsync(string id, CancellationToken cancellationToken)
   {
     UserEntity? user = await _users.AsNoTracking()
+      .Include(x => x.Roles)
       .SingleOrDefaultAsync(x => x.AggregateId == id, cancellationToken);
 
     return _mapper.Map<User?>(user);
@@ -42,6 +43,7 @@ public class UserQuerier : IUserQuerier
     string uniqueNameNormalized = uniqueName.Trim().ToUpper();
 
     UserEntity? user = await _users.AsNoTracking()
+      .Include(x => x.Roles)
       .SingleOrDefaultAsync(x => x.TenantId == tenantId && x.UniqueNameNormalized == uniqueNameNormalized, cancellationToken);
 
     return _mapper.Map<User?>(user);
@@ -53,6 +55,7 @@ public class UserQuerier : IUserQuerier
     string emailAddressNormalized = email.Address.ToUpper();
 
     UserEntity[] users = await _users.AsNoTracking()
+      .Include(x => x.Roles)
       .Where(x => x.TenantId == tenantId && x.EmailAddressNormalized == emailAddressNormalized)
       .ToArrayAsync(cancellationToken);
 
@@ -82,6 +85,7 @@ public class UserQuerier : IUserQuerier
     }
 
     IQueryable<UserEntity> query = _users.FromQuery(builder.Build())
+      .Include(x => x.Roles)
       .AsNoTracking();
 
     long total = await query.LongCountAsync(cancellationToken);

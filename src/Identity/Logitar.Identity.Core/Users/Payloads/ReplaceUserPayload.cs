@@ -24,4 +24,6 @@ public record ReplaceUserPayload
   public string? Picture { get; set; }
   public string? Profile { get; set; }
   public string? Website { get; set; }
+
+  public IEnumerable<string> Roles { get; set; } = Enumerable.Empty<string>();
 }

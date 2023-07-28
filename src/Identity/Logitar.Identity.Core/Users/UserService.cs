@@ -1,10 +1,13 @@
 ﻿using Logitar.EventSourcing;
 using Logitar.Identity.Core.Models;
+using Logitar.Identity.Core.Payloads;
+using Logitar.Identity.Core.Roles.Queries;
 using Logitar.Identity.Core.Sessions;
 using Logitar.Identity.Core.Sessions.Commands;
 using Logitar.Identity.Core.Users.Models;
 using Logitar.Identity.Core.Users.Payloads;
 using Logitar.Identity.Domain;
+using Logitar.Identity.Domain.Roles;
 using Logitar.Identity.Domain.Sessions;
 using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.Domain.Users;
@@ -15,16 +18,18 @@ namespace Logitar.Identity.Core.Users;
 public class UserService : IUserService
 {
   private readonly IDeleteSessionsCommand _deleteSessionsCommand;
+  private readonly IFindRolesQuery _findRolesQuery;
   private readonly ISessionRepository _sessionRepository;
   private readonly IUserQuerier _userQuerier;
   private readonly IUserRepository _userRepository;
   private readonly IOptions<UserSettings> _userSettings;
 
-  public UserService(IDeleteSessionsCommand deleteSessionsCommand,
+  public UserService(IDeleteSessionsCommand deleteSessionsCommand, IFindRolesQuery findRolesQuery,
     ISessionRepository sessionRepository, IUserQuerier userQuerier, IUserRepository userRepository,
     IOptions<UserSettings> userSettings)
   {
     _deleteSessionsCommand = deleteSessionsCommand;
+    _findRolesQuery = findRolesQuery;
     _sessionRepository = sessionRepository;
     _userQuerier = userQuerier;
     _userRepository = userRepository;
@@ -127,6 +132,12 @@ public class UserService : IUserService
     user.Picture = payload.Picture?.GetUri(nameof(payload.Picture));
     user.Profile = payload.Profile?.GetUri(nameof(payload.Profile));
     user.Website = payload.Website?.GetUri(nameof(payload.Website));
+
+    IEnumerable<RoleAggregate> roles = await _findRolesQuery.ExecuteAsync(user.TenantId, payload.Roles, nameof(payload.Roles), cancellationToken);
+    foreach (RoleAggregate role in roles)
+    {
+      user.AddRole(role);
+    }
 
     await _userRepository.SaveAsync(user, cancellationToken);
 
@@ -270,6 +281,20 @@ public class UserService : IUserService
     user.Picture = payload.Picture?.GetUri(nameof(payload.Picture));
     user.Profile = payload.Profile?.GetUri(nameof(payload.Profile));
     user.Website = payload.Website?.GetUri(nameof(payload.Website));
+
+    Dictionary<AggregateId, RoleAggregate> roles = (await _findRolesQuery.ExecuteAsync(user.TenantId, payload.Roles, nameof(payload.Roles), cancellationToken))
+      .ToDictionary(x => x.Id, x => x);
+    foreach (AggregateId roleId in user.Roles)
+    {
+      if (!roles.ContainsKey(roleId))
+      {
+        user.RemoveRole(roleId);
+      }
+    }
+    foreach (RoleAggregate role in roles.Values)
+    {
+      user.AddRole(role);
+    }
 
     await _userRepository.SaveAsync(user, cancellationToken);
 
@@ -418,6 +443,30 @@ public class UserService : IUserService
     if (payload.Website != null)
     {
       user.Website = payload.Website.Value?.GetUri(nameof(payload.Website));
+    }
+
+    IEnumerable<string> roleIds = payload.Roles.Select(role => role.Role);
+    IEnumerable<RoleAggregate> roles = await _findRolesQuery.ExecuteAsync(user.TenantId, roleIds, nameof(payload.Roles), cancellationToken);
+    Dictionary<string, RoleAggregate> rolesById = roles.ToDictionary(x => x.Id.Value, x => x);
+    Dictionary<string, RoleAggregate> rolesByUniqueName = roles.ToDictionary(x => x.UniqueName.ToUpper(), x => x);
+    foreach (RoleModification modification in payload.Roles)
+    {
+      string roleId = modification.Role.Trim();
+      if (!rolesById.TryGetValue(roleId, out RoleAggregate? role))
+      {
+        string uniqueName = roleId.ToUpper();
+        role = rolesByUniqueName[uniqueName];
+      }
+
+      switch (modification.Action)
+      {
+        case CollectionAction.Add:
+          user.AddRole(role);
+          break;
+        case CollectionAction.Remove:
+          user.RemoveRole(role);
+          break;
+      }
     }
 
     await _userRepository.SaveAsync(user, cancellationToken);

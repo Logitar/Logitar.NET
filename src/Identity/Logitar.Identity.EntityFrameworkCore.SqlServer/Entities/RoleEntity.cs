@@ -30,6 +30,7 @@ public record RoleEntity : AggregateEntity
   public string? Description { get; private set; }
 
   public List<ApiKeyEntity> ApiKeys { get; private set; } = new();
+  public List<UserEntity> Users { get; private set; } = new();
 
   public void Update(RoleUpdatedEvent updated, ActorEntity actor)
   {

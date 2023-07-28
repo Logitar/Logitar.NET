@@ -9,6 +9,7 @@ using Logitar.Identity.Domain;
 using Logitar.Identity.Domain.ApiKeys;
 using Logitar.Identity.Domain.Roles;
 using Logitar.Identity.Domain.Settings;
+using Logitar.Identity.Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -22,6 +23,8 @@ public class RoleServiceTests : IntegrationTestingBase
   private readonly IRoleRepository _roleRepository;
   private readonly IRoleService _roleService;
   private readonly IOptions<RoleSettings> _roleSettings;
+  private readonly IUserRepository _userRepository;
+  private readonly IOptions<UserSettings> _userSettings;
 
   private readonly RoleAggregate _role;
 
@@ -31,6 +34,8 @@ public class RoleServiceTests : IntegrationTestingBase
     _roleRepository = ServiceProvider.GetRequiredService<IRoleRepository>();
     _roleService = ServiceProvider.GetRequiredService<IRoleService>();
     _roleSettings = ServiceProvider.GetRequiredService<IOptions<RoleSettings>>();
+    _userRepository = ServiceProvider.GetRequiredService<IUserRepository>();
+    _userSettings = ServiceProvider.GetRequiredService<IOptions<UserSettings>>();
 
     RoleSettings roleSettings = _roleSettings.Value;
     _role = new(roleSettings.UniqueNameSettings, "admin", tenantId: Guid.NewGuid().ToString());
@@ -77,6 +82,11 @@ public class RoleServiceTests : IntegrationTestingBase
     Assert.Contains(apiKey.Roles, roleId => roleId == _role.Id);
     await _apiKeyRepository.SaveAsync(apiKey);
 
+    UserAggregate user = new(_userSettings.Value.UniqueNameSettings, "admin", _role.TenantId);
+    user.AddRole(_role);
+    Assert.Contains(user.Roles, roleId => roleId == _role.Id);
+    await _userRepository.SaveAsync(user);
+
     Assert.True(await IdentityContext.Roles.AnyAsync(x => x.AggregateId == _role.Id.Value));
 
     Role? role = await _roleService.DeleteAsync(_role.Id.Value, CancellationToken);
@@ -87,6 +97,10 @@ public class RoleServiceTests : IntegrationTestingBase
     apiKey = (await _apiKeyRepository.LoadAsync(apiKey.Id))!;
     Assert.NotNull(apiKey);
     Assert.DoesNotContain(apiKey.Roles, roleId => roleId == _role.Id);
+
+    user = (await _userRepository.LoadAsync(user.Id))!;
+    Assert.NotNull(user);
+    Assert.DoesNotContain(user.Roles, roleId => roleId == _role.Id);
   }
 
   [Fact(DisplayName = "DeleteAsync: it should return null when role is not found.")]
