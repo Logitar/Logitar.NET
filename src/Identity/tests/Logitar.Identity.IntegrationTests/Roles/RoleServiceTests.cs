@@ -36,7 +36,7 @@ public class RoleServiceTests : IntegrationTestingBase
     _role = new(roleSettings.UniqueNameSettings, "admin", tenantId: Guid.NewGuid().ToString());
   }
 
-  [Fact]
+  [Fact(DisplayName = "CreateAsync: it should create the correct role.")]
   public async Task CreateAsync_it_should_create_the_correct_role()
   {
     CreateRolePayload payload = new()
@@ -54,7 +54,7 @@ public class RoleServiceTests : IntegrationTestingBase
     Assert.Null(role.Description);
   }
 
-  [Fact]
+  [Fact(DisplayName = "CreateAsync: it should throw UniqueNameAlreadyUsedException when unique name is already used.")]
   public async Task CreateAsync_it_should_throw_UniqueNameAlreadyUsedException_when_unique_name_is_already_used()
   {
     CreateRolePayload payload = new()
@@ -69,7 +69,7 @@ public class RoleServiceTests : IntegrationTestingBase
     Assert.Equal("UniqueName", exception.PropertyName);
   }
 
-  [Fact]
+  [Fact(DisplayName = "DeleteAsync: it should delete the correct role.")]
   public async Task DeleteAsync_it_should_delete_the_correct_role()
   {
     ApiKeyAggregate apiKey = new("Default", _role.TenantId);
@@ -89,22 +89,22 @@ public class RoleServiceTests : IntegrationTestingBase
     Assert.DoesNotContain(apiKey.Roles, roleId => roleId == _role.Id);
   }
 
-  [Fact]
+  [Fact(DisplayName = "DeleteAsync: it should return null when role is not found.")]
   public async Task DeleteAsync_it_should_return_null_when_role_is_not_found()
   {
     Role? role = await _roleService.DeleteAsync(Guid.Empty.ToString(), CancellationToken);
     Assert.Null(role);
   }
 
-  [Fact]
-  public async Task ReadAsync_it_should_read_the_correct_role_by_id()
+  [Fact(DisplayName = "ReadAsync: it should read the correct role by ID.")]
+  public async Task ReadAsync_it_should_read_the_correct_role_by_Id()
   {
     Role? role = await _roleService.ReadAsync(_role.Id.Value, _role.TenantId, "admin2", CancellationToken);
     Assert.NotNull(role);
     Assert.Equal(_role.Id.Value, role.Id);
   }
 
-  [Fact]
+  [Fact(DisplayName = "ReadAsync: it should read the correct role by unique name.")]
   public async Task ReadAsync_it_should_read_the_correct_role_by_unique_name()
   {
     Role? role = await _roleService.ReadAsync(id: Guid.Empty.ToString(), _role.TenantId, _role.UniqueName, CancellationToken);
@@ -112,14 +112,14 @@ public class RoleServiceTests : IntegrationTestingBase
     Assert.Equal(_role.Id.Value, role.Id);
   }
 
-  [Fact]
+  [Fact(DisplayName = "ReadAsync: it should return null when no role is a match.")]
   public async Task ReadAsync_it_should_return_null_when_no_role_is_a_match()
   {
     Role? role = await _roleService.ReadAsync(id: Guid.Empty.ToString(), _role.TenantId, "admin2", CancellationToken);
     Assert.Null(role);
   }
 
-  [Fact]
+  [Fact(DisplayName = "ReadAsync: it should throw TooManyResultsException when many roles are a match.")]
   public async Task ReadAsync_it_should_throw_TooManyResultsException_when_many_roles_are_a_match()
   {
     RoleSettings roleSettings = _roleSettings.Value;
@@ -131,7 +131,7 @@ public class RoleServiceTests : IntegrationTestingBase
     Assert.Equal(2, exception.Actual);
   }
 
-  [Fact]
+  [Fact(DisplayName = "ReplaceAsync: it should replace the correct role.")]
   public async Task ReplaceAsync_it_should_replace_the_correct_role()
   {
     ReplaceRolePayload payload = new()
@@ -147,7 +147,7 @@ public class RoleServiceTests : IntegrationTestingBase
     Assert.Null(role.Description);
   }
 
-  [Fact]
+  [Fact(DisplayName = "ReplaceAsync: it should return null when role is not found.")]
   public async Task ReplaceAsync_it_should_return_null_when_role_is_not_found()
   {
     ReplaceRolePayload payload = new();
@@ -155,7 +155,7 @@ public class RoleServiceTests : IntegrationTestingBase
     Assert.Null(role);
   }
 
-  [Fact]
+  [Fact(DisplayName = "ReplaceAsync: it should throw UniqueNameAlreadyUsedException when unique name is already used.")]
   public async Task ReplaceAsync_it_should_throw_UniqueNameAlreadyUsedException_when_unique_name_is_already_used()
   {
     RoleSettings roleSettings = _roleSettings.Value;
@@ -173,7 +173,7 @@ public class RoleServiceTests : IntegrationTestingBase
     Assert.Equal("UniqueName", exception.PropertyName);
   }
 
-  [Fact]
+  [Fact(DisplayName = "SearchAsync: it should return the correct roles.")]
   public async Task SearchAsync_it_should_return_the_correct_roles()
   {
     RoleSettings roleSettings = _roleSettings.Value;
@@ -207,7 +207,7 @@ public class RoleServiceTests : IntegrationTestingBase
     Assert.Equal(writeUsers.Id.Value, roles.Items.ElementAt(1).Id);
   }
 
-  [Fact]
+  [Fact(DisplayName = "UpdateAsync: it should update the correct role.")]
   public async Task UpdateAsync_it_should_update_the_correct_role()
   {
     _role.DisplayName = "Administrator";
@@ -226,7 +226,7 @@ public class RoleServiceTests : IntegrationTestingBase
     Assert.Null(role.Description);
   }
 
-  [Fact]
+  [Fact(DisplayName = "UpdateAsync: it should return null when role is not found.")]
   public async Task UpdateAsync_it_should_return_null_when_role_is_not_found()
   {
     UpdateRolePayload payload = new();
@@ -234,7 +234,7 @@ public class RoleServiceTests : IntegrationTestingBase
     Assert.Null(role);
   }
 
-  [Fact]
+  [Fact(DisplayName = "UpdateAsync: it should throw UniqueNameAlreadyUsedException when unique name is already used.")]
   public async Task UpdateAsync_it_should_throw_UniqueNameAlreadyUsedException_when_unique_name_is_already_used()
   {
     RoleSettings roleSettings = _roleSettings.Value;
