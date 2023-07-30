@@ -428,7 +428,7 @@ public class SessionFacadeTests : IntegrationTestingBase
     SessionEntity? entity = await IdentityContext.Sessions.SingleOrDefaultAsync(x => x.AggregateId == session.Id);
     Assert.NotNull(entity);
     Assert.NotNull(entity.Secret);
-    Pbkdf2 secret = Pbkdf2.Parse(entity.Secret);
+    Pbkdf2 secret = Pbkdf2.Decode(entity.Secret);
 
     Assert.NotNull(session.RefreshToken);
     string[] values = session.RefreshToken.Split('.');

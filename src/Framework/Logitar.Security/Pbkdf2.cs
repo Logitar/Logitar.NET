@@ -7,10 +7,9 @@ namespace Logitar.Security;
 /// TODO(fpion): tests
 /// Reference: <see href="https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#pbkdf2"/>
 /// </summary>
-public class Pbkdf2
+public record Pbkdf2 : Password
 {
   public const string Prefix = "PBKDF2";
-  public const char Separator = ':';
 
   private readonly KeyDerivationPrf _algorithm;
   private readonly int _iterations;
@@ -36,22 +35,22 @@ public class Pbkdf2
     _hash = hash;
   }
 
-  public static Pbkdf2 Parse(string s)
+  public static Pbkdf2 Decode(string encoded)
   {
-    string[] values = s.Split(Separator);
+    string[] values = encoded.Split(Separator);
     if (values.Length != 5 || values[0] != Prefix)
     {
-      throw new ArgumentException($"The value '{s}' is not a valid string representation of PBKDF2.", nameof(s));
+      throw new ArgumentException($"The value '{encoded}' is not a valid string representation of PBKDF2.", nameof(encoded));
     }
 
     return new Pbkdf2(Enum.Parse<KeyDerivationPrf>(values[1]), int.Parse(values[2]),
       Convert.FromBase64String(values[3]), Convert.FromBase64String(values[4]));
   }
-  public static bool TryParse(string s, out Pbkdf2? pbkdf2)
+  public static bool TryDecode(string encoded, out Pbkdf2? pbkdf2)
   {
     try
     {
-      pbkdf2 = Parse(s);
+      pbkdf2 = Decode(encoded);
       return true;
     }
     catch (Exception)
@@ -61,16 +60,12 @@ public class Pbkdf2
     }
   }
 
-  public bool IsMatch(byte[] password) => IsMatch(Convert.ToBase64String(password));
-  public bool IsMatch(string password) => _hash.SequenceEqual(ComputeHash(password));
+  public override string Encode() => string.Join(Separator, Prefix, _algorithm, _iterations,
+    Convert.ToBase64String(_salt), Convert.ToBase64String(_hash));
+
+  public override bool IsMatch(byte[] password) => IsMatch(Convert.ToBase64String(password));
+  public override bool IsMatch(string password) => _hash.SequenceEqual(ComputeHash(password));
 
   private byte[] ComputeHash(string password, int? length = null)
     => KeyDerivation.Pbkdf2(password, _salt, _algorithm, _iterations, length ?? _hash.Length);
-
-  public override bool Equals(object? obj) => obj is Pbkdf2 other && other._algorithm == _algorithm
-    && other._iterations == _iterations && other._salt.SequenceEqual(_salt) && other._hash.SequenceEqual(_hash);
-  public override int GetHashCode() => HashCode.Combine(Prefix, _algorithm, _iterations,
-    Convert.ToBase64String(_salt), Convert.ToBase64String(_hash));
-  public override string ToString() => string.Join(Separator, Prefix, _algorithm, _iterations,
-    Convert.ToBase64String(_salt), Convert.ToBase64String(_hash));
 }

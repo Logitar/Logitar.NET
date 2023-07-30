@@ -24,6 +24,7 @@ public static class DependencyInjectionExtensions
 
     EventSerializer.Instance.RegisterConverter(new CultureInfoConverter());
     EventSerializer.Instance.RegisterConverter(new GenderConverter());
+    EventSerializer.Instance.RegisterConverter(new PasswordConverter());
     EventSerializer.Instance.RegisterConverter(new Pbkdf2Converter());
     EventSerializer.Instance.RegisterConverter(new TimeZoneEntryConverter());
 

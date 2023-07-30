@@ -2,6 +2,7 @@
 using Logitar.EventSourcing;
 using Logitar.Identity.Domain.ApiKeys.Events;
 using Logitar.Identity.Domain.ApiKeys.Validators;
+using Logitar.Identity.Domain.Passwords;
 using Logitar.Identity.Domain.Roles;
 using Logitar.Security;
 using System.Collections.Immutable;
@@ -12,7 +13,7 @@ public class ApiKeyAggregate : AggregateRoot
 {
   public const int SecretLength = 256 / 8;
 
-  private Pbkdf2 _secret = new(string.Empty);
+  private Password _secret = Password.Default;
 
   private string _title = string.Empty;
   private string? _description = null;
@@ -26,14 +27,13 @@ public class ApiKeyAggregate : AggregateRoot
 
   public ApiKeyAggregate(string title, string? tenantId = null) : base()
   {
-    Secret = RandomNumberGenerator.GetBytes(SecretLength);
-
     ApiKeyCreatedEvent created = new()
     {
-      Secret = new Pbkdf2(Secret),
+      Secret = PasswordHelper.Generate(SecretLength, out byte[] secret),
       TenantId = tenantId?.CleanTrim(),
       Title = title.Trim()
     };
+    Secret = secret;
 
     new ApiKeyCreatedValidator().ValidateAndThrow(created);
 

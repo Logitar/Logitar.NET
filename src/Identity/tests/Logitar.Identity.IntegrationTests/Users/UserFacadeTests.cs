@@ -171,7 +171,7 @@ public class UserFacadeTests : IntegrationTestingBase
       .SingleOrDefaultAsync(x => x.AggregateId == user.Id);
     Assert.NotNull(entity);
     Assert.NotNull(entity.Password);
-    Assert.True(Pbkdf2.TryParse(entity.Password, out Pbkdf2? pbkdf2));
+    Assert.True(Pbkdf2.TryDecode(entity.Password, out Pbkdf2? pbkdf2));
     Assert.NotNull(pbkdf2);
     Assert.True(pbkdf2.IsMatch(payload.Password));
   }
@@ -665,7 +665,7 @@ public class UserFacadeTests : IntegrationTestingBase
       .SingleOrDefaultAsync(x => x.AggregateId == _user.Id.Value);
     Assert.NotNull(entity);
     Assert.NotNull(entity.Password);
-    Pbkdf2 password = Pbkdf2.Parse(entity.Password);
+    Pbkdf2 password = Pbkdf2.Decode(entity.Password);
     Assert.True(password.IsMatch(resetPayload.Password));
 
     await Assert.ThrowsAsync<SecurityTokenBlacklistedException>(

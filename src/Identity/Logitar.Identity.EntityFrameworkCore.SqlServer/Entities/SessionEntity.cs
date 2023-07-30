@@ -11,7 +11,7 @@ public record SessionEntity : AggregateEntity
     UserId = user.UserId;
     User = user;
 
-    Secret = created.Secret?.ToString();
+    Secret = created.Secret?.Encode();
 
     IsActive = true;
   }
@@ -41,7 +41,7 @@ public record SessionEntity : AggregateEntity
   {
     Update(renewed, actor);
 
-    Secret = renewed.Secret.ToString();
+    Secret = renewed.Secret.Encode();
   }
 
   public override void SetActor(string id, string json)

@@ -114,7 +114,7 @@ public class ApiKeyFacadeTests : IntegrationTestingBase
 
     ApiKeyEntity? entity = await IdentityContext.ApiKeys.SingleOrDefaultAsync(x => x.AggregateId == apiKey.Id);
     Assert.NotNull(entity);
-    Pbkdf2 pbkdf2 = Pbkdf2.Parse(entity.Secret);
+    Pbkdf2 pbkdf2 = Pbkdf2.Decode(entity.Secret);
     Assert.True(pbkdf2.IsMatch(apiKey.Secret));
   }
 
