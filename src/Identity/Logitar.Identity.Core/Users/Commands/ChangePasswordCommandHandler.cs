@@ -1,25 +1,25 @@
 ﻿using Logitar.EventSourcing;
+using Logitar.Identity.Core.Passwords;
 using Logitar.Identity.Core.Users.Models;
 using Logitar.Identity.Core.Users.Payloads;
-using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.Domain.Users;
+using Logitar.Security.Cryptography;
 using MediatR;
-using Microsoft.Extensions.Options;
 
 namespace Logitar.Identity.Core.Users.Commands;
 
 public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordCommand, User?>
 {
+  private readonly IPasswordHelper _passwordHelper;
   private readonly IUserQuerier _userQuerier;
   private readonly IUserRepository _userRepository;
-  private readonly IOptions<UserSettings> _userSettings;
 
-  public ChangePasswordCommandHandler(IUserQuerier userQuerier, IUserRepository userRepository,
-    IOptions<UserSettings> userSettings)
+  public ChangePasswordCommandHandler(IPasswordHelper passwordHelper, IUserQuerier userQuerier,
+    IUserRepository userRepository)
   {
+    _passwordHelper = passwordHelper;
     _userQuerier = userQuerier;
     _userRepository = userRepository;
-    _userSettings = userSettings;
   }
 
   public async Task<User?> Handle(ChangePasswordCommand command, CancellationToken cancellationToken)
@@ -32,9 +32,9 @@ public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordComman
     }
 
     ChangePasswordPayload payload = command.Payload;
-    UserSettings userSettings = _userSettings.Value;
+    Password password = _passwordHelper.Create(payload.Password);
 
-    user.ChangePassword(userSettings.PasswordSettings, payload.Password, payload.Current);
+    user.ChangePassword(payload.Current, password);
 
     await _userRepository.SaveAsync(user, cancellationToken);
 

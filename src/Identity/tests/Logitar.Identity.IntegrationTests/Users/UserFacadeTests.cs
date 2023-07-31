@@ -3,6 +3,7 @@ using Logitar.EventSourcing;
 using Logitar.EventSourcing.EntityFrameworkCore.Relational;
 using Logitar.Identity.Core;
 using Logitar.Identity.Core.Models;
+using Logitar.Identity.Core.Passwords;
 using Logitar.Identity.Core.Payloads;
 using Logitar.Identity.Core.Roles;
 using Logitar.Identity.Core.Roles.Models;
@@ -20,7 +21,7 @@ using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.Domain.Users;
 using Logitar.Identity.Domain.Users.Events;
 using Logitar.Identity.EntityFrameworkCore.SqlServer.Entities;
-using Logitar.Security;
+using Logitar.Security.Cryptography;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -30,6 +31,7 @@ namespace Logitar.Identity.IntegrationTests.Users;
 [Trait(Traits.Category, Categories.Integration)]
 public class UserFacadeTests : IntegrationTestingBase
 {
+  private readonly IPasswordHelper _passwordHelper;
   private readonly IRoleRepository _roleRepository;
   private readonly IOptions<RoleSettings> _roleSettings;
   private readonly string _secret;
@@ -46,6 +48,7 @@ public class UserFacadeTests : IntegrationTestingBase
 
   public UserFacadeTests() : base()
   {
+    _passwordHelper = ServiceProvider.GetRequiredService<IPasswordHelper>();
     _roleRepository = ServiceProvider.GetRequiredService<IRoleRepository>();
     _roleSettings = ServiceProvider.GetRequiredService<IOptions<RoleSettings>>();
     _sessionRepository = ServiceProvider.GetRequiredService<ISessionRepository>();
@@ -78,7 +81,8 @@ public class UserFacadeTests : IntegrationTestingBase
       Password = "Test123!"
     };
 
-    _user.SetPassword(_userSettings.Value.PasswordSettings, payload.Password);
+    Password password = _passwordHelper.Create(payload.Password);
+    _user.SetPassword(password);
     await _userRepository.SaveAsync(_user);
 
     Assert.Null(_user.AuthenticatedOn);
@@ -152,8 +156,8 @@ public class UserFacadeTests : IntegrationTestingBase
   [Fact(DisplayName = "ChangePasswordAsync: it should change the correct password.")]
   public async Task ChangePasswordAsync_it_should_change_the_correct_password()
   {
-    UserSettings userSettings = _userSettings.Value;
-    _user.SetPassword(userSettings.PasswordSettings, "Test123!");
+    Password password = _passwordHelper.Create("Test123!");
+    _user.SetPassword(password);
     await _userRepository.SaveAsync(_user);
 
     ChangePasswordPayload payload = new()
@@ -171,7 +175,7 @@ public class UserFacadeTests : IntegrationTestingBase
       .SingleOrDefaultAsync(x => x.AggregateId == user.Id);
     Assert.NotNull(entity);
     Assert.NotNull(entity.Password);
-    Assert.True(Pbkdf2.TryParse(entity.Password, out Pbkdf2? pbkdf2));
+    Assert.True(Pbkdf2.TryDecode(entity.Password, out Pbkdf2? pbkdf2));
     Assert.NotNull(pbkdf2);
     Assert.True(pbkdf2.IsMatch(payload.Password));
   }
@@ -187,13 +191,14 @@ public class UserFacadeTests : IntegrationTestingBase
   [Fact(DisplayName = "ChangePasswordAsync: it should thrown InvalidCredentialsException when current password is not valid.")]
   public async Task ChangePasswordAsync_it_should_throw_InvalidCredentialsException_when_current_password_is_not_valid()
   {
-    UserSettings userSettings = _userSettings.Value;
-    _user.SetPassword(userSettings.PasswordSettings, "Test123!");
+    Password password = _passwordHelper.Create("Test123!");
+    _user.SetPassword(password);
     await _userRepository.SaveAsync(_user);
 
     ChangePasswordPayload payload = new()
     {
-      Current = "AAaa!!11"
+      Current = "AAaa!!11",
+      Password = "Test123!"
     };
     await Assert.ThrowsAsync<InvalidCredentialsException>(
       async () => await _userFacade.ChangePasswordAsync(_user.Id.Value, payload, CancellationToken));
@@ -202,7 +207,10 @@ public class UserFacadeTests : IntegrationTestingBase
   [Fact(DisplayName = "ChangePasswordAsync: it should throw InvalidCredentialsException when user has no password.")]
   public async Task ChangePasswordAsync_it_should_throw_InvalidCredentialsException_when_user_has_no_password()
   {
-    ChangePasswordPayload payload = new();
+    ChangePasswordPayload payload = new()
+    {
+      Password = "Test123!"
+    };
     await Assert.ThrowsAsync<InvalidCredentialsException>(
       async () => await _userFacade.ChangePasswordAsync(_user.Id.Value, payload, CancellationToken));
   }
@@ -210,8 +218,8 @@ public class UserFacadeTests : IntegrationTestingBase
   [Fact(DisplayName = "ChangePasswordAsync: it should throw ValidationException when new password is not valid.")]
   public async Task ChangePasswordAsync_it_should_throw_ValidationException_when_new_password_is_not_valid()
   {
-    UserSettings userSettings = _userSettings.Value;
-    _user.SetPassword(userSettings.PasswordSettings, "Test123!");
+    Password password = _passwordHelper.Create("Test123!");
+    _user.SetPassword(password);
     await _userRepository.SaveAsync(_user);
 
     ChangePasswordPayload payload = new()
@@ -665,7 +673,7 @@ public class UserFacadeTests : IntegrationTestingBase
       .SingleOrDefaultAsync(x => x.AggregateId == _user.Id.Value);
     Assert.NotNull(entity);
     Assert.NotNull(entity.Password);
-    Pbkdf2 password = Pbkdf2.Parse(entity.Password);
+    Pbkdf2 password = Pbkdf2.Decode(entity.Password);
     Assert.True(password.IsMatch(resetPayload.Password));
 
     await Assert.ThrowsAsync<SecurityTokenBlacklistedException>(

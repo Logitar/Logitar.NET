@@ -1,6 +1,7 @@
 ﻿using Logitar.Identity.Core;
 using Logitar.Identity.Core.ApiKeys;
 using Logitar.Identity.Core.Models;
+using Logitar.Identity.Core.Passwords;
 using Logitar.Identity.Core.Payloads;
 using Logitar.Identity.Core.Roles;
 using Logitar.Identity.Core.Roles.Models;
@@ -10,6 +11,7 @@ using Logitar.Identity.Domain.ApiKeys;
 using Logitar.Identity.Domain.Roles;
 using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.Domain.Users;
+using Logitar.Security.Cryptography;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -20,6 +22,7 @@ namespace Logitar.Identity.IntegrationTests.Roles;
 public class RoleFacadeTests : IntegrationTestingBase
 {
   private readonly IApiKeyRepository _apiKeyRepository;
+  private readonly IPasswordHelper _passwordHelper;
   private readonly IRoleFacade _roleFacade;
   private readonly IRoleRepository _roleRepository;
   private readonly IOptions<RoleSettings> _roleSettings;
@@ -31,6 +34,7 @@ public class RoleFacadeTests : IntegrationTestingBase
   public RoleFacadeTests() : base()
   {
     _apiKeyRepository = ServiceProvider.GetRequiredService<IApiKeyRepository>();
+    _passwordHelper = ServiceProvider.GetRequiredService<IPasswordHelper>();
     _roleFacade = ServiceProvider.GetRequiredService<IRoleFacade>();
     _roleRepository = ServiceProvider.GetRequiredService<IRoleRepository>();
     _roleSettings = ServiceProvider.GetRequiredService<IOptions<RoleSettings>>();
@@ -77,7 +81,8 @@ public class RoleFacadeTests : IntegrationTestingBase
   [Fact(DisplayName = "DeleteAsync: it should delete the correct role.")]
   public async Task DeleteAsync_it_should_delete_the_correct_role()
   {
-    ApiKeyAggregate apiKey = new("Default", _role.TenantId);
+    Password secret = _passwordHelper.Generate(ApiKeyAggregate.SecretLength, out _);
+    ApiKeyAggregate apiKey = new(secret, "Default", _role.TenantId);
     apiKey.AddRole(_role);
     Assert.Contains(apiKey.Roles, roleId => roleId == _role.Id);
     await _apiKeyRepository.SaveAsync(apiKey);

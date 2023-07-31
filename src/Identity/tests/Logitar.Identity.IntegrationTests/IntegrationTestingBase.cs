@@ -1,6 +1,7 @@
 ﻿using Logitar.EventSourcing.EntityFrameworkCore.Relational;
 using Logitar.Identity.Core.Models;
 using Logitar.Identity.EntityFrameworkCore.SqlServer;
+using Logitar.Security.Cryptography;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +22,7 @@ public abstract class IntegrationTestingBase : IAsyncLifetime
       .AddLogitarIdentityWithEntityFrameworkCoreSqlServer(connectionString)
       .AddSingleton(configuration)
       .AddSingleton<ICurrentActor>(new CurrentActorMock(Actor))
+      .Configure<Pbkdf2Settings>(settings => settings.Iterations = 6)
       .BuildServiceProvider();
   }
 

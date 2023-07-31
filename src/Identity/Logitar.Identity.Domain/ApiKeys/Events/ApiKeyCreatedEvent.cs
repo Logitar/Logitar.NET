@@ -1,12 +1,12 @@
 ﻿using Logitar.EventSourcing;
-using Logitar.Security;
+using Logitar.Security.Cryptography;
 using MediatR;
 
 namespace Logitar.Identity.Domain.ApiKeys.Events;
 
 public record ApiKeyCreatedEvent : DomainEvent, INotification
 {
-  public Pbkdf2 Secret { get; init; } = new(string.Empty);
+  public Password Secret { get; init; } = Password.Default;
 
   public string? TenantId { get; init; }
 

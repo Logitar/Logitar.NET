@@ -112,7 +112,7 @@ public record UserEntity : AggregateEntity
   {
     SetVersion(change);
 
-    Password = change.Password.ToString();
+    Password = change.Password.Encode();
     PasswordChangedById = change.ActorId ?? Actor.DefaultId;
     PasswordChangedBy = actor.Serialize();
     PasswordChangedOn = change.OccurredOn;
@@ -142,7 +142,7 @@ public record UserEntity : AggregateEntity
   {
     SetVersion(change);
 
-    Password = change.Password.ToString();
+    Password = change.Password.Encode();
     PasswordChangedById = change.ActorId ?? Actor.DefaultId;
     PasswordChangedBy = actor.Serialize();
     PasswordChangedOn = change.OccurredOn;
@@ -195,7 +195,7 @@ public record UserEntity : AggregateEntity
     }
     if (updated.Password != null)
     {
-      Password = updated.Password.ToString();
+      Password = updated.Password.Encode();
       PasswordChangedById = updated.ActorId ?? Actor.DefaultId;
       PasswordChangedBy = actor.Serialize();
       PasswordChangedOn = updated.OccurredOn;

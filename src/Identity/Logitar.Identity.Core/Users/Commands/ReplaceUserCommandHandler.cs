@@ -1,10 +1,12 @@
 ﻿using Logitar.EventSourcing;
+using Logitar.Identity.Core.Passwords;
 using Logitar.Identity.Core.Roles.Queries;
 using Logitar.Identity.Core.Users.Models;
 using Logitar.Identity.Core.Users.Payloads;
 using Logitar.Identity.Domain.Roles;
 using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.Domain.Users;
+using Logitar.Security.Cryptography;
 using MediatR;
 using Microsoft.Extensions.Options;
 
@@ -13,14 +15,16 @@ namespace Logitar.Identity.Core.Users.Commands;
 public class ReplaceUserCommandHandler : IRequestHandler<ReplaceUserCommand, User?>
 {
   private readonly IMediator _mediator;
+  private readonly IPasswordHelper _passwordHelper;
   private readonly IUserQuerier _userQuerier;
   private readonly IUserRepository _userRepository;
   private readonly IOptions<UserSettings> _userSettings;
 
-  public ReplaceUserCommandHandler(IMediator mediator, IUserQuerier userQuerier,
-    IUserRepository userRepository, IOptions<UserSettings> userSettings)
+  public ReplaceUserCommandHandler(IMediator mediator, IPasswordHelper passwordHelper,
+    IUserQuerier userQuerier, IUserRepository userRepository, IOptions<UserSettings> userSettings)
   {
     _mediator = mediator;
+    _passwordHelper = passwordHelper;
     _userQuerier = userQuerier;
     _userRepository = userRepository;
     _userSettings = userSettings;
@@ -50,7 +54,8 @@ public class ReplaceUserCommandHandler : IRequestHandler<ReplaceUserCommand, Use
     }
     if (payload.Password != null)
     {
-      user.SetPassword(userSettings.PasswordSettings, payload.Password);
+      Password password = _passwordHelper.Create(payload.Password);
+      user.SetPassword(password);
     }
 
     if (payload.IsDisabled != null)

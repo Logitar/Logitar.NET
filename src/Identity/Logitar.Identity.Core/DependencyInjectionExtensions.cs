@@ -1,4 +1,5 @@
 ﻿using Logitar.Identity.Core.ApiKeys;
+using Logitar.Identity.Core.Passwords;
 using Logitar.Identity.Core.Roles;
 using Logitar.Identity.Core.Sessions;
 using Logitar.Identity.Core.Tokens;
@@ -16,6 +17,7 @@ public static class DependencyInjectionExtensions
 
     return services
       .AddMediatR(config => config.RegisterServicesFromAssembly(assembly))
+      .AddSingleton<IPasswordHelper, PasswordHelper>()
       .AddTransient<ITokenManager, JsonWebTokenManager>()
       .AddTransient<IApiKeyFacade, ApiKeyFacade>()
       .AddTransient<IRoleFacade, RoleFacade>()

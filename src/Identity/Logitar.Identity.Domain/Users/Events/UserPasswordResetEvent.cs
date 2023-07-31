@@ -1,10 +1,10 @@
 ﻿using Logitar.EventSourcing;
-using Logitar.Security;
+using Logitar.Security.Cryptography;
 using MediatR;
 
 namespace Logitar.Identity.Domain.Users.Events;
 
 public record UserPasswordResetEvent : DomainEvent, INotification
 {
-  public Pbkdf2 Password { get; init; } = new(string.Empty);
+  public Password Password { get; init; } = Password.Default;
 }

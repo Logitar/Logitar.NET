@@ -8,7 +8,7 @@ public record ApiKeyEntity : AggregateEntity
 {
   public ApiKeyEntity(ApiKeyCreatedEvent created, ActorEntity actor) : base(created, actor)
   {
-    Secret = created.Secret.ToString();
+    Secret = created.Secret.Encode();
 
     TenantId = created.TenantId;
 

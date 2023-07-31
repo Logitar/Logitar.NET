@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Logitar.EventSourcing;
+using Logitar.Identity.Core.Passwords;
 using Logitar.Identity.Core.Tokens.Commands;
 using Logitar.Identity.Core.Tokens.Models;
 using Logitar.Identity.Core.Tokens.Payloads;
@@ -8,6 +9,7 @@ using Logitar.Identity.Core.Users.Payloads;
 using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.Domain.Users;
 using Logitar.Identity.Domain.Users.Validators;
+using Logitar.Security.Cryptography;
 using MediatR;
 using Microsoft.Extensions.Options;
 
@@ -16,14 +18,16 @@ namespace Logitar.Identity.Core.Users.Commands;
 public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand, User?>
 {
   private readonly IMediator _mediator;
+  private readonly IPasswordHelper _passwordHelper;
   private readonly IUserRepository _userRepository;
   private readonly IUserQuerier _userQuerier;
   private readonly IOptions<UserSettings> _userSettings;
 
-  public ResetPasswordCommandHandler(IMediator mediator, IUserRepository userRepository,
-    IUserQuerier userQuerier, IOptions<UserSettings> userSettings)
+  public ResetPasswordCommandHandler(IMediator mediator, IPasswordHelper passwordHelper,
+    IUserRepository userRepository, IUserQuerier userQuerier, IOptions<UserSettings> userSettings)
   {
     _mediator = mediator;
+    _passwordHelper = passwordHelper;
     _userRepository = userRepository;
     _userQuerier = userQuerier;
     _userSettings = userSettings;
@@ -57,7 +61,8 @@ public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand,
       return null;
     }
 
-    user.ResetPassword(userSettings.PasswordSettings, payload.Password);
+    Password password = _passwordHelper.Create(payload.Password);
+    user.ResetPassword(password);
 
     await _userRepository.SaveAsync(user, cancellationToken);
 

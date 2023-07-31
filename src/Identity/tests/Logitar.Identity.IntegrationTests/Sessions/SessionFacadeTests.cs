@@ -1,5 +1,6 @@
 ﻿using Logitar.Identity.Core;
 using Logitar.Identity.Core.Models;
+using Logitar.Identity.Core.Passwords;
 using Logitar.Identity.Core.Payloads;
 using Logitar.Identity.Core.Sessions;
 using Logitar.Identity.Core.Sessions.Models;
@@ -9,7 +10,7 @@ using Logitar.Identity.Domain.Sessions;
 using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.Domain.Users;
 using Logitar.Identity.EntityFrameworkCore.SqlServer.Entities;
-using Logitar.Security;
+using Logitar.Security.Cryptography;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -21,6 +22,7 @@ public class SessionFacadeTests : IntegrationTestingBase
 {
   private const string Password = "G_rw)XW5?Z7>C$~9";
 
+  private readonly IPasswordHelper _passwordHelper;
   private readonly ISessionFacade _sessionFacade;
   private readonly ISessionRepository _sessionRepository;
   private readonly IUserRepository _userRepository;
@@ -30,6 +32,7 @@ public class SessionFacadeTests : IntegrationTestingBase
 
   public SessionFacadeTests() : base()
   {
+    _passwordHelper = ServiceProvider.GetRequiredService<IPasswordHelper>();
     _sessionFacade = ServiceProvider.GetRequiredService<ISessionFacade>();
     _sessionRepository = ServiceProvider.GetRequiredService<ISessionRepository>();
     _userRepository = ServiceProvider.GetRequiredService<IUserRepository>();
@@ -40,6 +43,9 @@ public class SessionFacadeTests : IntegrationTestingBase
     {
       Email = new EmailAddress(Faker.Person.Email, isVerified: true)
     };
+
+    Password password = _passwordHelper.Create(Password);
+    _user.SetPassword(password);
   }
 
   [Fact(DisplayName = "CreateAsync: it should create the correct Session.")]
@@ -123,12 +129,13 @@ public class SessionFacadeTests : IntegrationTestingBase
   [Fact(DisplayName = "RenewAsync: it should renew the correct session.")]
   public async Task RenewAsync_it_should_renew_the_correct_session()
   {
-    SessionAggregate aggregate = new(_user, isPersistent: true);
+    Password secret = _passwordHelper.Generate(SessionAggregate.SecretLength, out byte[] secretBytes);
+    SessionAggregate aggregate = new(_user, secret);
     await _sessionRepository.SaveAsync(aggregate);
 
     RenewSessionPayload payload = new()
     {
-      RefreshToken = new RefreshToken(aggregate).ToString()
+      RefreshToken = new RefreshToken(aggregate.Id, secretBytes).ToString()
     };
     Session session = await _sessionFacade.RenewAsync(payload, CancellationToken);
     Assert.Equal(_user.Id.Value, session.User.Id);
@@ -153,10 +160,11 @@ public class SessionFacadeTests : IntegrationTestingBase
   [Fact(DisplayName = "RenewAsync: it should throw InvalidCredentialsException when session is not found.")]
   public async Task RenewAsync_it_should_throw_InvalidCredentialsException_when_session_is_not_found()
   {
-    SessionAggregate session = new(_user, isPersistent: true);
+    Password secret = _passwordHelper.Generate(SessionAggregate.SecretLength, out byte[] secretBytes);
+    SessionAggregate session = new(_user, secret);
     RenewSessionPayload payload = new()
     {
-      RefreshToken = new RefreshToken(session).ToString()
+      RefreshToken = new RefreshToken(session.Id, secretBytes).ToString()
     };
     var exception = await Assert.ThrowsAsync<InvalidCredentialsException>(
       async () => await _sessionFacade.RenewAsync(payload, CancellationToken));
@@ -166,16 +174,13 @@ public class SessionFacadeTests : IntegrationTestingBase
   [Fact(DisplayName = "RenewAsync: it should throw InvalidCredentialsException when session is not persistent.")]
   public async Task RenewAsync_it_should_throw_InvalidCredentialsException_when_session_is_not_persistent()
   {
-    SessionAggregate session = new(_user, isPersistent: false);
+    SessionAggregate session = new(_user);
     await _sessionRepository.SaveAsync(session);
 
-    byte[] secret = RandomNumberGenerator.GetBytes(32);
-    session.GetType().GetProperty("Secret")?.SetValue(session, secret);
-    Assert.NotNull(session.Secret);
-
+    byte[] secretBytes = RandomNumberGenerator.GetBytes(32);
     RenewSessionPayload payload = new()
     {
-      RefreshToken = new RefreshToken(session).ToString()
+      RefreshToken = new RefreshToken(session.Id, secretBytes).ToString()
     };
     var exception = await Assert.ThrowsAsync<InvalidCredentialsException>(
       async () => await _sessionFacade.RenewAsync(payload, CancellationToken));
@@ -185,16 +190,14 @@ public class SessionFacadeTests : IntegrationTestingBase
   [Fact(DisplayName = "RenewAsync: it should throw InvalidCredentialsException when session secret is not valid.")]
   public async Task RenewAsync_it_should_throw_InvalidCredentialsException_when_session_secret_is_not_valid()
   {
-    SessionAggregate session = new(_user, isPersistent: true);
+    Password secret = _passwordHelper.Generate(SessionAggregate.SecretLength, out _);
+    SessionAggregate session = new(_user, secret);
     await _sessionRepository.SaveAsync(session);
 
-    byte[] secret = RandomNumberGenerator.GetBytes(32);
-    session.GetType().GetProperty("Secret")?.SetValue(session, secret);
-    Assert.NotNull(session.Secret);
-
+    byte[] secretBytes = RandomNumberGenerator.GetBytes(32);
     RenewSessionPayload payload = new()
     {
-      RefreshToken = new RefreshToken(session).ToString()
+      RefreshToken = new RefreshToken(session.Id, secretBytes).ToString()
     };
     var exception = await Assert.ThrowsAsync<InvalidCredentialsException>(
       async () => await _sessionFacade.RenewAsync(payload, CancellationToken));
@@ -204,13 +207,14 @@ public class SessionFacadeTests : IntegrationTestingBase
   [Fact(DisplayName = "RenewAsync: it should throw SessionIsNotActiveException when session is not active")]
   public async Task RenewAsync_it_should_throw_SessionIsNotActiveException_when_session_is_not_active()
   {
-    SessionAggregate session = new(_user, isPersistent: true);
+    Password secret = _passwordHelper.Generate(SessionAggregate.SecretLength, out byte[] secretBytes);
+    SessionAggregate session = new(_user, secret);
     session.SignOut();
     await _sessionRepository.SaveAsync(session);
 
     RenewSessionPayload payload = new()
     {
-      RefreshToken = new RefreshToken(session).ToString()
+      RefreshToken = new RefreshToken(session.Id, secretBytes).ToString()
     };
     var exception = await Assert.ThrowsAsync<SessionIsNotActiveException>(
       async () => await _sessionFacade.RenewAsync(payload, CancellationToken));
@@ -229,17 +233,18 @@ public class SessionFacadeTests : IntegrationTestingBase
     };
     await _userRepository.SaveAsync(user);
 
-    SessionAggregate session = _user.SignIn(userSettings, isPersistent: true);
-    SessionAggregate session1 = user.SignIn(userSettings, isPersistent: true);
-    SessionAggregate session2 = user.SignIn(userSettings, isPersistent: true);
-    SessionAggregate session3 = user.SignIn(userSettings, isPersistent: true);
-    SessionAggregate notPersistent = user.SignIn(userSettings, isPersistent: false);
-    SessionAggregate notActive = user.SignIn(userSettings, isPersistent: true);
+    Password secret = _passwordHelper.Generate(SessionAggregate.SecretLength, out _);
+    SessionAggregate session = _user.SignIn(userSettings, secret);
+    SessionAggregate session1 = user.SignIn(userSettings, secret);
+    SessionAggregate session2 = user.SignIn(userSettings, secret);
+    SessionAggregate session3 = user.SignIn(userSettings, secret);
+    SessionAggregate notPersistent = user.SignIn(userSettings);
+    SessionAggregate notActive = user.SignIn(userSettings, secret);
     notActive.SignOut();
     SessionAggregate[] sessions = new[] { session, session1, session2, session3, notPersistent, notActive };
     await _sessionRepository.SaveAsync(sessions);
 
-    SessionAggregate other = user.SignIn(userSettings, isPersistent: true);
+    SessionAggregate other = user.SignIn(userSettings, secret);
     await _sessionRepository.SaveAsync(session);
 
     SearchSessionPayload payload = new()
@@ -271,9 +276,6 @@ public class SessionFacadeTests : IntegrationTestingBase
   [Fact(DisplayName = "SignInAsync: it should sign in the correct user using EmailAddress.")]
   public async Task SignInAsync_it_should_sign_in_the_correct_user_using_EmailAddress()
   {
-    _user.SetPassword(_userSettings.Value.PasswordSettings, Password);
-    await _userRepository.SaveAsync(_user);
-
     Assert.NotNull(_user.Email);
     string[] parts = _user.Email.Address.Split('@');
     string emailAddress = string.Join('@', parts[0].ToLower(), parts[1].ToUpper());
@@ -294,9 +296,6 @@ public class SessionFacadeTests : IntegrationTestingBase
   [Fact(DisplayName = "SignInAsync: it should sign in the correct user using UniqueName.")]
   public async Task SignInAsync_it_should_sign_in_the_correct_user_using_UniqueName()
   {
-    _user.SetPassword(_userSettings.Value.PasswordSettings, Password);
-    await _userRepository.SaveAsync(_user);
-
     SignInPayload payload = new()
     {
       TenantId = _user.TenantId,
@@ -316,9 +315,6 @@ public class SessionFacadeTests : IntegrationTestingBase
   [Fact(DisplayName = "SignInAsync: it should throw InvalidCredentialsException when password is not valid.")]
   public async Task SignInAsync_it_should_throw_InvalidCredentialsException_when_password_is_not_valid()
   {
-    _user.SetPassword(_userSettings.Value.PasswordSettings, Password);
-    await _userRepository.SaveAsync(_user);
-
     SignInPayload payload = new()
     {
       TenantId = _user.TenantId,
@@ -333,10 +329,16 @@ public class SessionFacadeTests : IntegrationTestingBase
   [Fact(DisplayName = "SignInAsync: it should throw InvalidCredentialsException when user has no password.")]
   public async Task SignInAsync_it_should_throw_InvalidCredentialsException_when_user_has_no_password()
   {
+    Assert.NotNull(_user.Email);
+    UserAggregate user = new(_userSettings.Value.UniqueNameSettings, _user.UniqueName)
+    {
+      Email = new(_user.Email.Address, isVerified: true)
+    };
+    await _userRepository.SaveAsync(user);
+
     SignInPayload payload = new()
     {
-      TenantId = _user.TenantId,
-      UniqueName = _user.UniqueName,
+      UniqueName = user.UniqueName,
       Password = Password
     };
     var exception = await Assert.ThrowsAsync<InvalidCredentialsException>(
@@ -428,7 +430,7 @@ public class SessionFacadeTests : IntegrationTestingBase
     SessionEntity? entity = await IdentityContext.Sessions.SingleOrDefaultAsync(x => x.AggregateId == session.Id);
     Assert.NotNull(entity);
     Assert.NotNull(entity.Secret);
-    Pbkdf2 secret = Pbkdf2.Parse(entity.Secret);
+    Pbkdf2 secret = Pbkdf2.Decode(entity.Secret);
 
     Assert.NotNull(session.RefreshToken);
     string[] values = session.RefreshToken.Split('.');

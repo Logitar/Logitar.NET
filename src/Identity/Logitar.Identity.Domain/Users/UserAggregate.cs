@@ -6,14 +6,14 @@ using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.Domain.Users.Events;
 using Logitar.Identity.Domain.Users.Validators;
 using Logitar.Identity.Domain.Validators;
-using Logitar.Security;
+using Logitar.Security.Cryptography;
 using System.Collections.Immutable;
 
 namespace Logitar.Identity.Domain.Users;
 
 public class UserAggregate : AggregateRoot
 {
-  private Pbkdf2? _password = null;
+  private Password? _password = null;
 
   private PostalAddress? _address = null;
   private EmailAddress? _email = null;
@@ -340,15 +340,13 @@ public class UserAggregate : AggregateRoot
   }
   protected virtual void Apply(UserAuthenticatedEvent authenticated) => AuthenticatedOn = authenticated.OccurredOn;
 
-  public void ChangePassword(IPasswordSettings passwordSettings, string password, string current)
+  public void ChangePassword(string currentPassword, Password newPassword)
   {
-    CheckPassword(current);
-
-    new PasswordValidator(passwordSettings, "Password").ValidateAndThrow(password);
+    CheckPassword(currentPassword);
 
     ApplyChange(new UserPasswordChangedEvent
     {
-      Password = new Pbkdf2(password)
+      Password = newPassword
     }, actorId: Id.Value);
   }
   protected virtual void Apply(UserPasswordChangedEvent change) => _password = change.Password;
@@ -373,23 +371,19 @@ public class UserAggregate : AggregateRoot
   }
   protected virtual void Apply(UserEnabledEvent _) => IsDisabled = false;
 
-  public void ResetPassword(IPasswordSettings passwordSettings, string password)
+  public void ResetPassword(Password password)
   {
-    new PasswordValidator(passwordSettings, "Password").ValidateAndThrow(password);
-
     ApplyChange(new UserPasswordResetEvent
     {
-      Password = new Pbkdf2(password)
+      Password = password
     }, actorId: Id.Value);
   }
   protected virtual void Apply(UserPasswordResetEvent reset) => _password = reset.Password;
 
-  public void SetPassword(IPasswordSettings passwordSettings, string password)
+  public void SetPassword(Password password)
   {
-    new PasswordValidator(passwordSettings, "Password").ValidateAndThrow(password);
-
     UserUpdatedEvent updated = GetLatestUpdatedEvent();
-    updated.Password = new Pbkdf2(password);
+    updated.Password = password;
     Apply(updated);
   }
 
@@ -403,9 +397,9 @@ public class UserAggregate : AggregateRoot
     Apply(updated);
   }
 
-  public SessionAggregate SignIn(IUserSettings userSettings, bool isPersistent = false)
-    => SignIn(userSettings, password: null, isPersistent);
-  public SessionAggregate SignIn(IUserSettings userSettings, string? password, bool isPersistent = false)
+  public SessionAggregate SignIn(IUserSettings userSettings, Password? secret = null)
+    => SignIn(userSettings, password: null, secret);
+  public SessionAggregate SignIn(IUserSettings userSettings, string? password, Password? secret = null)
   {
     CheckStatus(userSettings);
 
@@ -417,7 +411,7 @@ public class UserAggregate : AggregateRoot
     DateTime now = DateTime.UtcNow;
     ApplyChange(new UserSignedInEvent(), actorId: Id.Value, occurredOn: now);
 
-    return new SessionAggregate(this, isPersistent, now);
+    return new SessionAggregate(this, secret, now);
   }
   protected virtual void Apply(UserSignedInEvent signedIn) => AuthenticatedOn = signedIn.OccurredOn;
 
