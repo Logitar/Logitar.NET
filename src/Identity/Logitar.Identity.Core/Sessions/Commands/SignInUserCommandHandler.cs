@@ -39,9 +39,10 @@ public class SignInUserCommandHandler : IRequestHandler<SignInUserCommand, Sessi
       ? _passwordHelper.Generate(SessionAggregate.SecretLength, out secretBytes) : null;
     SessionAggregate session = user.SignIn(userSettings, command.Password, secret);
 
+    string actorId = user.Id.Value;
     foreach (CustomAttribute customAttribute in command.CustomAttributes)
     {
-      session.SetCustomAttribute(customAttribute.Key, customAttribute.Value);
+      session.SetCustomAttribute(customAttribute.Key, customAttribute.Value, actorId);
     }
 
     await _userRepository.SaveAsync(user, cancellationToken);

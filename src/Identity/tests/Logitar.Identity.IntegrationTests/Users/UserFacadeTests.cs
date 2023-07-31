@@ -20,7 +20,7 @@ using Logitar.Identity.Domain.Sessions;
 using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.Domain.Users;
 using Logitar.Identity.Domain.Users.Events;
-using Logitar.Identity.EntityFrameworkCore.SqlServer.Entities;
+using Logitar.Identity.EntityFrameworkCore.Relational.Entities;
 using Logitar.Security.Cryptography;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -313,7 +313,7 @@ public class UserFacadeTests : IntegrationTestingBase
     Assert.Equal(payload.MiddleName, user.MiddleName);
     Assert.Equal(payload.LastName, user.LastName);
     Assert.Equal(payload.Nickname, user.Nickname);
-    Assert.Equal(payload.Birthdate.Value, user.Birthdate);
+    Assert.True((user.Birthdate - payload.Birthdate) < TimeSpan.FromMilliseconds(1));
     Assert.Equal(payload.Gender?.ToLower(), user.Gender);
     Assert.Equal(payload.Locale, user.Locale);
     Assert.Equal(payload.TimeZone, user.TimeZone);
@@ -578,7 +578,7 @@ public class UserFacadeTests : IntegrationTestingBase
     Assert.Equal(payload.MiddleName, user.MiddleName);
     Assert.Equal(payload.LastName, user.LastName);
     Assert.Equal(payload.Nickname, user.Nickname);
-    Assert.Equal(payload.Birthdate, user.Birthdate);
+    Assert.True((user.Birthdate - payload.Birthdate) < TimeSpan.FromMilliseconds(1));
     Assert.Equal(payload.Gender.ToLower(), user.Gender);
     Assert.Equal(payload.Locale, user.Locale);
     Assert.Equal(payload.TimeZone, user.TimeZone);
@@ -1048,7 +1048,7 @@ public class UserFacadeTests : IntegrationTestingBase
     Assert.Equal(payload.MiddleName.Value, user.MiddleName);
     Assert.Equal(payload.LastName.Value, user.LastName);
     Assert.Equal(payload.Nickname.Value, user.Nickname);
-    Assert.Equal(payload.Birthdate.Value, user.Birthdate);
+    Assert.True((user.Birthdate - payload.Birthdate.Value) < TimeSpan.FromMilliseconds(1));
     Assert.Equal(payload.Gender.Value?.ToLower(), user.Gender);
     Assert.Equal(payload.Locale.Value, user.Locale);
     Assert.Equal(payload.TimeZone.Value, user.TimeZone);

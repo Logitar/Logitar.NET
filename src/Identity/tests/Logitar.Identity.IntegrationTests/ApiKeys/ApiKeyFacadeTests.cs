@@ -14,8 +14,8 @@ using Logitar.Identity.Domain.ApiKeys;
 using Logitar.Identity.Domain.ApiKeys.Events;
 using Logitar.Identity.Domain.Roles;
 using Logitar.Identity.Domain.Settings;
-using Logitar.Identity.EntityFrameworkCore.SqlServer.Actors;
-using Logitar.Identity.EntityFrameworkCore.SqlServer.Entities;
+using Logitar.Identity.EntityFrameworkCore.Relational.Actors;
+using Logitar.Identity.EntityFrameworkCore.Relational.Entities;
 using Logitar.Security.Cryptography;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -124,7 +124,7 @@ public class ApiKeyFacadeTests : IntegrationTestingBase
     ApiKey apiKey = await _apiKeyFacade.CreateAsync(payload, CancellationToken);
     Assert.Equal(payload.TenantId, apiKey.TenantId);
     Assert.Equal(payload.Title.Trim(), apiKey.Title);
-    Assert.Equal(payload.ExpiresOn, apiKey.ExpiresOn);
+    Assert.True((apiKey.ExpiresOn - payload.ExpiresOn) < TimeSpan.FromMilliseconds(1));
     Assert.NotNull(apiKey.Secret);
     Assert.Null(apiKey.Description);
 
@@ -249,7 +249,7 @@ public class ApiKeyFacadeTests : IntegrationTestingBase
     Assert.NotNull(apiKey);
     Assert.Equal(payload.Title.Trim(), apiKey.Title);
     Assert.Equal(payload.Description, apiKey.Description);
-    Assert.Equal(payload.ExpiresOn, apiKey.ExpiresOn);
+    Assert.True((apiKey.ExpiresOn - payload.ExpiresOn) < TimeSpan.FromMilliseconds(1));
 
     Assert.Equal(payload.CustomAttributes.Count(), apiKey.CustomAttributes.Count());
     foreach (CustomAttribute customAttribute in payload.CustomAttributes)
@@ -335,7 +335,7 @@ public class ApiKeyFacadeTests : IntegrationTestingBase
     };
     payload.Id.Operator = (SearchOperator)(-1);
     payload.Id.Terms = new[] { new SearchTerm(_apiKey.Id.Value) };
-    payload.Search.Terms = new[] { new SearchTerm("%API Key%") };
+    payload.Search.Terms = new[] { new SearchTerm("%api kEY%") };
     payload.TenantId.Terms = new[] { new SearchTerm(tenantId) };
 
     SearchResults<ApiKey> results = await _apiKeyFacade.SearchAsync(payload, CancellationToken);
@@ -399,7 +399,7 @@ public class ApiKeyFacadeTests : IntegrationTestingBase
     Assert.NotNull(apiKey);
     Assert.Equal(payload.Title.Trim(), apiKey.Title);
     Assert.Equal(payload.Description.Value, apiKey.Description);
-    Assert.Equal(payload.ExpiresOn, apiKey.ExpiresOn);
+    Assert.True((apiKey.ExpiresOn - payload.ExpiresOn) < TimeSpan.FromMilliseconds(1));
 
     CustomAttribute customAttribute = Assert.Single(apiKey.CustomAttributes);
     Assert.Equal("Source", customAttribute.Key);

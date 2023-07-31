@@ -43,15 +43,16 @@ public class RenewSessionCommandHandler : IRequestHandler<RenewSessionCommand, S
     Password newSecret = _passwordHelper.Generate(SessionAggregate.SecretLength, out byte[] secretBytes);
     session.Renew(refreshToken.Secret, newSecret);
 
+    string actorId = session.UserId.Value;
     foreach (CustomAttributeModification modification in payload.CustomAttributes)
     {
       if (modification.Value == null)
       {
-        session.RemoveCustomAttribute(modification.Key);
+        session.RemoveCustomAttribute(modification.Key, actorId);
       }
       else
       {
-        session.SetCustomAttribute(modification.Key, modification.Value);
+        session.SetCustomAttribute(modification.Key, modification.Value, actorId);
       }
     }
 

@@ -6,8 +6,8 @@ public class CustomAttributeValidator
 {
   public CustomAttributeValidator(IValidator<string>? keyValidator = null, IValidator<string>? valueValidator = null)
   {
-    KeyValidator = keyValidator ?? new CustomAttributeKeyValidator();
-    ValueValidator = valueValidator ?? new CustomAttributeValueValidator();
+    KeyValidator = keyValidator ?? new CustomAttributeKeyValidator("Key");
+    ValueValidator = valueValidator ?? new CustomAttributeValueValidator("Value");
   }
 
   public IValidator<string> KeyValidator { get; }

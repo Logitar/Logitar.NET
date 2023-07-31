@@ -39,6 +39,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\Framework\tests\Logitar.UnitTests\Logitar.UnitTests.csproj" />
     <ProjectReference Include="..\..\Logitar.Identity.Core\Logitar.Identity.Core.csproj" />
+    <ProjectReference Include="..\..\Logitar.Identity.EntityFrameworkCore.PostgreSQL\Logitar.Identity.EntityFrameworkCore.PostgreSQL.csproj" />
     <ProjectReference Include="..\..\Logitar.Identity.EntityFrameworkCore.SqlServer\Logitar.Identity.EntityFrameworkCore.SqlServer.csproj" />
   </ItemGroup>
 

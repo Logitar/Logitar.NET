@@ -45,12 +45,12 @@ public class SessionAggregate : AggregateRoot
 
   public void Delete() => ApplyChange(new SessionDeletedEvent());
 
-  public void RemoveCustomAttribute(string key)
+  public void RemoveCustomAttribute(string key, string? actorId = null)
   {
     key = key.Trim();
     if (_customAttributes.ContainsKey(key))
     {
-      SessionUpdatedEvent updated = GetLatestUpdatedEvent();
+      SessionUpdatedEvent updated = GetLatestUpdatedEvent(actorId);
       updated.CustomAttributes[key] = null;
       Apply(updated);
     }
@@ -76,7 +76,7 @@ public class SessionAggregate : AggregateRoot
   }
   protected virtual void Apply(SessionRenewedEvent renewed) => _secret = renewed.Secret;
 
-  public void SetCustomAttribute(string key, string value)
+  public void SetCustomAttribute(string key, string value, string? actorId = null)
   {
     key = key.Trim();
     value = value.Trim();
@@ -84,7 +84,7 @@ public class SessionAggregate : AggregateRoot
 
     if (!_customAttributes.TryGetValue(key, out string? existingValue) || value != existingValue)
     {
-      SessionUpdatedEvent updated = GetLatestUpdatedEvent();
+      SessionUpdatedEvent updated = GetLatestUpdatedEvent(actorId);
       updated.CustomAttributes[key] = value;
       Apply(updated);
     }
@@ -113,13 +113,13 @@ public class SessionAggregate : AggregateRoot
       }
     }
   }
-  protected SessionUpdatedEvent GetLatestUpdatedEvent()
+  protected SessionUpdatedEvent GetLatestUpdatedEvent(string? actorId = null)
   {
     SessionUpdatedEvent? updated = Changes.LastOrDefault(e => e is SessionUpdatedEvent) as SessionUpdatedEvent;
     if (updated == null)
     {
       updated = new();
-      ApplyChange(updated);
+      ApplyChange(updated, actorId);
     }
 
     return updated;

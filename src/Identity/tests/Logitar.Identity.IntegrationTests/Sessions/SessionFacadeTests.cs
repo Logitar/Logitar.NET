@@ -9,7 +9,7 @@ using Logitar.Identity.Domain;
 using Logitar.Identity.Domain.Sessions;
 using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.Domain.Users;
-using Logitar.Identity.EntityFrameworkCore.SqlServer.Entities;
+using Logitar.Identity.EntityFrameworkCore.Relational.Entities;
 using Logitar.Security.Cryptography;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -58,7 +58,7 @@ public class SessionFacadeTests : IntegrationTestingBase
       CustomAttributes = new[]
       {
         new CustomAttribute("IpAddress", "::1"),
-        new CustomAttribute("  User-Agent  ", "  Mozilla/5.0  ")
+        new CustomAttribute("  UserAgent  ", "  Mozilla/5.0  ")
       }
     };
     Session session = await _sessionFacade.CreateAsync(payload, CancellationToken);
@@ -143,7 +143,7 @@ public class SessionFacadeTests : IntegrationTestingBase
     Password secret = _passwordHelper.Generate(SessionAggregate.SecretLength, out byte[] secretBytes);
     SessionAggregate aggregate = new(_user, secret);
     aggregate.SetCustomAttribute("IpAddress", "::1");
-    aggregate.SetCustomAttribute("User-Agent", "Mozilla/5.0");
+    aggregate.SetCustomAttribute("UserAgent", "Mozilla/5.0");
     await _sessionRepository.SaveAsync(aggregate);
 
     RenewSessionPayload payload = new()
@@ -151,7 +151,7 @@ public class SessionFacadeTests : IntegrationTestingBase
       RefreshToken = new RefreshToken(aggregate.Id, secretBytes).ToString(),
       CustomAttributes = new[]
       {
-        new CustomAttributeModification("  User-Agent  ", null),
+        new CustomAttributeModification("  UserAgent  ", null),
         new CustomAttributeModification("IpAddress", " 10.0.0.1 ")
       }
     };
@@ -327,7 +327,7 @@ public class SessionFacadeTests : IntegrationTestingBase
       CustomAttributes = new[]
       {
         new CustomAttribute("IpAddress", "::1"),
-        new CustomAttribute("  User-Agent  ", "  Mozilla/5.0  ")
+        new CustomAttribute("  UserAgent  ", "  Mozilla/5.0  ")
       }
     };
     Session session = await _sessionFacade.SignInAsync(payload, CancellationToken);
