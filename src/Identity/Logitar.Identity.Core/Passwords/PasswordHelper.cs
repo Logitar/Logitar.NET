@@ -17,6 +17,16 @@ public class PasswordHelper : IPasswordHelper
     _userSettings = userSettings;
   }
 
+  public static Password Decode(string encoded)
+  {
+    string kind = encoded.Split(Password.Separator).First();
+    return kind switch
+    {
+      Pbkdf2.Prefix => Pbkdf2.Decode(encoded),
+      _ => throw new NotSupportedException($"The password kind '{kind}' is not supported."),
+    };
+  }
+
   public Password Create(string password)
   {
     UserSettings userSettings = _userSettings.Value;
@@ -25,16 +35,6 @@ public class PasswordHelper : IPasswordHelper
     Pbkdf2Settings pbkdf2Settings = _pbkdf2Settings.Value;
     new Pbkdf2Validator().ValidateAndThrow(pbkdf2Settings);
     return new Pbkdf2(password, pbkdf2Settings);
-  }
-
-  public Password Decode(string encoded)
-  {
-    string kind = encoded.Split(Password.Separator).First();
-    return kind switch
-    {
-      Pbkdf2.Prefix => Pbkdf2.Decode(encoded),
-      _ => throw new NotSupportedException($"The password kind '{kind}' is not supported."),
-    };
   }
 
   public Password Generate(int length, out byte[] password)
