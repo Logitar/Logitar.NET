@@ -56,10 +56,7 @@ public class SessionAggregate : AggregateRoot
       throw new InvalidCredentialsException(message.ToString());
     }
 
-    ApplyChange(new SessionRenewedEvent
-    {
-      Secret = newSecret
-    }, actorId: UserId.Value);
+    ApplyChange(new SessionRenewedEvent(newSecret), actorId: UserId.Value);
   }
   protected virtual void Apply(SessionRenewedEvent renewed) => _secret = renewed.Secret;
 

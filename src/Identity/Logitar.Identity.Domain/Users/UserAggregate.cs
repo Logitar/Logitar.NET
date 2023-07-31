@@ -344,10 +344,7 @@ public class UserAggregate : AggregateRoot
   {
     CheckPassword(currentPassword);
 
-    ApplyChange(new UserPasswordChangedEvent
-    {
-      Password = newPassword
-    }, actorId: Id.Value);
+    ApplyChange(new UserPasswordChangedEvent(newPassword), actorId: Id.Value);
   }
   protected virtual void Apply(UserPasswordChangedEvent change) => _password = change.Password;
 
@@ -371,13 +368,7 @@ public class UserAggregate : AggregateRoot
   }
   protected virtual void Apply(UserEnabledEvent _) => IsDisabled = false;
 
-  public void ResetPassword(Password password)
-  {
-    ApplyChange(new UserPasswordResetEvent
-    {
-      Password = password
-    }, actorId: Id.Value);
-  }
+  public void ResetPassword(Password password) => ApplyChange(new UserPasswordResetEvent(password), actorId: Id.Value);
   protected virtual void Apply(UserPasswordResetEvent reset) => _password = reset.Password;
 
   public void SetPassword(Password password)
