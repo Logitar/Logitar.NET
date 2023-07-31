@@ -11,7 +11,8 @@ public class ApiKeyProfile : Profile
   {
     CreateMap<ApiKeyEntity, ApiKey>()
       .IncludeBase<AggregateEntity, Aggregate>()
-      .ForMember(x => x.ExpiresOn, x => x.MapFrom(y => MappingHelper.ToUniversalTime(y.ExpiresOn)))
-      .ForMember(x => x.Secret, x => x.Ignore());
+      .ForMember(x => x.ExpiresOn, x => x.MapFrom(y => DateTimeHelper.ToUniversalTime(y.ExpiresOn)))
+      .ForMember(x => x.Secret, x => x.Ignore())
+      .ForMember(x => x.CustomAttributes, x => x.MapFrom(y => y.GetCustomAttributes()));
   }
 }

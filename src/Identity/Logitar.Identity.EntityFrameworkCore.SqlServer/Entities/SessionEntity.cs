@@ -4,7 +4,7 @@ using Logitar.Identity.EntityFrameworkCore.SqlServer.Constants;
 
 namespace Logitar.Identity.EntityFrameworkCore.SqlServer.Entities;
 
-public record SessionEntity : AggregateEntity
+public record SessionEntity : AggregateEntity, ICustomAttributesProvider
 {
   public SessionEntity(SessionCreatedEvent created, ActorEntity actor, UserEntity user) : base(created, actor)
   {
@@ -22,6 +22,9 @@ public record SessionEntity : AggregateEntity
 
   public int SessionId { get; private set; }
 
+  public int UserId { get; private set; }
+  public UserEntity? User { get; private set; }
+
   public string? Secret { get; private set; }
   public bool IsPersistent
   {
@@ -34,8 +37,7 @@ public record SessionEntity : AggregateEntity
   public string? SignedOutBy { get; private set; }
   public DateTime? SignedOutOn { get; private set; }
 
-  public int UserId { get; private set; }
-  public UserEntity? User { get; private set; }
+  public string? CustomAttributes { get; private set; }
 
   public void Renew(SessionRenewedEvent renewed, ActorEntity actor)
   {
@@ -62,5 +64,12 @@ public record SessionEntity : AggregateEntity
     SignedOutById = signedOut.ActorId ?? Actor.DefaultId;
     SignedOutBy = actor.Serialize();
     SignedOutOn = signedOut.OccurredOn;
+  }
+
+  public void Update(SessionUpdatedEvent updated, ActorEntity actor)
+  {
+    Update(updated, actor);
+
+    CustomAttributes = this.UpdateCustomAttributes(updated.CustomAttributes);
   }
 }

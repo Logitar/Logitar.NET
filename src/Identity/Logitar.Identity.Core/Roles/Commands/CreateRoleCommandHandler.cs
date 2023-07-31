@@ -1,4 +1,5 @@
-﻿using Logitar.Identity.Core.Roles.Models;
+﻿using Logitar.Identity.Core.Models;
+using Logitar.Identity.Core.Roles.Models;
 using Logitar.Identity.Core.Roles.Payloads;
 using Logitar.Identity.Domain.Roles;
 using Logitar.Identity.Domain.Settings;
@@ -37,6 +38,11 @@ public class CreateRoleCommandHandler : IRequestHandler<CreateRoleCommand, Role>
       DisplayName = payload.DisplayName,
       Description = payload.Description
     };
+
+    foreach (CustomAttribute customAttribute in payload.CustomAttributes)
+    {
+      role.SetCustomAttribute(customAttribute.Key, customAttribute.Value);
+    }
 
     await _roleRepository.SaveAsync(role, cancellationToken);
 

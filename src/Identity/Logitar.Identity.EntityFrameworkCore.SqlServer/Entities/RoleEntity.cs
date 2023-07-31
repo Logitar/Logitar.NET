@@ -3,7 +3,7 @@ using Logitar.Identity.EntityFrameworkCore.SqlServer.Actors;
 
 namespace Logitar.Identity.EntityFrameworkCore.SqlServer.Entities;
 
-public record RoleEntity : AggregateEntity
+public record RoleEntity : AggregateEntity, ICustomAttributesProvider
 {
   public RoleEntity(RoleCreatedEvent created, ActorEntity actor) : base(created, actor)
   {
@@ -29,6 +29,8 @@ public record RoleEntity : AggregateEntity
   public string? DisplayName { get; private set; }
   public string? Description { get; private set; }
 
+  public string? CustomAttributes { get; private set; }
+
   public List<ApiKeyEntity> ApiKeys { get; private set; } = new();
   public List<UserEntity> Users { get; private set; } = new();
 
@@ -48,5 +50,7 @@ public record RoleEntity : AggregateEntity
     {
       Description = updated.Description.Value;
     }
+
+    CustomAttributes = this.UpdateCustomAttributes(updated.CustomAttributes);
   }
 }

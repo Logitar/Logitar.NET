@@ -1,6 +1,7 @@
 ﻿using Logitar.EventSourcing;
 using Logitar.Identity.Core.ApiKeys.Models;
 using Logitar.Identity.Core.ApiKeys.Payloads;
+using Logitar.Identity.Core.Models;
 using Logitar.Identity.Core.Roles.Queries;
 using Logitar.Identity.Domain.ApiKeys;
 using Logitar.Identity.Domain.Roles;
@@ -43,6 +44,19 @@ public class ReplaceApiKeyCommandHandler : IRequestHandler<ReplaceApiKeyCommand,
     if (payload.ExpiresOn.HasValue)
     {
       apiKey.ExpiresOn = payload.ExpiresOn.Value;
+    }
+
+    HashSet<string> customAttributes = payload.CustomAttributes.Select(c => c.Key).ToHashSet();
+    foreach (string key in apiKey.CustomAttributes.Keys)
+    {
+      if (!customAttributes.Contains(key))
+      {
+        apiKey.RemoveCustomAttribute(key);
+      }
+    }
+    foreach (CustomAttribute customAttribute in payload.CustomAttributes)
+    {
+      apiKey.SetCustomAttribute(customAttribute.Key, customAttribute.Value);
     }
 
     Dictionary<AggregateId, RoleAggregate> roles = (await _mediator.Send(new FindRolesQuery(apiKey.TenantId, payload.Roles, nameof(payload.Roles)), cancellationToken))

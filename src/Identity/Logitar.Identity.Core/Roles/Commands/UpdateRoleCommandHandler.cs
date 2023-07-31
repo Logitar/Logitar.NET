@@ -1,4 +1,5 @@
 ﻿using Logitar.EventSourcing;
+using Logitar.Identity.Core.Payloads;
 using Logitar.Identity.Core.Roles.Models;
 using Logitar.Identity.Core.Roles.Payloads;
 using Logitar.Identity.Domain.Roles;
@@ -51,6 +52,18 @@ public class UpdateRoleCommandHandler : IRequestHandler<UpdateRoleCommand, Role?
     if (payload.Description != null)
     {
       role.Description = payload.Description.Value;
+    }
+
+    foreach (CustomAttributeModification modification in payload.CustomAttributes)
+    {
+      if (modification.Value == null)
+      {
+        role.RemoveCustomAttribute(modification.Key);
+      }
+      else
+      {
+        role.SetCustomAttribute(modification.Key, modification.Value);
+      }
     }
 
     await _roleRepository.SaveAsync(role, cancellationToken);

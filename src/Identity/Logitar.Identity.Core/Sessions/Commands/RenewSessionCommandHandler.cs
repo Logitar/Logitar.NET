@@ -1,4 +1,5 @@
 ﻿using Logitar.Identity.Core.Passwords;
+using Logitar.Identity.Core.Payloads;
 using Logitar.Identity.Core.Sessions.Models;
 using Logitar.Identity.Core.Sessions.Payloads;
 using Logitar.Identity.Domain;
@@ -41,6 +42,18 @@ public class RenewSessionCommandHandler : IRequestHandler<RenewSessionCommand, S
 
     Password newSecret = _passwordHelper.Generate(SessionAggregate.SecretLength, out byte[] secretBytes);
     session.Renew(refreshToken.Secret, newSecret);
+
+    foreach (CustomAttributeModification modification in payload.CustomAttributes)
+    {
+      if (modification.Value == null)
+      {
+        session.RemoveCustomAttribute(modification.Key);
+      }
+      else
+      {
+        session.SetCustomAttribute(modification.Key, modification.Value);
+      }
+    }
 
     await _sessionRepository.SaveAsync(session, cancellationToken);
 

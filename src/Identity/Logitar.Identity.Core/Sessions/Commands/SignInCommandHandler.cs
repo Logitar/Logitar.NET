@@ -47,6 +47,7 @@ public class SignInCommandHandler : IRequestHandler<SignInCommand, Session>
       throw new InvalidCredentialsException(message.ToString());
     }
 
-    return await _mediator.Send(new SignInUserCommand(user, payload.Password, payload.IsPersistent), cancellationToken);
+    return await _mediator.Send(new SignInUserCommand(user, payload.Password, payload.IsPersistent,
+      payload.CustomAttributes), cancellationToken);
   }
 }

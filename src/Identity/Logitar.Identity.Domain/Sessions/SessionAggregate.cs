@@ -1,6 +1,7 @@
 ﻿using Logitar.EventSourcing;
 using Logitar.Identity.Domain.Sessions.Events;
 using Logitar.Identity.Domain.Users;
+using Logitar.Identity.Domain.Validators;
 using Logitar.Security.Cryptography;
 
 namespace Logitar.Identity.Domain.Sessions;
@@ -8,6 +9,8 @@ namespace Logitar.Identity.Domain.Sessions;
 public class SessionAggregate : AggregateRoot
 {
   public const int SecretLength = 256 / 8;
+
+  private readonly Dictionary<string, string> _customAttributes = new();
 
   private Password? _secret = null;
 
@@ -38,7 +41,20 @@ public class SessionAggregate : AggregateRoot
 
   public bool IsActive { get; private set; }
 
+  public IReadOnlyDictionary<string, string> CustomAttributes => _customAttributes.AsReadOnly();
+
   public void Delete() => ApplyChange(new SessionDeletedEvent());
+
+  public void RemoveCustomAttribute(string key)
+  {
+    key = key.Trim();
+    if (_customAttributes.ContainsKey(key))
+    {
+      SessionUpdatedEvent updated = GetLatestUpdatedEvent();
+      updated.CustomAttributes[key] = null;
+      Apply(updated);
+    }
+  }
 
   public void Renew(byte[] secret, Password newSecret)
   {
@@ -60,6 +76,20 @@ public class SessionAggregate : AggregateRoot
   }
   protected virtual void Apply(SessionRenewedEvent renewed) => _secret = renewed.Secret;
 
+  public void SetCustomAttribute(string key, string value)
+  {
+    key = key.Trim();
+    value = value.Trim();
+    new CustomAttributeValidator().ValidateAndThrow(key, value);
+
+    if (!_customAttributes.TryGetValue(key, out string? existingValue) || value != existingValue)
+    {
+      SessionUpdatedEvent updated = GetLatestUpdatedEvent();
+      updated.CustomAttributes[key] = value;
+      Apply(updated);
+    }
+  }
+
   public void SignOut()
   {
     if (IsActive)
@@ -68,4 +98,30 @@ public class SessionAggregate : AggregateRoot
     }
   }
   protected virtual void Apply(SessionSignedOutEvent signedOut) => IsActive = false;
+
+  protected virtual void Apply(SessionUpdatedEvent updated)
+  {
+    foreach (var (key, value) in updated.CustomAttributes)
+    {
+      if (value == null)
+      {
+        _customAttributes.Remove(key);
+      }
+      else
+      {
+        _customAttributes[key] = value;
+      }
+    }
+  }
+  protected SessionUpdatedEvent GetLatestUpdatedEvent()
+  {
+    SessionUpdatedEvent? updated = Changes.LastOrDefault(e => e is SessionUpdatedEvent) as SessionUpdatedEvent;
+    if (updated == null)
+    {
+      updated = new();
+      ApplyChange(updated);
+    }
+
+    return updated;
+  }
 }

@@ -28,5 +28,7 @@ public record UpdateUserPayload
   public MayBe<string>? Profile { get; set; }
   public MayBe<string>? Website { get; set; }
 
+  public IEnumerable<CustomAttributeModification> CustomAttributes { get; set; } = Enumerable.Empty<CustomAttributeModification>();
+
   public IEnumerable<RoleModification> Roles { get; set; } = Enumerable.Empty<RoleModification>();
 }

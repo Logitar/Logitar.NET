@@ -13,6 +13,7 @@ public class SessionProfile : Profile
     CreateMap<SessionEntity, Session>()
       .IncludeBase<AggregateEntity, Aggregate>()
       .ForMember(x => x.SignedOutBy, x => x.MapFrom(y => ActorEntity.Deserialize(y.SignedOutById, y.SignedOutBy)))
-      .ForMember(x => x.SignedOutOn, x => x.MapFrom(y => MappingHelper.ToUniversalTime(y.SignedOutOn)));
+      .ForMember(x => x.SignedOutOn, x => x.MapFrom(y => DateTimeHelper.ToUniversalTime(y.SignedOutOn)))
+      .ForMember(x => x.CustomAttributes, x => x.MapFrom(y => y.GetCustomAttributes()));
   }
 }

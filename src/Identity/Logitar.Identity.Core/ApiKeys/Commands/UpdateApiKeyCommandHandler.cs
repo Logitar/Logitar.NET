@@ -48,6 +48,18 @@ public class UpdateApiKeyCommandHandler : IRequestHandler<UpdateApiKeyCommand, A
       apiKey.ExpiresOn = payload.ExpiresOn.Value;
     }
 
+    foreach (CustomAttributeModification modification in payload.CustomAttributes)
+    {
+      if (modification.Value == null)
+      {
+        apiKey.RemoveCustomAttribute(modification.Key);
+      }
+      else
+      {
+        apiKey.SetCustomAttribute(modification.Key, modification.Value);
+      }
+    }
+
     IEnumerable<string> roleIds = payload.Roles.Select(role => role.Role);
     IEnumerable<RoleAggregate> roles = await _mediator.Send(new FindRolesQuery(apiKey.TenantId, roleIds, nameof(payload.Roles)), cancellationToken);
     Dictionary<string, RoleAggregate> rolesById = roles.ToDictionary(x => x.Id.Value, x => x);

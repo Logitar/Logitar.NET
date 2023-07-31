@@ -25,6 +25,7 @@ public class CreateSessionCommandHandler : IRequestHandler<CreateSessionCommand,
     UserAggregate user = await _userRepository.LoadAsync(userId, cancellationToken)
       ?? throw new AggregateNotFoundException<UserAggregate>(payload.UserId, nameof(payload.UserId));
 
-    return await _mediator.Send(new SignInUserCommand(user, password: null, payload.IsPersistent), cancellationToken);
+    return await _mediator.Send(new SignInUserCommand(user, password: null, payload.IsPersistent,
+      payload.CustomAttributes), cancellationToken);
   }
 }
