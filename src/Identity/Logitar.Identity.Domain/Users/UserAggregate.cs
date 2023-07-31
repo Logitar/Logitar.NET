@@ -345,11 +345,9 @@ public class UserAggregate : AggregateRoot
   {
     CheckPassword(current);
 
-    new PasswordValidator(passwordSettings, "Password").ValidateAndThrow(password);
-
     ApplyChange(new UserPasswordChangedEvent
     {
-      Password = PasswordHelper.Create(password)
+      Password = PasswordHelper.ValidateAndCreate(passwordSettings, password)
     }, actorId: Id.Value);
   }
   protected virtual void Apply(UserPasswordChangedEvent change) => _password = change.Password;
@@ -376,21 +374,17 @@ public class UserAggregate : AggregateRoot
 
   public void ResetPassword(IPasswordSettings passwordSettings, string password)
   {
-    new PasswordValidator(passwordSettings, "Password").ValidateAndThrow(password);
-
     ApplyChange(new UserPasswordResetEvent
     {
-      Password = PasswordHelper.Create(password)
+      Password = PasswordHelper.ValidateAndCreate(passwordSettings, password)
     }, actorId: Id.Value);
   }
   protected virtual void Apply(UserPasswordResetEvent reset) => _password = reset.Password;
 
   public void SetPassword(IPasswordSettings passwordSettings, string password)
   {
-    new PasswordValidator(passwordSettings, "Password").ValidateAndThrow(password);
-
     UserUpdatedEvent updated = GetLatestUpdatedEvent();
-    updated.Password = PasswordHelper.Create(password);
+    updated.Password = PasswordHelper.ValidateAndCreate(passwordSettings, password);
     Apply(updated);
   }
 

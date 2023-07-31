@@ -1,10 +1,18 @@
-﻿using Logitar.Security;
+﻿using FluentValidation;
+using Logitar.Identity.Domain.Settings;
+using Logitar.Identity.Domain.Users.Validators;
+using Logitar.Security;
 
 namespace Logitar.Identity.Domain.Passwords;
 
 public static class PasswordHelper
 {
-  public static Password Create(string password) => new Pbkdf2(password);
+  public static Password ValidateAndCreate(IPasswordSettings passwordSettings, string password)
+  {
+    new PasswordValidator(passwordSettings, "Password").ValidateAndThrow(password);
+
+    return new Pbkdf2(password);
+  }
 
   public static Password Decode(string encoded)
   {
