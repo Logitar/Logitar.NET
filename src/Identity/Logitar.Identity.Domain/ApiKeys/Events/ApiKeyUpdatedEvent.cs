@@ -9,5 +9,7 @@ public record ApiKeyUpdatedEvent : DomainEvent, INotification
   public MayBe<string>? Description { get; set; }
   public DateTime? ExpiresOn { get; set; }
 
+  public Dictionary<string, string?> CustomAttributes { get; init; } = new();
+
   public Dictionary<string, CollectionAction> Roles { get; init; } = new();
 }

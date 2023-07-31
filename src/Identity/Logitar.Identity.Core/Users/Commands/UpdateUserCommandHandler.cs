@@ -153,6 +153,18 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, User?
       user.Website = payload.Website.Value?.GetUri(nameof(payload.Website));
     }
 
+    foreach (CustomAttributeModification modification in payload.CustomAttributes)
+    {
+      if (modification.Value == null)
+      {
+        user.RemoveCustomAttribute(modification.Key);
+      }
+      else
+      {
+        user.SetCustomAttribute(modification.Key, modification.Value);
+      }
+    }
+
     IEnumerable<string> roleIds = payload.Roles.Select(role => role.Role);
     IEnumerable<RoleAggregate> roles = await _mediator.Send(new FindRolesQuery(user.TenantId, roleIds, nameof(payload.Roles)), cancellationToken);
     Dictionary<string, RoleAggregate> rolesById = roles.ToDictionary(x => x.Id.Value, x => x);

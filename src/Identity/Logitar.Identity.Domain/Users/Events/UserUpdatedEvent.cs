@@ -28,5 +28,7 @@ public record UserUpdatedEvent : DomainEvent, INotification
   public MayBe<Uri>? Profile { get; set; }
   public MayBe<Uri>? Website { get; set; }
 
+  public Dictionary<string, string?> CustomAttributes { get; init; } = new();
+
   public Dictionary<string, CollectionAction> Roles { get; init; } = new();
 }

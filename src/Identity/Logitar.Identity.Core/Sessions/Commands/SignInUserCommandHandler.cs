@@ -1,4 +1,5 @@
-﻿using Logitar.Identity.Core.Passwords;
+﻿using Logitar.Identity.Core.Models;
+using Logitar.Identity.Core.Passwords;
 using Logitar.Identity.Core.Sessions.Models;
 using Logitar.Identity.Domain.Sessions;
 using Logitar.Identity.Domain.Settings;
@@ -37,6 +38,11 @@ public class SignInUserCommandHandler : IRequestHandler<SignInUserCommand, Sessi
     Password? secret = command.IsPersistent
       ? _passwordHelper.Generate(SessionAggregate.SecretLength, out secretBytes) : null;
     SessionAggregate session = user.SignIn(userSettings, command.Password, secret);
+
+    foreach (CustomAttribute customAttribute in command.CustomAttributes)
+    {
+      session.SetCustomAttribute(customAttribute.Key, customAttribute.Value);
+    }
 
     await _userRepository.SaveAsync(user, cancellationToken);
     await _sessionRepository.SaveAsync(session, cancellationToken);

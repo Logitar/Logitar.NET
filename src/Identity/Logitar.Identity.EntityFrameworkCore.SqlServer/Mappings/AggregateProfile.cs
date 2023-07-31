@@ -12,8 +12,8 @@ public class AggregateProfile : Profile
     CreateMap<AggregateEntity, Aggregate>()
       .ForMember(x => x.Id, x => x.MapFrom(y => y.AggregateId))
       .ForMember(x => x.CreatedBy, x => x.MapFrom(y => ActorEntity.Deserialize(y.CreatedById, y.CreatedBy)))
-      .ForMember(x => x.CreatedOn, x => x.MapFrom(y => MappingHelper.ToUniversalTime(y.CreatedOn)))
+      .ForMember(x => x.CreatedOn, x => x.MapFrom(y => DateTimeHelper.ToUniversalTime(y.CreatedOn)))
       .ForMember(x => x.UpdatedBy, x => x.MapFrom(y => ActorEntity.Deserialize(y.UpdatedById, y.UpdatedBy)))
-      .ForMember(x => x.UpdatedOn, x => x.MapFrom(y => MappingHelper.ToUniversalTime(y.UpdatedOn)));
+      .ForMember(x => x.UpdatedOn, x => x.MapFrom(y => DateTimeHelper.ToUniversalTime(y.UpdatedOn)));
   }
 }

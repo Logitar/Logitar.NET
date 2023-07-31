@@ -13,5 +13,7 @@ public record ApiKey : Aggregate
 
   public byte[]? Secret { get; set; }
 
+  public IEnumerable<CustomAttribute> CustomAttributes { get; set; } = Enumerable.Empty<CustomAttribute>();
+
   public IEnumerable<Role> Roles { get; set; } = Enumerable.Empty<Role>();
 }

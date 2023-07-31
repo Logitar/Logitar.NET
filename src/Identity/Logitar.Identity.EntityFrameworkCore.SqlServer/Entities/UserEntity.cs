@@ -5,7 +5,7 @@ using Logitar.Identity.EntityFrameworkCore.SqlServer.Constants;
 
 namespace Logitar.Identity.EntityFrameworkCore.SqlServer.Entities;
 
-public record UserEntity : AggregateEntity
+public record UserEntity : AggregateEntity, ICustomAttributesProvider
 {
   public UserEntity(UserCreatedEvent created, ActorEntity actor) : base(created, actor)
   {
@@ -97,6 +97,8 @@ public record UserEntity : AggregateEntity
   public string? Profile { get; private set; }
   public string? Picture { get; private set; }
   public string? Website { get; private set; }
+
+  public string? CustomAttributes { get; private set; }
 
   public List<RoleEntity> Roles { get; private set; } = new();
   public List<SessionEntity> Sessions { get; private set; } = new();
@@ -317,6 +319,8 @@ public record UserEntity : AggregateEntity
     {
       Website = updated.Website.Value?.ToString();
     }
+
+    CustomAttributes = this.UpdateCustomAttributes(updated.CustomAttributes);
 
     Dictionary<string, RoleEntity> rolesById = roles.ToDictionary(x => x.AggregateId, x => x);
     foreach (var (roleId, action) in updated.Roles)

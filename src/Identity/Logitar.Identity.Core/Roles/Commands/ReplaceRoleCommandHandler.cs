@@ -1,4 +1,5 @@
 ﻿using Logitar.EventSourcing;
+using Logitar.Identity.Core.Models;
 using Logitar.Identity.Core.Roles.Models;
 using Logitar.Identity.Core.Roles.Payloads;
 using Logitar.Identity.Domain.Roles;
@@ -47,6 +48,19 @@ public class ReplaceRoleCommandHandler : IRequestHandler<ReplaceRoleCommand, Rol
 
     role.DisplayName = payload.DisplayName;
     role.Description = payload.Description;
+
+    HashSet<string> customAttributes = payload.CustomAttributes.Select(c => c.Key).ToHashSet();
+    foreach (string key in role.CustomAttributes.Keys)
+    {
+      if (!customAttributes.Contains(key))
+      {
+        role.RemoveCustomAttribute(key);
+      }
+    }
+    foreach (CustomAttribute customAttribute in payload.CustomAttributes)
+    {
+      role.SetCustomAttribute(customAttribute.Key, customAttribute.Value);
+    }
 
     await _roleRepository.SaveAsync(role, cancellationToken);
 

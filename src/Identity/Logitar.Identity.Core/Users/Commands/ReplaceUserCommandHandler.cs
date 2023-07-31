@@ -1,4 +1,5 @@
 ﻿using Logitar.EventSourcing;
+using Logitar.Identity.Core.Models;
 using Logitar.Identity.Core.Passwords;
 using Logitar.Identity.Core.Roles.Queries;
 using Logitar.Identity.Core.Users.Models;
@@ -106,6 +107,19 @@ public class ReplaceUserCommandHandler : IRequestHandler<ReplaceUserCommand, Use
     user.Picture = payload.Picture?.GetUri(nameof(payload.Picture));
     user.Profile = payload.Profile?.GetUri(nameof(payload.Profile));
     user.Website = payload.Website?.GetUri(nameof(payload.Website));
+
+    HashSet<string> customAttributes = payload.CustomAttributes.Select(c => c.Key).ToHashSet();
+    foreach (string key in user.CustomAttributes.Keys)
+    {
+      if (!customAttributes.Contains(key))
+      {
+        user.RemoveCustomAttribute(key);
+      }
+    }
+    foreach (CustomAttribute customAttribute in payload.CustomAttributes)
+    {
+      user.SetCustomAttribute(customAttribute.Key, customAttribute.Value);
+    }
 
     Dictionary<AggregateId, RoleAggregate> roles = (await _mediator.Send(new FindRolesQuery(user.TenantId, payload.Roles, nameof(payload.Roles)), cancellationToken))
       .ToDictionary(x => x.Id, x => x);

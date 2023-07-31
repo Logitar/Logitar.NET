@@ -14,4 +14,6 @@ public record Session : Aggregate
   public string? RefreshToken { get; set; }
 
   public User User { get; set; } = new();
+
+  public IEnumerable<CustomAttribute> CustomAttributes { get; set; } = Enumerable.Empty<CustomAttribute>();
 }

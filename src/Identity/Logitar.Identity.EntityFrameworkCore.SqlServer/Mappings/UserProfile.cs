@@ -17,7 +17,8 @@ public class UserProfile : Profile
       .ForMember(x => x.Address, x => x.MapFrom(GetAddress))
       .ForMember(x => x.Email, x => x.MapFrom(GetEmail))
       .ForMember(x => x.Phone, x => x.MapFrom(GetPhone))
-      .ForMember(x => x.Birthdate, x => x.MapFrom(y => MappingHelper.ToUniversalTime(y.Birthdate)));
+      .ForMember(x => x.Birthdate, x => x.MapFrom(y => DateTimeHelper.ToUniversalTime(y.Birthdate)))
+      .ForMember(x => x.CustomAttributes, x => x.MapFrom(y => y.GetCustomAttributes()));
   }
 
   private static Address? GetAddress(UserEntity user, User _)
@@ -38,7 +39,7 @@ public class UserProfile : Profile
       Formatted = user.AddressFormatted,
       IsVerified = user.IsAddressVerified,
       VerifiedBy = ActorEntity.Deserialize(user.AddressVerifiedById, user.AddressVerifiedBy),
-      VerifiedOn = MappingHelper.ToUniversalTime(user.AddressVerifiedOn)
+      VerifiedOn = DateTimeHelper.ToUniversalTime(user.AddressVerifiedOn)
     };
   }
 
@@ -54,7 +55,7 @@ public class UserProfile : Profile
       Address = user.EmailAddress,
       IsVerified = user.IsEmailVerified,
       VerifiedBy = ActorEntity.Deserialize(user.EmailVerifiedById, user.EmailVerifiedBy),
-      VerifiedOn = MappingHelper.ToUniversalTime(user.EmailVerifiedOn)
+      VerifiedOn = DateTimeHelper.ToUniversalTime(user.EmailVerifiedOn)
     };
   }
 
@@ -73,7 +74,7 @@ public class UserProfile : Profile
       E164Formatted = user.PhoneE164Formatted,
       IsVerified = user.IsPhoneVerified,
       VerifiedBy = ActorEntity.Deserialize(user.PhoneVerifiedById, user.PhoneVerifiedBy),
-      VerifiedOn = MappingHelper.ToUniversalTime(user.PhoneVerifiedOn)
+      VerifiedOn = DateTimeHelper.ToUniversalTime(user.PhoneVerifiedOn)
     };
   }
 }

@@ -1,5 +1,6 @@
 ﻿using Logitar.Identity.Core.ApiKeys.Models;
 using Logitar.Identity.Core.ApiKeys.Payloads;
+using Logitar.Identity.Core.Models;
 using Logitar.Identity.Core.Passwords;
 using Logitar.Identity.Core.Roles.Queries;
 using Logitar.Identity.Domain.ApiKeys;
@@ -35,6 +36,11 @@ public class CreateApiKeyCommandHandler : IRequestHandler<CreateApiKeyCommand, A
       Description = payload.Description,
       ExpiresOn = payload.ExpiresOn
     };
+
+    foreach (CustomAttribute customAttribute in payload.CustomAttributes)
+    {
+      apiKey.SetCustomAttribute(customAttribute.Key, customAttribute.Value);
+    }
 
     IEnumerable<RoleAggregate> roles = await _mediator.Send(new FindRolesQuery(apiKey.TenantId, payload.Roles, nameof(payload.Roles)), cancellationToken);
     foreach (RoleAggregate role in roles)

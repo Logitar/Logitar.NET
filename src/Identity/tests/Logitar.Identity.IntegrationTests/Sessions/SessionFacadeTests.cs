@@ -54,7 +54,12 @@ public class SessionFacadeTests : IntegrationTestingBase
     CreateSessionPayload payload = new()
     {
       UserId = _user.Id.Value,
-      IsPersistent = true
+      IsPersistent = true,
+      CustomAttributes = new[]
+      {
+        new CustomAttribute("IpAddress", "::1"),
+        new CustomAttribute("  User-Agent  ", "  Mozilla/5.0  ")
+      }
     };
     Session session = await _sessionFacade.CreateAsync(payload, CancellationToken);
     Assert.Equal(payload.UserId, session.User.Id);
@@ -63,6 +68,12 @@ public class SessionFacadeTests : IntegrationTestingBase
     Assert.Equal(session.User.AuthenticatedOn, session.CreatedOn);
     AssertIsActive(session);
     await AssertRefreshTokenIsValidAsync(session);
+
+    Assert.Equal(payload.CustomAttributes.Count(), session.CustomAttributes.Count());
+    foreach (CustomAttribute customAttribute in payload.CustomAttributes)
+    {
+      Assert.Contains(session.CustomAttributes, c => c.Key == customAttribute.Key.Trim() && c.Value == customAttribute.Value.Trim());
+    }
   }
 
   [Fact(DisplayName = "CreateAsync: it should throw AggregateNotFoundException when user is not found.")]
@@ -131,11 +142,18 @@ public class SessionFacadeTests : IntegrationTestingBase
   {
     Password secret = _passwordHelper.Generate(SessionAggregate.SecretLength, out byte[] secretBytes);
     SessionAggregate aggregate = new(_user, secret);
+    aggregate.SetCustomAttribute("IpAddress", "::1");
+    aggregate.SetCustomAttribute("User-Agent", "Mozilla/5.0");
     await _sessionRepository.SaveAsync(aggregate);
 
     RenewSessionPayload payload = new()
     {
-      RefreshToken = new RefreshToken(aggregate.Id, secretBytes).ToString()
+      RefreshToken = new RefreshToken(aggregate.Id, secretBytes).ToString(),
+      CustomAttributes = new[]
+      {
+        new CustomAttributeModification("  User-Agent  ", null),
+        new CustomAttributeModification("IpAddress", " 10.0.0.1 ")
+      }
     };
     Session session = await _sessionFacade.RenewAsync(payload, CancellationToken);
     Assert.Equal(_user.Id.Value, session.User.Id);
@@ -143,6 +161,10 @@ public class SessionFacadeTests : IntegrationTestingBase
     Assert.True(session.IsPersistent);
     AssertIsActive(session);
     await AssertRefreshTokenIsValidAsync(session);
+
+    CustomAttribute customAttribute = Assert.Single(session.CustomAttributes);
+    Assert.Equal("IpAddress", customAttribute.Key);
+    Assert.Equal("10.0.0.1", customAttribute.Value);
   }
 
   [Fact(DisplayName = "RenewAsync: it should throw InvalidCredentialsException when refresh token is not valid.")]
@@ -301,7 +323,12 @@ public class SessionFacadeTests : IntegrationTestingBase
       TenantId = _user.TenantId,
       UniqueName = "  AdmIn  ",
       Password = Password,
-      IsPersistent = true
+      IsPersistent = true,
+      CustomAttributes = new[]
+      {
+        new CustomAttribute("IpAddress", "::1"),
+        new CustomAttribute("  User-Agent  ", "  Mozilla/5.0  ")
+      }
     };
     Session session = await _sessionFacade.SignInAsync(payload, CancellationToken);
     Assert.Equal(_user.Id.Value, session.User.Id);
@@ -310,6 +337,12 @@ public class SessionFacadeTests : IntegrationTestingBase
     Assert.Equal(session.User.AuthenticatedOn, session.CreatedOn);
     AssertIsActive(session);
     await AssertRefreshTokenIsValidAsync(session);
+
+    Assert.Equal(payload.CustomAttributes.Count(), session.CustomAttributes.Count());
+    foreach (CustomAttribute customAttribute in payload.CustomAttributes)
+    {
+      Assert.Contains(session.CustomAttributes, c => c.Key == customAttribute.Key.Trim() && c.Value == customAttribute.Value.Trim());
+    }
   }
 
   [Fact(DisplayName = "SignInAsync: it should throw InvalidCredentialsException when password is not valid.")]

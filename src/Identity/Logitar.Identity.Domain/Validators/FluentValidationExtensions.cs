@@ -32,6 +32,16 @@ public static class FluentValidationExtensions
   }
   internal static bool BeInTheFuture(DateTime dateTime, DateTime? moment) => dateTime > (moment ?? DateTime.UtcNow);
 
+  public static IRuleBuilderOptions<T, string?> Identifier<T>(this IRuleBuilder<T, string?> ruleBuilder)
+  {
+    return ruleBuilder.Must(BeAValidIdentifier)
+      .WithErrorCode("IdentifierValidator")
+      .WithMessage("'{PropertyName}' may not start with a digit, and it may only contain letters, digits and underscores (_).");
+  }
+  internal static bool BeAValidIdentifier(string? identifier) => identifier == null
+    || (!string.IsNullOrEmpty(identifier) && !char.IsDigit(identifier.First())
+      && identifier.All(c => char.IsLetterOrDigit(c) || c == '_'));
+
   public static IRuleBuilderOptions<T, CultureInfo?> Locale<T>(this IRuleBuilder<T, CultureInfo?> ruleBuilder)
   {
     return ruleBuilder.Must(BeAValidLocale)

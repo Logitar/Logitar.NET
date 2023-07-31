@@ -4,7 +4,7 @@ using Logitar.Identity.EntityFrameworkCore.SqlServer.Actors;
 
 namespace Logitar.Identity.EntityFrameworkCore.SqlServer.Entities;
 
-public record ApiKeyEntity : AggregateEntity
+public record ApiKeyEntity : AggregateEntity, ICustomAttributesProvider
 {
   public ApiKeyEntity(ApiKeyCreatedEvent created, ActorEntity actor) : base(created, actor)
   {
@@ -31,6 +31,8 @@ public record ApiKeyEntity : AggregateEntity
 
   public DateTime? AuthenticatedOn { get; private set; }
 
+  public string? CustomAttributes { get; private set; }
+
   public List<RoleEntity> Roles { get; private set; } = new();
 
   public void Authenticate(ApiKeyAuthenticatedEvent authenticated) => AuthenticatedOn = authenticated.OccurredOn;
@@ -51,6 +53,8 @@ public record ApiKeyEntity : AggregateEntity
     {
       ExpiresOn = updated.ExpiresOn.Value.ToUniversalTime();
     }
+
+    CustomAttributes = this.UpdateCustomAttributes(updated.CustomAttributes);
 
     Dictionary<string, RoleEntity> rolesById = roles.ToDictionary(x => x.AggregateId, x => x);
     foreach (var (roleId, action) in updated.Roles)

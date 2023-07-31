@@ -9,5 +9,7 @@ public record UpdateApiKeyPayload
   public MayBe<string>? Description { get; set; }
   public DateTime? ExpiresOn { get; set; }
 
+  public IEnumerable<CustomAttributeModification> CustomAttributes { get; set; } = Enumerable.Empty<CustomAttributeModification>();
+
   public IEnumerable<RoleModification> Roles { get; set; } = Enumerable.Empty<RoleModification>();
 }

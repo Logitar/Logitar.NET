@@ -10,6 +10,7 @@ public class RoleProfile : Profile
   public RoleProfile()
   {
     CreateMap<RoleEntity, Role>()
-      .IncludeBase<AggregateEntity, Aggregate>();
+      .IncludeBase<AggregateEntity, Aggregate>()
+      .ForMember(x => x.CustomAttributes, x => x.MapFrom(y => y.GetCustomAttributes()));
   }
 }

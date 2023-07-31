@@ -9,6 +9,8 @@ namespace Logitar.Identity.Domain.Roles;
 
 public class RoleAggregate : AggregateRoot
 {
+  private readonly Dictionary<string, string> _customAttributes = new();
+
   private string? _displayName = null;
   private string? _description = null;
 
@@ -73,7 +75,34 @@ public class RoleAggregate : AggregateRoot
     }
   }
 
+  public IReadOnlyDictionary<string, string> CustomAttributes => _customAttributes.AsReadOnly();
+
   public void Delete() => ApplyChange(new RoleDeletedEvent());
+
+  public void RemoveCustomAttribute(string key)
+  {
+    key = key.Trim();
+    if (_customAttributes.ContainsKey(key))
+    {
+      RoleUpdatedEvent updated = GetLatestUpdatedEvent();
+      updated.CustomAttributes[key] = null;
+      Apply(updated);
+    }
+  }
+
+  public void SetCustomAttribute(string key, string value)
+  {
+    key = key.Trim();
+    value = value.Trim();
+    new CustomAttributeValidator().ValidateAndThrow(key, value);
+
+    if (!_customAttributes.TryGetValue(key, out string? existingValue) || value != existingValue)
+    {
+      RoleUpdatedEvent updated = GetLatestUpdatedEvent();
+      updated.CustomAttributes[key] = value;
+      Apply(updated);
+    }
+  }
 
   public void SetUniqueName(IUniqueNameSettings uniqueNameSettings, string uniqueName)
   {
@@ -98,6 +127,18 @@ public class RoleAggregate : AggregateRoot
     if (updated.Description != null)
     {
       _description = updated.Description.Value;
+    }
+
+    foreach (var (key, value) in updated.CustomAttributes)
+    {
+      if (value == null)
+      {
+        _customAttributes.Remove(key);
+      }
+      else
+      {
+        _customAttributes[key] = value;
+      }
     }
   }
   protected RoleUpdatedEvent GetLatestUpdatedEvent()

@@ -1,4 +1,5 @@
-﻿using Logitar.Identity.Core.Passwords;
+﻿using Logitar.Identity.Core.Models;
+using Logitar.Identity.Core.Passwords;
 using Logitar.Identity.Core.Roles.Queries;
 using Logitar.Identity.Core.Users.Models;
 using Logitar.Identity.Core.Users.Payloads;
@@ -91,6 +92,11 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, User>
     user.Picture = payload.Picture?.GetUri(nameof(payload.Picture));
     user.Profile = payload.Profile?.GetUri(nameof(payload.Profile));
     user.Website = payload.Website?.GetUri(nameof(payload.Website));
+
+    foreach (CustomAttribute customAttribute in payload.CustomAttributes)
+    {
+      user.SetCustomAttribute(customAttribute.Key, customAttribute.Value);
+    }
 
     IEnumerable<RoleAggregate> roles = await _mediator.Send(new FindRolesQuery(user.TenantId, payload.Roles, nameof(payload.Roles)), cancellationToken);
     foreach (RoleAggregate role in roles)

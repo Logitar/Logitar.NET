@@ -64,6 +64,8 @@ public class UserFacadeTests : IntegrationTestingBase
     {
       Email = new(Faker.Person.Email, isVerified: true)
     };
+    _user.SetCustomAttribute("HealthInsuranceNumber", "5-891454-771");
+    _user.SetCustomAttribute("JobTitle", "Software Developer");
 
     RoleSettings roleSettings = _roleSettings.Value;
     _manageApp = new(roleSettings.UniqueNameSettings, "manage_app", _user.TenantId);
@@ -278,6 +280,11 @@ public class UserFacadeTests : IntegrationTestingBase
       Picture = "https://www.test.com/assets/img/profile.jpg",
       Profile = "    ",
       Website = "https://www.test.com/",
+      CustomAttributes = new[]
+      {
+        new CustomAttribute("HealthInsuranceNumber", "5-891454-771"),
+        new CustomAttribute(" JobTitle   ", "   Software Developer ")
+      },
       Roles = new[] { $" {_readUsers.UniqueName.ToUpper()} " }
     };
     User user = await _userFacade.CreateAsync(payload, CancellationToken);
@@ -316,6 +323,12 @@ public class UserFacadeTests : IntegrationTestingBase
     Assert.NotNull(user.PasswordChangedOn);
     Assert.NotNull(user.DisabledOn);
     Assert.Null(user.Profile);
+
+    Assert.Equal(payload.CustomAttributes.Count(), user.CustomAttributes.Count());
+    foreach (CustomAttribute customAttribute in payload.CustomAttributes)
+    {
+      Assert.Contains(user.CustomAttributes, c => c.Key == customAttribute.Key.Trim() && c.Value == customAttribute.Value.Trim());
+    }
 
     Role role = Assert.Single(user.Roles);
     Assert.Equal(_readUsers.UniqueName, role.UniqueName);
@@ -545,6 +558,11 @@ public class UserFacadeTests : IntegrationTestingBase
       Picture = "https://www.test.com/assets/img/profile.jpg",
       Profile = "   ",
       Website = "https://www.test.com/",
+      CustomAttributes = new[]
+      {
+        new CustomAttribute(" JobTitle ", "  Software Architect  "),
+        new CustomAttribute("EmployeeNumber", "815613")
+      },
       Roles = new[] { _writeUsers.Id.Value, _manageApp.UniqueName }
     };
     User? user = await _userFacade.ReplaceAsync(_user.Id.Value, payload, CancellationToken);
@@ -567,6 +585,12 @@ public class UserFacadeTests : IntegrationTestingBase
     Assert.Equal(payload.Picture, user.Picture);
     Assert.Null(user.Profile);
     Assert.Equal(payload.Website, user.Website);
+
+    Assert.Equal(payload.CustomAttributes.Count(), user.CustomAttributes.Count());
+    foreach (CustomAttribute customAttribute in payload.CustomAttributes)
+    {
+      Assert.Contains(user.CustomAttributes, c => c.Key == customAttribute.Key.Trim() && c.Value == customAttribute.Value.Trim());
+    }
 
     Assert.Equal(2, user.Roles.Count());
     Assert.Contains(user.Roles, role => role.Id == _writeUsers.Id.Value);
@@ -985,6 +1009,11 @@ public class UserFacadeTests : IntegrationTestingBase
       Picture = new MayBe<string>("https://www.test.com/assets/img/profile.jpg"),
       Profile = new MayBe<string>("   "),
       Website = new MayBe<string>("https://www.test.com/"),
+      CustomAttributes = new[]
+      {
+        new CustomAttributeModification("  HealthInsuranceNumber  ", null),
+        new CustomAttributeModification(" JobTitle   ", "   Software Architect ")
+      },
       Roles = new[]
       {
         new RoleModification(_manageApp.Id.Value, CollectionAction.Remove),
@@ -1029,6 +1058,10 @@ public class UserFacadeTests : IntegrationTestingBase
       payload.LastName.Value), user.FullName);
     Assert.Null(user.Profile);
     Assert.True(user.HasPassword);
+
+    CustomAttribute customAttribute = Assert.Single(user.CustomAttributes);
+    Assert.Equal("JobTitle", customAttribute.Key);
+    Assert.Equal("Software Architect", customAttribute.Value);
 
     Role role = Assert.Single(user.Roles);
     Assert.Equal(_readUsers.UniqueName, role.UniqueName);

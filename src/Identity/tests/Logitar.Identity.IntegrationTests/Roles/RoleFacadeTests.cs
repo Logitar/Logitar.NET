@@ -43,6 +43,8 @@ public class RoleFacadeTests : IntegrationTestingBase
 
     RoleSettings roleSettings = _roleSettings.Value;
     _role = new(roleSettings.UniqueNameSettings, "admin", tenantId: Guid.NewGuid().ToString());
+    _role.SetCustomAttribute("ReadUsers", bool.TrueString);
+    _role.SetCustomAttribute("WriteUsers", bool.FalseString);
   }
 
   [Fact(DisplayName = "CreateAsync: it should create the correct role.")]
@@ -53,7 +55,12 @@ public class RoleFacadeTests : IntegrationTestingBase
       TenantId = _role.TenantId,
       UniqueName = $"{_role.UniqueName}2",
       DisplayName = "  Administrator  ",
-      Description = "    "
+      Description = "    ",
+      CustomAttributes = new[]
+      {
+        new CustomAttribute("ReadUsers", bool.TrueString),
+        new CustomAttribute(" WriteUsers   ", $"   {bool.FalseString} ")
+      }
     };
     Role? role = await _roleFacade.CreateAsync(payload, CancellationToken);
     Assert.NotNull(role);
@@ -61,6 +68,12 @@ public class RoleFacadeTests : IntegrationTestingBase
     Assert.Equal(payload.UniqueName, role.UniqueName);
     Assert.Equal(payload.DisplayName.Trim(), role.DisplayName);
     Assert.Null(role.Description);
+
+    Assert.Equal(payload.CustomAttributes.Count(), role.CustomAttributes.Count());
+    foreach (CustomAttribute customAttribute in payload.CustomAttributes)
+    {
+      Assert.Contains(role.CustomAttributes, c => c.Key == customAttribute.Key.Trim() && c.Value == customAttribute.Value.Trim());
+    }
   }
 
   [Fact(DisplayName = "CreateAsync: it should throw UniqueNameAlreadyUsedException when unique name is already used.")]
@@ -157,13 +170,24 @@ public class RoleFacadeTests : IntegrationTestingBase
     {
       UniqueName = " admin2 ",
       DisplayName = "  Administrator  ",
-      Description = "    "
+      Description = "    ",
+      CustomAttributes = new[]
+      {
+        new CustomAttribute("WriteUsers  ", $"  {bool.TrueString}"),
+        new CustomAttribute("ViewUsers", bool.FalseString)
+      }
     };
     Role? role = await _roleFacade.ReplaceAsync(_role.Id.Value, payload, CancellationToken);
     Assert.NotNull(role);
     Assert.Equal(payload.UniqueName.Trim(), role.UniqueName);
     Assert.Equal(payload.DisplayName.Trim(), role.DisplayName);
     Assert.Null(role.Description);
+
+    Assert.Equal(payload.CustomAttributes.Count(), role.CustomAttributes.Count());
+    foreach (CustomAttribute customAttribute in payload.CustomAttributes)
+    {
+      Assert.Contains(role.CustomAttributes, c => c.Key == customAttribute.Key.Trim() && c.Value == customAttribute.Value.Trim());
+    }
   }
 
   [Fact(DisplayName = "ReplaceAsync: it should return null when role is not found.")]
@@ -226,25 +250,6 @@ public class RoleFacadeTests : IntegrationTestingBase
     Assert.Equal(writeUsers.Id.Value, roles.Items.ElementAt(1).Id);
   }
 
-  [Fact(DisplayName = "UpdateAsync: it should update the correct role.")]
-  public async Task UpdateAsync_it_should_update_the_correct_role()
-  {
-    _role.DisplayName = "Administrator";
-    await _roleRepository.SaveAsync(_role);
-
-    UpdateRolePayload payload = new()
-    {
-      UniqueName = " admin2 ",
-      DisplayName = new MayBe<string>("    "),
-      Description = new MayBe<string>("    ")
-    };
-    Role? role = await _roleFacade.UpdateAsync(_role.Id.Value, payload, CancellationToken);
-    Assert.NotNull(role);
-    Assert.Equal(payload.UniqueName.Trim(), role.UniqueName);
-    Assert.Null(role.DisplayName);
-    Assert.Null(role.Description);
-  }
-
   [Fact(DisplayName = "UpdateAsync: it should return null when role is not found.")]
   public async Task UpdateAsync_it_should_return_null_when_role_is_not_found()
   {
@@ -269,6 +274,34 @@ public class RoleFacadeTests : IntegrationTestingBase
     Assert.Equal(_role.TenantId, exception.TenantId);
     Assert.Equal(_role.UniqueName, exception.UniqueName);
     Assert.Equal("UniqueName", exception.PropertyName);
+  }
+
+  [Fact(DisplayName = "UpdateAsync: it should update the correct role.")]
+  public async Task UpdateAsync_it_should_update_the_correct_role()
+  {
+    _role.DisplayName = "Administrator";
+    await _roleRepository.SaveAsync(_role);
+
+    UpdateRolePayload payload = new()
+    {
+      UniqueName = " admin2 ",
+      DisplayName = new MayBe<string>("    "),
+      Description = new MayBe<string>("    "),
+      CustomAttributes = new[]
+      {
+        new CustomAttributeModification("ReadUsers", bool.FalseString),
+        new CustomAttributeModification(" WriteUsers ", null)
+      }
+    };
+    Role? role = await _roleFacade.UpdateAsync(_role.Id.Value, payload, CancellationToken);
+    Assert.NotNull(role);
+    Assert.Equal(payload.UniqueName.Trim(), role.UniqueName);
+    Assert.Null(role.DisplayName);
+    Assert.Null(role.Description);
+
+    CustomAttribute customAttribute = role.CustomAttributes.Single();
+    Assert.Equal("ReadUsers", customAttribute.Key);
+    Assert.Equal(bool.FalseString, customAttribute.Value);
   }
 
   public override async Task InitializeAsync()

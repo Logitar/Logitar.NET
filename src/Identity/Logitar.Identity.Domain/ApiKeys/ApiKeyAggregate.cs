@@ -3,6 +3,7 @@ using Logitar.EventSourcing;
 using Logitar.Identity.Domain.ApiKeys.Events;
 using Logitar.Identity.Domain.ApiKeys.Validators;
 using Logitar.Identity.Domain.Roles;
+using Logitar.Identity.Domain.Validators;
 using Logitar.Security.Cryptography;
 using System.Collections.Immutable;
 
@@ -11,6 +12,8 @@ namespace Logitar.Identity.Domain.ApiKeys;
 public class ApiKeyAggregate : AggregateRoot
 {
   public const int SecretLength = 256 / 8;
+
+  private readonly Dictionary<string, string> _customAttributes = new();
 
   private Password _secret = Password.Default;
 
@@ -105,6 +108,8 @@ public class ApiKeyAggregate : AggregateRoot
 
   public DateTime? AuthenticatedOn { get; private set; }
 
+  public IReadOnlyDictionary<string, string> CustomAttributes => _customAttributes.AsReadOnly();
+
   public IImmutableSet<AggregateId> Roles => ImmutableHashSet.Create(_roles.ToArray());
 
   public void AddRole(RoleAggregate role)
@@ -146,6 +151,31 @@ public class ApiKeyAggregate : AggregateRoot
 
   public void Delete() => ApplyChange(new ApiKeyDeletedEvent());
 
+  public void RemoveCustomAttribute(string key)
+  {
+    key = key.Trim();
+    if (_customAttributes.ContainsKey(key))
+    {
+      ApiKeyUpdatedEvent updated = GetLatestUpdatedEvent();
+      updated.CustomAttributes[key] = null;
+      Apply(updated);
+    }
+  }
+
+  public void SetCustomAttribute(string key, string value)
+  {
+    key = key.Trim();
+    value = value.Trim();
+    new CustomAttributeValidator().ValidateAndThrow(key, value);
+
+    if (!_customAttributes.TryGetValue(key, out string? existingValue) || value != existingValue)
+    {
+      ApiKeyUpdatedEvent updated = GetLatestUpdatedEvent();
+      updated.CustomAttributes[key] = value;
+      Apply(updated);
+    }
+  }
+
   protected virtual void Apply(ApiKeyUpdatedEvent updated)
   {
     if (updated.Title != null)
@@ -159,6 +189,18 @@ public class ApiKeyAggregate : AggregateRoot
     if (updated.ExpiresOn.HasValue)
     {
       _expiresOn = updated.ExpiresOn.Value;
+    }
+
+    foreach (var (key, value) in updated.CustomAttributes)
+    {
+      if (value == null)
+      {
+        _customAttributes.Remove(key);
+      }
+      else
+      {
+        _customAttributes[key] = value;
+      }
     }
 
     foreach (var (id, action) in updated.Roles)

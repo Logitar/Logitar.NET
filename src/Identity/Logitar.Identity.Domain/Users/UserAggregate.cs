@@ -13,6 +13,8 @@ namespace Logitar.Identity.Domain.Users;
 
 public class UserAggregate : AggregateRoot
 {
+  private readonly Dictionary<string, string> _customAttributes = new();
+
   private Password? _password = null;
 
   private PostalAddress? _address = null;
@@ -307,6 +309,8 @@ public class UserAggregate : AggregateRoot
     }
   }
 
+  public IReadOnlyDictionary<string, string> CustomAttributes => _customAttributes.AsReadOnly();
+
   public IImmutableSet<AggregateId> Roles => ImmutableHashSet.Create(_roles.ToArray());
 
   public void AddRole(RoleAggregate role)
@@ -368,8 +372,33 @@ public class UserAggregate : AggregateRoot
   }
   protected virtual void Apply(UserEnabledEvent _) => IsDisabled = false;
 
+  public void RemoveCustomAttribute(string key)
+  {
+    key = key.Trim();
+    if (_customAttributes.ContainsKey(key))
+    {
+      UserUpdatedEvent updated = GetLatestUpdatedEvent();
+      updated.CustomAttributes[key] = null;
+      Apply(updated);
+    }
+  }
+
   public void ResetPassword(Password password) => ApplyChange(new UserPasswordResetEvent(password), actorId: Id.Value);
   protected virtual void Apply(UserPasswordResetEvent reset) => _password = reset.Password;
+
+  public void SetCustomAttribute(string key, string value)
+  {
+    key = key.Trim();
+    value = value.Trim();
+    new CustomAttributeValidator().ValidateAndThrow(key, value);
+
+    if (!_customAttributes.TryGetValue(key, out string? existingValue) || value != existingValue)
+    {
+      UserUpdatedEvent updated = GetLatestUpdatedEvent();
+      updated.CustomAttributes[key] = value;
+      Apply(updated);
+    }
+  }
 
   public void SetPassword(Password password)
   {
@@ -480,6 +509,18 @@ public class UserAggregate : AggregateRoot
     if (updated.Website != null)
     {
       _website = updated.Website.Value;
+    }
+
+    foreach (var (key, value) in updated.CustomAttributes)
+    {
+      if (value == null)
+      {
+        _customAttributes.Remove(key);
+      }
+      else
+      {
+        _customAttributes[key] = value;
+      }
     }
 
     foreach (var (id, action) in updated.Roles)
