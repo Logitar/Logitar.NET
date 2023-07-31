@@ -1,7 +1,9 @@
-﻿using Logitar.Identity.Core.Sessions.Models;
+﻿using Logitar.Identity.Core.Passwords;
+using Logitar.Identity.Core.Sessions.Models;
 using Logitar.Identity.Domain.Sessions;
 using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.Domain.Users;
+using Logitar.Security;
 using MediatR;
 using Microsoft.Extensions.Options;
 
@@ -9,15 +11,17 @@ namespace Logitar.Identity.Core.Sessions.Commands;
 
 public class SignInUserCommandHandler : IRequestHandler<SignInUserCommand, Session>
 {
+  private readonly IPasswordHelper _passwordHelper;
   private readonly ISessionQuerier _sessionQuerier;
   private readonly ISessionRepository _sessionRepository;
   private readonly IUserRepository _userRepository;
   private readonly IOptions<UserSettings> _userSettings;
 
-  public SignInUserCommandHandler(ISessionQuerier sessionQuerier,
+  public SignInUserCommandHandler(IPasswordHelper passwordHelper, ISessionQuerier sessionQuerier,
     ISessionRepository sessionRepository, IUserRepository userRepository,
     IOptions<UserSettings> userSettings)
   {
+    _passwordHelper = passwordHelper;
     _sessionQuerier = sessionQuerier;
     _sessionRepository = sessionRepository;
     _userRepository = userRepository;
@@ -29,15 +33,18 @@ public class SignInUserCommandHandler : IRequestHandler<SignInUserCommand, Sessi
     UserAggregate user = command.User;
     UserSettings userSettings = _userSettings.Value;
 
-    SessionAggregate session = user.SignIn(userSettings, command.Password, command.IsPersistent);
+    byte[]? secretBytes = null;
+    Password? secret = command.IsPersistent
+      ? _passwordHelper.Generate(SessionAggregate.SecretLength, out secretBytes) : null;
+    SessionAggregate session = user.SignIn(userSettings, command.Password, secret);
 
     await _userRepository.SaveAsync(user, cancellationToken);
     await _sessionRepository.SaveAsync(session, cancellationToken);
 
     Session result = await _sessionQuerier.ReadAsync(session, cancellationToken);
-    if (session.Secret != null)
+    if (secretBytes != null)
     {
-      result.RefreshToken = new RefreshToken(session).ToString();
+      result.RefreshToken = new RefreshToken(session.Id, secretBytes).ToString();
     }
 
     return result;

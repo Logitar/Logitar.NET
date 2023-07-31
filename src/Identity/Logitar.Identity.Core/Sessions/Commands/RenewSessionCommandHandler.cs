@@ -1,18 +1,23 @@
-﻿using Logitar.Identity.Core.Sessions.Models;
+﻿using Logitar.Identity.Core.Passwords;
+using Logitar.Identity.Core.Sessions.Models;
 using Logitar.Identity.Core.Sessions.Payloads;
 using Logitar.Identity.Domain;
 using Logitar.Identity.Domain.Sessions;
+using Logitar.Security;
 using MediatR;
 
 namespace Logitar.Identity.Core.Sessions.Commands;
 
 public class RenewSessionCommandHandler : IRequestHandler<RenewSessionCommand, Session>
 {
+  private readonly IPasswordHelper _passwordHelper;
   private readonly ISessionQuerier _sessionQuerier;
   private readonly ISessionRepository _sessionRepository;
 
-  public RenewSessionCommandHandler(ISessionQuerier sessionQuerier, ISessionRepository sessionRepository)
+  public RenewSessionCommandHandler(IPasswordHelper passwordHelper, ISessionQuerier sessionQuerier,
+    ISessionRepository sessionRepository)
   {
+    _passwordHelper = passwordHelper;
     _sessionQuerier = sessionQuerier;
     _sessionRepository = sessionRepository;
   }
@@ -34,15 +39,13 @@ public class RenewSessionCommandHandler : IRequestHandler<RenewSessionCommand, S
     SessionAggregate session = await _sessionRepository.LoadAsync(refreshToken.Id, cancellationToken)
       ?? throw new InvalidCredentialsException($"The session '{refreshToken.Id}' could not be found.");
 
-    session.Renew(refreshToken.Secret);
+    Password newSecret = _passwordHelper.Generate(SessionAggregate.SecretLength, out byte[] secretBytes);
+    session.Renew(refreshToken.Secret, newSecret);
 
     await _sessionRepository.SaveAsync(session, cancellationToken);
 
     Session result = await _sessionQuerier.ReadAsync(session, cancellationToken);
-    if (session.Secret != null)
-    {
-      result.RefreshToken = new RefreshToken(session).ToString();
-    }
+    result.RefreshToken = new RefreshToken(session.Id, secretBytes).ToString();
 
     return result;
   }

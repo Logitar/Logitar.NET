@@ -2,7 +2,6 @@
 using Logitar.EventSourcing;
 using Logitar.Identity.Domain.ApiKeys.Events;
 using Logitar.Identity.Domain.ApiKeys.Validators;
-using Logitar.Identity.Domain.Passwords;
 using Logitar.Identity.Domain.Roles;
 using Logitar.Security;
 using System.Collections.Immutable;
@@ -25,15 +24,14 @@ public class ApiKeyAggregate : AggregateRoot
   {
   }
 
-  public ApiKeyAggregate(string title, string? tenantId = null) : base()
+  public ApiKeyAggregate(Password secret, string title, string? tenantId = null) : base()
   {
     ApiKeyCreatedEvent created = new()
     {
-      Secret = PasswordHelper.Generate(SecretLength, out byte[] secret),
+      Secret = secret,
       TenantId = tenantId?.CleanTrim(),
       Title = title.Trim()
     };
-    Secret = secret;
 
     new ApiKeyCreatedValidator().ValidateAndThrow(created);
 
@@ -108,8 +106,6 @@ public class ApiKeyAggregate : AggregateRoot
   public DateTime? AuthenticatedOn { get; private set; }
 
   public IImmutableSet<AggregateId> Roles => ImmutableHashSet.Create(_roles.ToArray());
-
-  public byte[]? Secret { get; private set; }
 
   public void AddRole(RoleAggregate role)
   {

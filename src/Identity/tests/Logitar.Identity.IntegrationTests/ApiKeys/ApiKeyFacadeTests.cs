@@ -5,6 +5,7 @@ using Logitar.Identity.Core.ApiKeys;
 using Logitar.Identity.Core.ApiKeys.Models;
 using Logitar.Identity.Core.ApiKeys.Payloads;
 using Logitar.Identity.Core.Models;
+using Logitar.Identity.Core.Passwords;
 using Logitar.Identity.Core.Payloads;
 using Logitar.Identity.Core.Roles;
 using Logitar.Identity.Core.Roles.Models;
@@ -27,9 +28,11 @@ public class ApiKeyFacadeTests : IntegrationTestingBase
 {
   private readonly IApiKeyFacade _apiKeyFacade;
   private readonly IApiKeyRepository _apiKeyRepository;
+  private readonly IPasswordHelper _passwordHelper;
   private readonly IRoleRepository _roleRepository;
   private readonly IOptions<RoleSettings> _roleSettings;
 
+  private readonly byte[] _secret;
   private readonly ApiKeyAggregate _apiKey;
   private readonly RoleAggregate _manageApp;
   private readonly RoleAggregate _readUsers;
@@ -39,10 +42,12 @@ public class ApiKeyFacadeTests : IntegrationTestingBase
   {
     _apiKeyFacade = ServiceProvider.GetRequiredService<IApiKeyFacade>();
     _apiKeyRepository = ServiceProvider.GetRequiredService<IApiKeyRepository>();
+    _passwordHelper = ServiceProvider.GetRequiredService<IPasswordHelper>();
     _roleRepository = ServiceProvider.GetRequiredService<IRoleRepository>();
     _roleSettings = ServiceProvider.GetRequiredService<IOptions<RoleSettings>>();
 
-    _apiKey = new("Default", tenantId: Guid.NewGuid().ToString())
+    Password secret = _passwordHelper.Generate(ApiKeyAggregate.SecretLength, out _secret);
+    _apiKey = new(secret, "Default", tenantId: Guid.NewGuid().ToString())
     {
       ExpiresOn = DateTime.UtcNow.AddYears(1)
     };
@@ -56,11 +61,10 @@ public class ApiKeyFacadeTests : IntegrationTestingBase
   [Fact(DisplayName = "AuthenticateAsync: it authenticates the correct API key.")]
   public async Task AuthenticateAsync_it_authenticates_the_correct_api_key()
   {
-    Assert.NotNull(_apiKey.Secret);
     AuthenticateApiKeyPayload payload = new()
     {
       Id = _apiKey.Id.Value,
-      Secret = _apiKey.Secret
+      Secret = _secret
     };
     ApiKey apiKey = await _apiKeyFacade.AuthenticateAsync(payload, CancellationToken);
     Assert.Equal(_apiKey.Id.Value, apiKey.Id);
@@ -221,11 +225,12 @@ public class ApiKeyFacadeTests : IntegrationTestingBase
   [Fact(DisplayName = "SearchAsync: it should return the correct search results.")]
   public async Task SearchAsync_it_should_return_the_correct_search_results()
   {
+    Password secret = _passwordHelper.Generate(ApiKeyAggregate.SecretLength, out _);
     string tenantId = Guid.NewGuid().ToString();
 
-    ApiKeyAggregate apiKey1 = new("API Key #1", tenantId);
-    ApiKeyAggregate apiKey2 = new("API Key #2", tenantId);
-    ApiKeyAggregate apiKey3 = new("API Key #3", tenantId);
+    ApiKeyAggregate apiKey1 = new(secret, "API Key #1", tenantId);
+    ApiKeyAggregate apiKey2 = new(secret, "API Key #2", tenantId);
+    ApiKeyAggregate apiKey3 = new(secret, "API Key #3", tenantId);
     await _apiKeyRepository.SaveAsync(new[] { apiKey1, apiKey2, apiKey3 });
 
     ActorEntity actor = ActorEntity.From(new Actor());

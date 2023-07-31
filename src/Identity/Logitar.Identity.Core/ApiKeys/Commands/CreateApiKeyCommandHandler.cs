@@ -1,8 +1,10 @@
 ﻿using Logitar.Identity.Core.ApiKeys.Models;
 using Logitar.Identity.Core.ApiKeys.Payloads;
+using Logitar.Identity.Core.Passwords;
 using Logitar.Identity.Core.Roles.Queries;
 using Logitar.Identity.Domain.ApiKeys;
 using Logitar.Identity.Domain.Roles;
+using Logitar.Security;
 using MediatR;
 
 namespace Logitar.Identity.Core.ApiKeys.Commands;
@@ -12,20 +14,23 @@ public class CreateApiKeyCommandHandler : IRequestHandler<CreateApiKeyCommand, A
   private readonly IApiKeyQuerier _apiKeyQuerier;
   private readonly IApiKeyRepository _apiKeyRepository;
   private readonly IMediator _mediator;
+  private readonly IPasswordHelper _passwordHelper;
 
   public CreateApiKeyCommandHandler(IApiKeyQuerier apiKeyQuerier, IApiKeyRepository apiKeyRepository,
-    IMediator mediator)
+    IMediator mediator, IPasswordHelper passwordHelper)
   {
     _apiKeyQuerier = apiKeyQuerier;
     _apiKeyRepository = apiKeyRepository;
     _mediator = mediator;
+    _passwordHelper = passwordHelper;
   }
 
   public async Task<ApiKey> Handle(CreateApiKeyCommand command, CancellationToken cancellationToken)
   {
     CreateApiKeyPayload payload = command.Payload;
 
-    ApiKeyAggregate apiKey = new(payload.Title, payload.TenantId)
+    Password secret = _passwordHelper.Generate(ApiKeyAggregate.SecretLength, out byte[] secretBytes);
+    ApiKeyAggregate apiKey = new(secret, payload.Title, payload.TenantId)
     {
       Description = payload.Description,
       ExpiresOn = payload.ExpiresOn
@@ -40,10 +45,7 @@ public class CreateApiKeyCommandHandler : IRequestHandler<CreateApiKeyCommand, A
     await _apiKeyRepository.SaveAsync(apiKey, cancellationToken);
 
     ApiKey result = await _apiKeyQuerier.ReadAsync(apiKey, cancellationToken);
-    if (apiKey.Secret != null)
-    {
-      result.Secret = apiKey.Secret;
-    }
+    result.Secret = secretBytes;
 
     return result;
   }

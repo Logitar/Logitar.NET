@@ -1,5 +1,4 @@
 ﻿using Logitar.EventSourcing;
-using Logitar.Identity.Domain.Passwords;
 using Logitar.Identity.Domain.Sessions.Events;
 using Logitar.Identity.Domain.Users;
 using Logitar.Security;
@@ -16,15 +15,13 @@ public class SessionAggregate : AggregateRoot
   {
   }
 
-  public SessionAggregate(UserAggregate user, bool isPersistent = false, DateTime? createdOn = null) : base()
+  public SessionAggregate(UserAggregate user, Password? secret = null, DateTime? createdOn = null) : base()
   {
-    byte[]? secret = null;
     ApplyChange(new SessionCreatedEvent
     {
       UserId = user.Id,
-      Secret = isPersistent ? PasswordHelper.Generate(SecretLength, out secret) : null
+      Secret = secret
     }, actorId: user.Id.Value, occurredOn: createdOn);
-    Secret = secret;
   }
   protected virtual void Apply(SessionCreatedEvent created)
   {
@@ -41,11 +38,9 @@ public class SessionAggregate : AggregateRoot
 
   public bool IsActive { get; private set; }
 
-  public byte[]? Secret { get; private set; }
-
   public void Delete() => ApplyChange(new SessionDeletedEvent());
 
-  public void Renew(byte[] secret)
+  public void Renew(byte[] secret, Password newSecret)
   {
     if (!IsActive)
     {
@@ -63,9 +58,8 @@ public class SessionAggregate : AggregateRoot
 
     ApplyChange(new SessionRenewedEvent
     {
-      Secret = PasswordHelper.Generate(SecretLength, out byte[] newSecret)
+      Secret = newSecret
     }, actorId: UserId.Value);
-    Secret = newSecret;
   }
   protected virtual void Apply(SessionRenewedEvent renewed) => _secret = renewed.Secret;
 

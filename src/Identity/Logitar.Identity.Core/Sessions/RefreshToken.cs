@@ -1,5 +1,4 @@
 ﻿using Logitar.EventSourcing;
-using Logitar.Identity.Domain.Sessions;
 
 namespace Logitar.Identity.Core.Sessions;
 
@@ -8,18 +7,7 @@ public record RefreshToken
   public const string Prefix = "RT";
   public const char Separator = '.';
 
-  public RefreshToken(SessionAggregate session)
-  {
-    if (session.Secret == null)
-    {
-      throw new ArgumentException($"The {nameof(session.Secret)} is required.", nameof(session));
-    }
-
-    Id = session.Id;
-    Secret = session.Secret;
-  }
-
-  private RefreshToken(AggregateId id, byte[] secret)
+  public RefreshToken(AggregateId id, byte[] secret)
   {
     Id = id;
     Secret = secret;

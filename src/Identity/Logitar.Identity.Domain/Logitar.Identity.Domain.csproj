@@ -21,7 +21,6 @@
 
   <ItemGroup>
     <Using Include="System.Globalization" />
-    <Using Include="System.Security.Cryptography" />
     <Using Include="System.Text" />
   </ItemGroup>
 
