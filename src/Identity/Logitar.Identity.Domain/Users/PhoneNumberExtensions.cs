@@ -8,7 +8,7 @@ public static class PhoneNumberExtensions
 
   public static string FormatToE164(this IPhoneNumber phoneNumber)
   {
-    var phone = phoneNumber.Parse();
+    PhoneNumbers.PhoneNumber phone = phoneNumber.Parse();
 
     return PhoneNumberUtil.GetInstance().Format(phone, PhoneNumberFormat.E164);
   }

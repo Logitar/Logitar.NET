@@ -17,7 +17,7 @@ public class PasswordConverter : JsonConverter<Password?>
     {
       Pbkdf2.Prefix => Pbkdf2.Decode(password),
       _ => throw new NotSupportedException($"The password kind '{kind}' is not supported."),
-    }; // TODO(fpion): refactor
+    }; // TODO(fpion): refactor when EventSerializer is used as a service
   }
 
   public override void Write(Utf8JsonWriter writer, Password? password, JsonSerializerOptions options)

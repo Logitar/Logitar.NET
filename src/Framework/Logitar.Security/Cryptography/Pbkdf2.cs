@@ -41,7 +41,7 @@ public record Pbkdf2 : Password
 
   public static Pbkdf2 Decode(string encoded)
   {
-    var values = encoded.Split(Separator);
+    string[] values = encoded.Split(Separator);
     if (values.Length != 5 || values[0] != Prefix)
     {
       throw new ArgumentException($"The value '{encoded}' is not a valid string representation of PBKDF2.", nameof(encoded));

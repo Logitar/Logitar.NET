@@ -29,7 +29,7 @@ public class PasswordHelper : IPasswordHelper
 
   public Password Decode(string encoded)
   {
-    var kind = encoded.Split(Password.Separator).First();
+    string kind = encoded.Split(Password.Separator).First();
     return kind switch
     {
       Pbkdf2.Prefix => Pbkdf2.Decode(encoded),
