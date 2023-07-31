@@ -6,5 +6,13 @@ namespace Logitar.Identity.Domain.Sessions.Events;
 
 public record SessionRenewedEvent : DomainEvent, INotification
 {
-  public Password Secret { get; init; } = Password.Default;
+  public SessionRenewedEvent() : this(Password.Default)
+  {
+  }
+  public SessionRenewedEvent(Password secret)
+  {
+    Secret = secret;
+  }
+
+  public Password Secret { get; init; }
 }
