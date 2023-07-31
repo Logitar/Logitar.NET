@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 
-namespace Logitar.Security;
+namespace Logitar.Security.Cryptography;
 
 /// <summary>
 /// TODO(fpion): documentation
@@ -16,15 +16,19 @@ public record Pbkdf2 : Password
   private readonly byte[] _salt;
   private readonly byte[] _hash;
 
-  public Pbkdf2(byte[] password) : this(Convert.ToBase64String(password))
+  public Pbkdf2(byte[] password, Pbkdf2Settings? settings = null)
+    : this(Convert.ToBase64String(password), settings)
   {
   }
-  public Pbkdf2(string password)
+  public Pbkdf2(string password, Pbkdf2Settings? settings = null)
   {
-    _algorithm = KeyDerivationPrf.HMACSHA256;
-    _iterations = 600000;
-    _salt = RandomNumberGenerator.GetBytes(256 / 8);
-    _hash = ComputeHash(password, _salt.Length);
+    settings ??= new();
+    byte[] salt = RandomNumberGenerator.GetBytes(settings.SaltLength);
+
+    _algorithm = settings.Algorithm;
+    _iterations = settings.Iterations;
+    _salt = salt;
+    _hash = ComputeHash(password, settings.HashLength ?? salt.Length);
   }
 
   private Pbkdf2(KeyDerivationPrf algorithm, int iterations, byte[] salt, byte[] hash)
@@ -37,7 +41,7 @@ public record Pbkdf2 : Password
 
   public static Pbkdf2 Decode(string encoded)
   {
-    string[] values = encoded.Split(Separator);
+    var values = encoded.Split(Separator);
     if (values.Length != 5 || values[0] != Prefix)
     {
       throw new ArgumentException($"The value '{encoded}' is not a valid string representation of PBKDF2.", nameof(encoded));

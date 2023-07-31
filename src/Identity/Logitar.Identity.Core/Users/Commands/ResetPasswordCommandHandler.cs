@@ -9,7 +9,7 @@ using Logitar.Identity.Core.Users.Payloads;
 using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.Domain.Users;
 using Logitar.Identity.Domain.Users.Validators;
-using Logitar.Security;
+using Logitar.Security.Cryptography;
 using MediatR;
 using Microsoft.Extensions.Options;
 

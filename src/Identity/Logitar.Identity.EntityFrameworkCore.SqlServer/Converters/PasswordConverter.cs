@@ -1,4 +1,4 @@
-﻿using Logitar.Security;
+﻿using Logitar.Security.Cryptography;
 
 namespace Logitar.Identity.EntityFrameworkCore.SqlServer.Converters;
 

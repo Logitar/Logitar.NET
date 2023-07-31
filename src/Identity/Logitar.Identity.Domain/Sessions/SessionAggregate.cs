@@ -1,7 +1,7 @@
 ﻿using Logitar.EventSourcing;
 using Logitar.Identity.Domain.Sessions.Events;
 using Logitar.Identity.Domain.Users;
-using Logitar.Security;
+using Logitar.Security.Cryptography;
 
 namespace Logitar.Identity.Domain.Sessions;
 

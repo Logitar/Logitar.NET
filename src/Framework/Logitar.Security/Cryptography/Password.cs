@@ -1,4 +1,4 @@
-﻿namespace Logitar.Security;
+﻿namespace Logitar.Security.Cryptography;
 
 /// <summary>
 /// TODO(fpion): documentation

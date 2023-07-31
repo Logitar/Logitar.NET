@@ -3,7 +3,7 @@ using Logitar.Identity.Core.Sessions.Models;
 using Logitar.Identity.Core.Sessions.Payloads;
 using Logitar.Identity.Domain;
 using Logitar.Identity.Domain.Sessions;
-using Logitar.Security;
+using Logitar.Security.Cryptography;
 using MediatR;
 
 namespace Logitar.Identity.Core.Sessions.Commands;

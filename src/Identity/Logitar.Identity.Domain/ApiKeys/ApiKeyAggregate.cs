@@ -3,7 +3,7 @@ using Logitar.EventSourcing;
 using Logitar.Identity.Domain.ApiKeys.Events;
 using Logitar.Identity.Domain.ApiKeys.Validators;
 using Logitar.Identity.Domain.Roles;
-using Logitar.Security;
+using Logitar.Security.Cryptography;
 using System.Collections.Immutable;
 
 namespace Logitar.Identity.Domain.ApiKeys;

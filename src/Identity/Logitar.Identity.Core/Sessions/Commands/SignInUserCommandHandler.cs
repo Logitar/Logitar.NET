@@ -3,7 +3,7 @@ using Logitar.Identity.Core.Sessions.Models;
 using Logitar.Identity.Domain.Sessions;
 using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.Domain.Users;
-using Logitar.Security;
+using Logitar.Security.Cryptography;
 using MediatR;
 using Microsoft.Extensions.Options;
 

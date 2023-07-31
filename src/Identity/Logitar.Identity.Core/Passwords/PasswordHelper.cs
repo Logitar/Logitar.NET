@@ -1,27 +1,30 @@
 ﻿using FluentValidation;
 using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.Domain.Users.Validators;
-using Logitar.Security;
+using Logitar.Security.Cryptography;
 using Microsoft.Extensions.Options;
 
 namespace Logitar.Identity.Core.Passwords;
 
 public class PasswordHelper : IPasswordHelper
 {
+  private readonly IOptions<Pbkdf2Settings> _pbkdf2Settings;
   private readonly IOptions<UserSettings> _userSettings;
 
-  public PasswordHelper(IOptions<UserSettings> userSettings)
+  public PasswordHelper(IOptions<Pbkdf2Settings> pbkdf2Settings, IOptions<UserSettings> userSettings)
   {
+    _pbkdf2Settings = pbkdf2Settings;
     _userSettings = userSettings;
   }
 
   public Password Create(string password)
   {
     UserSettings userSettings = _userSettings.Value;
-
     new PasswordValidator(userSettings.PasswordSettings, "Password").ValidateAndThrow(password);
 
-    return new Pbkdf2(password);
+    Pbkdf2Settings pbkdf2Settings = _pbkdf2Settings.Value;
+    new Pbkdf2Validator().ValidateAndThrow(pbkdf2Settings);
+    return new Pbkdf2(password, pbkdf2Settings);
   }
 
   public Password Decode(string encoded)
@@ -38,6 +41,8 @@ public class PasswordHelper : IPasswordHelper
   {
     password = RandomNumberGenerator.GetBytes(length);
 
-    return new Pbkdf2(password);
+    Pbkdf2Settings pbkdf2Settings = _pbkdf2Settings.Value;
+    new Pbkdf2Validator().ValidateAndThrow(pbkdf2Settings);
+    return new Pbkdf2(password, pbkdf2Settings);
   }
 }

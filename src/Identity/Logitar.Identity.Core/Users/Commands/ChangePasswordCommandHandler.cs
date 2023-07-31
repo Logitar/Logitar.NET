@@ -3,7 +3,7 @@ using Logitar.Identity.Core.Passwords;
 using Logitar.Identity.Core.Users.Models;
 using Logitar.Identity.Core.Users.Payloads;
 using Logitar.Identity.Domain.Users;
-using Logitar.Security;
+using Logitar.Security.Cryptography;
 using MediatR;
 
 namespace Logitar.Identity.Core.Users.Commands;

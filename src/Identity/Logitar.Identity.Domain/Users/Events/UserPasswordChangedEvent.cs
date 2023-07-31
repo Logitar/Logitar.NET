@@ -1,5 +1,5 @@
 ﻿using Logitar.EventSourcing;
-using Logitar.Security;
+using Logitar.Security.Cryptography;
 using MediatR;
 
 namespace Logitar.Identity.Domain.Users.Events;
