@@ -8,5 +8,5 @@ public record SessionCreatedEvent : DomainEvent, INotification
 {
   public AggregateId UserId { get; init; }
 
-  public Pbkdf2? Secret { get; init; }
+  public Password? Secret { get; init; }
 }

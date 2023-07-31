@@ -1,4 +1,5 @@
 ﻿using Logitar.EventSourcing;
+using Logitar.Identity.Domain.Passwords;
 using Logitar.Identity.Domain.Sessions.Events;
 using Logitar.Identity.Domain.Users;
 using Logitar.Security;
@@ -9,7 +10,7 @@ public class SessionAggregate : AggregateRoot
 {
   public const int SecretLength = 256 / 8;
 
-  private Pbkdf2? _secret = null;
+  private Password? _secret = null;
 
   public SessionAggregate(AggregateId id) : base(id)
   {
@@ -17,13 +18,13 @@ public class SessionAggregate : AggregateRoot
 
   public SessionAggregate(UserAggregate user, bool isPersistent = false, DateTime? createdOn = null) : base()
   {
-    Secret = isPersistent ? RandomNumberGenerator.GetBytes(SecretLength) : null;
-
+    byte[]? secret = null;
     ApplyChange(new SessionCreatedEvent
     {
       UserId = user.Id,
-      Secret = Secret == null ? null : new Pbkdf2(Secret)
+      Secret = isPersistent ? PasswordHelper.Generate(SecretLength, out secret) : null
     }, actorId: user.Id.Value, occurredOn: createdOn);
+    Secret = secret;
   }
   protected virtual void Apply(SessionCreatedEvent created)
   {
@@ -60,12 +61,11 @@ public class SessionAggregate : AggregateRoot
       throw new InvalidCredentialsException(message.ToString());
     }
 
-    Secret = RandomNumberGenerator.GetBytes(SecretLength);
-
     ApplyChange(new SessionRenewedEvent
     {
-      Secret = new Pbkdf2(Secret)
+      Secret = PasswordHelper.Generate(SecretLength, out byte[] newSecret)
     }, actorId: UserId.Value);
+    Secret = newSecret;
   }
   protected virtual void Apply(SessionRenewedEvent renewed) => _secret = renewed.Secret;
 
