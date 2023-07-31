@@ -14,7 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\EventSourcing\Logitar.EventSourcing.EntityFrameworkCore.SqlServer\Logitar.EventSourcing.EntityFrameworkCore.SqlServer.csproj" />
     <ProjectReference Include="..\..\Framework\Logitar.Data.SqlServer\Logitar.Data.SqlServer.csproj" />
-    <ProjectReference Include="..\Logitar.Identity.Core\Logitar.Identity.Core.csproj" />
+    <ProjectReference Include="..\Logitar.Identity.EntityFrameworkCore.Relational\Logitar.Identity.EntityFrameworkCore.Relational.csproj" />
   </ItemGroup>
 
   <ItemGroup>

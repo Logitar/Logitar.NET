@@ -2,7 +2,7 @@
 using Logitar.Identity.Core.Tokens;
 using Logitar.Identity.Core.Tokens.Models;
 using Logitar.Identity.Core.Tokens.Payloads;
-using Logitar.Identity.EntityFrameworkCore.SqlServer.Entities;
+using Logitar.Identity.EntityFrameworkCore.Relational.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
