@@ -6,5 +6,5 @@ namespace Logitar.Identity.Domain.Users.Events;
 
 public record UserPasswordChangedEvent : DomainEvent, INotification
 {
-  public Pbkdf2 Password { get; init; } = new(string.Empty);
+  public Password Password { get; init; } = Password.Default;
 }

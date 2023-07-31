@@ -4,6 +4,8 @@ namespace Logitar.Identity.Domain.Passwords;
 
 public static class PasswordHelper
 {
+  public static Password Create(string password) => new Pbkdf2(password);
+
   public static Password Decode(string encoded)
   {
     string kind = encoded.Split(Password.Separator).First();

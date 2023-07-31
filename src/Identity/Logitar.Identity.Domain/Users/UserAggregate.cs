@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Logitar.EventSourcing;
+using Logitar.Identity.Domain.Passwords;
 using Logitar.Identity.Domain.Roles;
 using Logitar.Identity.Domain.Sessions;
 using Logitar.Identity.Domain.Settings;
@@ -13,7 +14,7 @@ namespace Logitar.Identity.Domain.Users;
 
 public class UserAggregate : AggregateRoot
 {
-  private Pbkdf2? _password = null;
+  private Password? _password = null;
 
   private PostalAddress? _address = null;
   private EmailAddress? _email = null;
@@ -348,7 +349,7 @@ public class UserAggregate : AggregateRoot
 
     ApplyChange(new UserPasswordChangedEvent
     {
-      Password = new Pbkdf2(password)
+      Password = PasswordHelper.Create(password)
     }, actorId: Id.Value);
   }
   protected virtual void Apply(UserPasswordChangedEvent change) => _password = change.Password;
@@ -379,7 +380,7 @@ public class UserAggregate : AggregateRoot
 
     ApplyChange(new UserPasswordResetEvent
     {
-      Password = new Pbkdf2(password)
+      Password = PasswordHelper.Create(password)
     }, actorId: Id.Value);
   }
   protected virtual void Apply(UserPasswordResetEvent reset) => _password = reset.Password;
@@ -389,7 +390,7 @@ public class UserAggregate : AggregateRoot
     new PasswordValidator(passwordSettings, "Password").ValidateAndThrow(password);
 
     UserUpdatedEvent updated = GetLatestUpdatedEvent();
-    updated.Password = new Pbkdf2(password);
+    updated.Password = PasswordHelper.Create(password);
     Apply(updated);
   }
 

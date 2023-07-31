@@ -7,7 +7,7 @@ namespace Logitar.Identity.Domain.Users.Events;
 public record UserUpdatedEvent : DomainEvent, INotification
 {
   public string? UniqueName { get; set; }
-  public Pbkdf2? Password { get; set; }
+  public Password? Password { get; set; }
 
   public MayBe<PostalAddress>? Address { get; set; }
   public MayBe<EmailAddress>? Email { get; set; }
