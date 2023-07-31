@@ -51,6 +51,8 @@ public class ApiKeyFacadeTests : IntegrationTestingBase
     {
       ExpiresOn = DateTime.UtcNow.AddYears(1)
     };
+    _apiKey.SetCustomAttribute("Source", "ManagementConsole");
+    _apiKey.SetCustomAttribute("SourceId", Guid.NewGuid().ToString());
 
     RoleSettings roleSettings = _roleSettings.Value;
     _manageApp = new(roleSettings.UniqueNameSettings, "manage_app", _apiKey.TenantId);
@@ -104,6 +106,19 @@ public class ApiKeyFacadeTests : IntegrationTestingBase
       Title = "  Title  ",
       Description = "    ",
       ExpiresOn = DateTime.UtcNow.AddYears(1),
+      CustomAttributes = new CustomAttribute[]
+      {
+        new()
+        {
+          Key = "Source",
+          Value = "ManagementConsole"
+        },
+        new()
+        {
+          Key = " SourceId   ",
+          Value = $"   {Guid.NewGuid()} "
+        }
+      },
       Roles = new[] { $" {_readUsers.UniqueName.ToUpper()} " }
     };
     ApiKey apiKey = await _apiKeyFacade.CreateAsync(payload, CancellationToken);
@@ -112,6 +127,12 @@ public class ApiKeyFacadeTests : IntegrationTestingBase
     Assert.Equal(payload.ExpiresOn, apiKey.ExpiresOn);
     Assert.NotNull(apiKey.Secret);
     Assert.Null(apiKey.Description);
+
+    Assert.Equal(payload.CustomAttributes.Count(), apiKey.CustomAttributes.Count());
+    foreach (CustomAttribute customAttribute in payload.CustomAttributes)
+    {
+      Assert.Contains(apiKey.CustomAttributes, c => c.Key == customAttribute.Key.Trim() && c.Value == customAttribute.Value.Trim());
+    }
 
     Role role = Assert.Single(apiKey.Roles);
     Assert.Equal(_readUsers.UniqueName, role.UniqueName);
@@ -206,6 +227,49 @@ public class ApiKeyFacadeTests : IntegrationTestingBase
     Assert.Null(apiKey);
   }
 
+  [Fact(DisplayName = "ReplaceAsync: it should replace the correct API key.")]
+  public async Task ReplaceAsync_it_should_replace_the_correct_api_key()
+  {
+    _apiKey.AddRole(_readUsers);
+    await _apiKeyRepository.SaveAsync(_apiKey);
+
+    ReplaceApiKeyPayload payload = new()
+    {
+      Title = "  Default API Key  ",
+      Description = "This is the default API key.",
+      ExpiresOn = _apiKey.ExpiresOn?.AddMonths(-6),
+      CustomAttributes = new[]
+      {
+        new CustomAttribute(" Source   ", "   Subsystem "),
+        new CustomAttribute("SourceKey", "default_api_key")
+      },
+      Roles = new[] { _writeUsers.Id.Value, _manageApp.UniqueName }
+    };
+    ApiKey? apiKey = await _apiKeyFacade.ReplaceAsync(_apiKey.Id.Value, payload, CancellationToken);
+    Assert.NotNull(apiKey);
+    Assert.Equal(payload.Title.Trim(), apiKey.Title);
+    Assert.Equal(payload.Description, apiKey.Description);
+    Assert.Equal(payload.ExpiresOn, apiKey.ExpiresOn);
+
+    Assert.Equal(payload.CustomAttributes.Count(), apiKey.CustomAttributes.Count());
+    foreach (CustomAttribute customAttribute in payload.CustomAttributes)
+    {
+      Assert.Contains(apiKey.CustomAttributes, c => c.Key == customAttribute.Key.Trim() && c.Value == customAttribute.Value.Trim());
+    }
+
+    Assert.Equal(2, apiKey.Roles.Count());
+    Assert.Contains(apiKey.Roles, role => role.Id == _writeUsers.Id.Value);
+    Assert.Contains(apiKey.Roles, role => role.UniqueName == _manageApp.UniqueName);
+  }
+
+  [Fact(DisplayName = "ReplaceAsync: it should return null when API key is not found.")]
+  public async Task ReplaceAsync_it_should_return_null_when_api_key_is_not_found()
+  {
+    ReplaceApiKeyPayload payload = new();
+    ApiKey? apiKey = await _apiKeyFacade.ReplaceAsync(Guid.Empty.ToString(), payload, CancellationToken);
+    Assert.Null(apiKey);
+  }
+
   [Fact(DisplayName = "ReplaceAsync: it should throw RolesNotFoundException when a role is missing.")]
   public async Task ReplaceAsync_it_should_throw_RolesNotFoundException_when_a_role_is_missing()
   {
@@ -281,38 +345,6 @@ public class ApiKeyFacadeTests : IntegrationTestingBase
     Assert.Equal(apiKey2.Id.Value, results.Items.ElementAt(1).Id);
   }
 
-  [Fact(DisplayName = "ReplaceAsync: it should replace the correct API key.")]
-  public async Task ReplaceAsync_it_should_replace_the_correct_api_key()
-  {
-    _apiKey.AddRole(_readUsers);
-    await _apiKeyRepository.SaveAsync(_apiKey);
-
-    ReplaceApiKeyPayload payload = new()
-    {
-      Title = "  Default API Key  ",
-      Description = "This is the default API key.",
-      ExpiresOn = _apiKey.ExpiresOn?.AddMonths(-6),
-      Roles = new[] { _writeUsers.Id.Value, _manageApp.UniqueName }
-    };
-    ApiKey? apiKey = await _apiKeyFacade.ReplaceAsync(_apiKey.Id.Value, payload, CancellationToken);
-    Assert.NotNull(apiKey);
-    Assert.Equal(payload.Title.Trim(), apiKey.Title);
-    Assert.Equal(payload.Description, apiKey.Description);
-    Assert.Equal(payload.ExpiresOn, apiKey.ExpiresOn);
-
-    Assert.Equal(2, apiKey.Roles.Count());
-    Assert.Contains(apiKey.Roles, role => role.Id == _writeUsers.Id.Value);
-    Assert.Contains(apiKey.Roles, role => role.UniqueName == _manageApp.UniqueName);
-  }
-
-  [Fact(DisplayName = "ReplaceAsync: it should return null when API key is not found.")]
-  public async Task ReplaceAsync_it_should_return_null_when_api_key_is_not_found()
-  {
-    ReplaceApiKeyPayload payload = new();
-    ApiKey? apiKey = await _apiKeyFacade.ReplaceAsync(Guid.Empty.ToString(), payload, CancellationToken);
-    Assert.Null(apiKey);
-  }
-
   [Fact(DisplayName = "UpdateAsync: it should return null when API key is not found.")]
   public async Task UpdateAsync_it_should_return_null_when_api_key_is_not_found()
   {
@@ -351,6 +383,11 @@ public class ApiKeyFacadeTests : IntegrationTestingBase
       Title = "  Default API Key  ",
       Description = new MayBe<string>("This is the default API key."),
       ExpiresOn = _apiKey.ExpiresOn?.AddMonths(-6),
+      CustomAttributes = new[]
+      {
+        new CustomAttributeModification("Source", "<n/a>"),
+        new CustomAttributeModification("  SourceId  ", null)
+      },
       Roles = new[]
       {
         new RoleModification(_manageApp.Id.Value, CollectionAction.Remove),
@@ -363,6 +400,10 @@ public class ApiKeyFacadeTests : IntegrationTestingBase
     Assert.Equal(payload.Title.Trim(), apiKey.Title);
     Assert.Equal(payload.Description.Value, apiKey.Description);
     Assert.Equal(payload.ExpiresOn, apiKey.ExpiresOn);
+
+    CustomAttribute customAttribute = Assert.Single(apiKey.CustomAttributes);
+    Assert.Equal("Source", customAttribute.Key);
+    Assert.Equal("<n/a>", customAttribute.Value);
 
     Role role = Assert.Single(apiKey.Roles);
     Assert.Equal(_readUsers.UniqueName, role.UniqueName);
