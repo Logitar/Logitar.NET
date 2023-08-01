@@ -14,6 +14,7 @@ namespace Logitar.Identity.Domain.Users;
 public class UserAggregate : AggregateRoot
 {
   private readonly Dictionary<string, string> _customAttributes = new();
+  private readonly Dictionary<string, string> _externalIdentifiers = new();
 
   private Password? _password = null;
 
@@ -311,6 +312,8 @@ public class UserAggregate : AggregateRoot
 
   public IReadOnlyDictionary<string, string> CustomAttributes => _customAttributes.AsReadOnly();
 
+  public IReadOnlyDictionary<string, string> ExternalIdentifiers => _externalIdentifiers.AsReadOnly();
+
   public IImmutableSet<AggregateId> Roles => ImmutableHashSet.Create(_roles.ToArray());
 
   public void AddRole(RoleAggregate role)
@@ -383,6 +386,17 @@ public class UserAggregate : AggregateRoot
     }
   }
 
+  public void RemoveExternalIdentifier(string key)
+  {
+    key = key.Trim();
+    if (_externalIdentifiers.ContainsKey(key))
+    {
+      UserUpdatedEvent updated = GetLatestUpdatedEvent();
+      updated.ExternalIdentifiers[key] = null;
+      Apply(updated);
+    }
+  }
+
   public void ResetPassword(Password password) => ApplyChange(new UserPasswordResetEvent(password), actorId: Id.Value);
   protected virtual void Apply(UserPasswordResetEvent reset) => _password = reset.Password;
 
@@ -396,6 +410,20 @@ public class UserAggregate : AggregateRoot
     {
       UserUpdatedEvent updated = GetLatestUpdatedEvent();
       updated.CustomAttributes[key] = value;
+      Apply(updated);
+    }
+  }
+
+  public void SetExternalIdentifier(string key, string value)
+  {
+    key = key.Trim();
+    value = value.Trim();
+    new ExternalIdentifierValidator().ValidateAndThrow(key, value);
+
+    if (!_externalIdentifiers.TryGetValue(key, out string? existingValue) || value != existingValue)
+    {
+      UserUpdatedEvent updated = GetLatestUpdatedEvent();
+      updated.ExternalIdentifiers[key] = value;
       Apply(updated);
     }
   }
@@ -520,6 +548,18 @@ public class UserAggregate : AggregateRoot
       else
       {
         _customAttributes[key] = value;
+      }
+    }
+
+    foreach (var (key, value) in updated.ExternalIdentifiers)
+    {
+      if (value == null)
+      {
+        _externalIdentifiers.Remove(key);
+      }
+      else
+      {
+        _externalIdentifiers[key] = value;
       }
     }
 

@@ -11,6 +11,7 @@ public class IdentityContext : DbContext
 
   public DbSet<ApiKeyRoleEntity> ApiKeyRoles { get; private set; } = null!;
   public DbSet<ApiKeyEntity> ApiKeys { get; private set; } = null!;
+  public DbSet<ExternalIdentifierEntity> ExternalIdentifiers { get; private set; } = null!;
   public DbSet<RoleEntity> Roles { get; private set; } = null!;
   public DbSet<SessionEntity> Sessions { get; private set; } = null!;
   public DbSet<BlacklistedTokenEntity> TokenBlacklist { get; private set; } = null!;

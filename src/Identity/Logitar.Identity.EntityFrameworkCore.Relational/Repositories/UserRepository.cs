@@ -44,6 +44,35 @@ public class UserRepository : IdentityRepository, IUserRepository
 
     return Load<UserAggregate>(events.Select(EventSerializer.Instance.Deserialize)).SingleOrDefault();
   }
+
+  public async Task<UserAggregate?> LoadAsync(string? tenantId, string externalIdentifierKey,
+    string externalIdentifierValue, CancellationToken cancellationToken)
+  {
+    tenantId = tenantId?.CleanTrim();
+    externalIdentifierKey = externalIdentifierKey.Trim();
+    string valueNormalized = externalIdentifierValue.Trim().ToUpper();
+
+    IQuery query = QueryHelper.From(Db.Events.Table)
+      .Join(Db.Users.AggregateId, Db.Events.AggregateId,
+        new OperatorCondition(Db.Events.AggregateType, Operators.IsEqualTo(_aggregateType))
+      )
+      .Join(Db.ExternalIdentifiers.UserId, Db.Users.UserId)
+      .WhereAnd(
+        new OperatorCondition(Db.ExternalIdentifiers.TenantId, tenantId == null ? Operators.IsNull() : Operators.IsEqualTo(tenantId)),
+        new OperatorCondition(Db.ExternalIdentifiers.Key, Operators.IsEqualTo(externalIdentifierKey)),
+        new OperatorCondition(Db.ExternalIdentifiers.ValueNormalized, Operators.IsEqualTo(valueNormalized))
+      )
+      .SelectAll(Db.Events.Table)
+      .Build();
+
+    EventEntity[] events = await EventContext.Events.FromQuery(query)
+      .OrderBy(e => e.Version)
+      .AsNoTracking()
+      .ToArrayAsync(cancellationToken);
+
+    return Load<UserAggregate>(events.Select(EventSerializer.Instance.Deserialize)).SingleOrDefault();
+  }
+
   public async Task<IEnumerable<UserAggregate>> LoadAsync(string? tenantId, IEmailAddress email, CancellationToken cancellationToken)
   {
     tenantId = tenantId?.CleanTrim();

@@ -42,5 +42,7 @@ public record User : Aggregate
 
   public IEnumerable<CustomAttribute> CustomAttributes { get; set; } = Enumerable.Empty<CustomAttribute>();
 
+  public IEnumerable<ExternalIdentifier> ExternalIdentifiers { get; set; } = Enumerable.Empty<ExternalIdentifier>();
+
   public IEnumerable<Role> Roles { get; set; } = Enumerable.Empty<Role>();
 }

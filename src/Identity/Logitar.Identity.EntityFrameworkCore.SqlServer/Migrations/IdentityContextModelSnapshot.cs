@@ -153,6 +153,86 @@ namespace Logitar.Identity.EntityFrameworkCore.SqlServer.Migrations
                     b.ToTable("TokenBlacklist", (string)null);
                 });
 
+            modelBuilder.Entity("Logitar.Identity.EntityFrameworkCore.Relational.Entities.ExternalIdentifierEntity", b =>
+                {
+                    b.Property<int>("ExternalIdentifierId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ExternalIdentifierId"));
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(3000)
+                        .HasColumnType("nvarchar(3000)");
+
+                    b.Property<string>("CreatedById")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("TenantId")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasMaxLength(3000)
+                        .HasColumnType("nvarchar(3000)");
+
+                    b.Property<string>("UpdatedById")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime>("UpdatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("ValueNormalized")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<long>("Version")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("ExternalIdentifierId");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("Id")
+                        .IsUnique();
+
+                    b.HasIndex("UpdatedById");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("TenantId", "Key", "ValueNormalized")
+                        .IsUnique()
+                        .HasFilter("[TenantId] IS NOT NULL");
+
+                    b.ToTable("ExternalIdentifiers", (string)null);
+                });
+
             modelBuilder.Entity("Logitar.Identity.EntityFrameworkCore.Relational.Entities.RoleEntity", b =>
                 {
                     b.Property<int>("RoleId")
@@ -668,6 +748,17 @@ namespace Logitar.Identity.EntityFrameworkCore.SqlServer.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Logitar.Identity.EntityFrameworkCore.Relational.Entities.ExternalIdentifierEntity", b =>
+                {
+                    b.HasOne("Logitar.Identity.EntityFrameworkCore.Relational.Entities.UserEntity", "User")
+                        .WithMany("ExternalIdentifiers")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Logitar.Identity.EntityFrameworkCore.Relational.Entities.SessionEntity", b =>
                 {
                     b.HasOne("Logitar.Identity.EntityFrameworkCore.Relational.Entities.UserEntity", "User")
@@ -696,6 +787,8 @@ namespace Logitar.Identity.EntityFrameworkCore.SqlServer.Migrations
 
             modelBuilder.Entity("Logitar.Identity.EntityFrameworkCore.Relational.Entities.UserEntity", b =>
                 {
+                    b.Navigation("ExternalIdentifiers");
+
                     b.Navigation("Sessions");
                 });
 #pragma warning restore 612, 618

@@ -76,6 +76,7 @@ public abstract class IntegrationTestingBase : IAsyncLifetime
     {
       case DatabaseProvider.EntityFrameworkCorePostgreSQL:
         await IdentityContext.Database.ExecuteSqlRawAsync(@"DELETE FROM ""public"".""ApiKeys"";");
+        await IdentityContext.Database.ExecuteSqlRawAsync(@"DELETE FROM ""public"".""ExternalIdentifiers"";");
         await IdentityContext.Database.ExecuteSqlRawAsync(@"DELETE FROM ""public"".""Roles"";");
         await IdentityContext.Database.ExecuteSqlRawAsync(@"DELETE FROM ""public"".""Sessions"";");
         await IdentityContext.Database.ExecuteSqlRawAsync(@"DELETE FROM ""public"".""TokenBlacklist"";");
@@ -83,6 +84,7 @@ public abstract class IntegrationTestingBase : IAsyncLifetime
         break;
       case DatabaseProvider.EntityFrameworkCoreSqlServer:
         await IdentityContext.Database.ExecuteSqlRawAsync("DELETE FROM [dbo].[ApiKeys];");
+        await IdentityContext.Database.ExecuteSqlRawAsync("DELETE FROM [dbo].[ExternalIdentifiers];");
         await IdentityContext.Database.ExecuteSqlRawAsync("DELETE FROM [dbo].[Roles];");
         await IdentityContext.Database.ExecuteSqlRawAsync("DELETE FROM [dbo].[Sessions];");
         await IdentityContext.Database.ExecuteSqlRawAsync("DELETE FROM [dbo].[TokenBlacklist];");

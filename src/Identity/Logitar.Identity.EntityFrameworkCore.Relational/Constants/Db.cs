@@ -33,6 +33,16 @@ public static class Db
     public static readonly ColumnId AggregateType = new(nameof(EventEntity.AggregateType), Table);
   }
 
+  public static class ExternalIdentifiers
+  {
+    public static readonly TableId Table = new(nameof(IdentityContext.ExternalIdentifiers));
+
+    public static readonly ColumnId Key = new(nameof(ExternalIdentifierEntity.Key), Table);
+    public static readonly ColumnId TenantId = new(nameof(ExternalIdentifierEntity.TenantId), Table);
+    public static readonly ColumnId UserId = new(nameof(ExternalIdentifierEntity.UserId), Table);
+    public static readonly ColumnId ValueNormalized = new(nameof(ExternalIdentifierEntity.ValueNormalized), Table);
+  }
+
   public static class Roles
   {
     public static readonly TableId Table = new(nameof(IdentityContext.Roles));

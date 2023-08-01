@@ -32,6 +32,7 @@ public class UserQuerier : IUserQuerier
   public async Task<User?> ReadAsync(string id, CancellationToken cancellationToken)
   {
     UserEntity? user = await _users.AsNoTracking()
+      .Include(x => x.ExternalIdentifiers)
       .Include(x => x.Roles)
       .SingleOrDefaultAsync(x => x.AggregateId == id, cancellationToken);
 
@@ -44,8 +45,24 @@ public class UserQuerier : IUserQuerier
     string uniqueNameNormalized = uniqueName.Trim().ToUpper();
 
     UserEntity? user = await _users.AsNoTracking()
+      .Include(x => x.ExternalIdentifiers)
       .Include(x => x.Roles)
       .SingleOrDefaultAsync(x => x.TenantId == tenantId && x.UniqueNameNormalized == uniqueNameNormalized, cancellationToken);
+
+    return _mapper.Map<User?>(user);
+  }
+
+  public async Task<User?> ReadAsync(string? tenantId, string externalIdentifierKey, string externalIdentifierValue, CancellationToken cancellationToken)
+  {
+    tenantId = tenantId?.CleanTrim();
+    externalIdentifierKey = externalIdentifierKey.Trim();
+    string valueNormalized = externalIdentifierValue.Trim().ToUpper();
+
+    UserEntity? user = await _users.AsNoTracking()
+      .Include(x => x.ExternalIdentifiers)
+      .Include(x => x.Roles)
+      .SingleOrDefaultAsync(x => x.ExternalIdentifiers.Any(y => y.TenantId == tenantId
+        && y.Key == externalIdentifierKey && y.ValueNormalized == valueNormalized), cancellationToken);
 
     return _mapper.Map<User?>(user);
   }
@@ -56,6 +73,7 @@ public class UserQuerier : IUserQuerier
     string emailAddressNormalized = email.Address.ToUpper();
 
     UserEntity[] users = await _users.AsNoTracking()
+      .Include(x => x.ExternalIdentifiers)
       .Include(x => x.Roles)
       .Where(x => x.TenantId == tenantId && x.EmailAddressNormalized == emailAddressNormalized)
       .ToArrayAsync(cancellationToken);
@@ -85,6 +103,7 @@ public class UserQuerier : IUserQuerier
     }
 
     IQueryable<UserEntity> query = _users.FromQuery(builder.Build())
+      .Include(x => x.ExternalIdentifiers)
       .Include(x => x.Roles)
       .AsNoTracking();
 

@@ -30,5 +30,7 @@ public record UserUpdatedEvent : DomainEvent, INotification
 
   public Dictionary<string, string?> CustomAttributes { get; init; } = new();
 
+  public Dictionary<string, string?> ExternalIdentifiers { get; init; } = new();
+
   public Dictionary<string, CollectionAction> Roles { get; init; } = new();
 }

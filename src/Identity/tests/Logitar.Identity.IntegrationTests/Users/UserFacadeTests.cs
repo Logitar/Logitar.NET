@@ -420,7 +420,7 @@ public class UserFacadeTests : IntegrationTestingBase
   [Fact(DisplayName = "ReadAsync: it should read the correct user.")]
   public async Task ReadAsync_it_should_read_the_correct_user()
   {
-    User? user = await _userFacade.ReadAsync(_user.Id.Value, _user.TenantId, _user.UniqueName, CancellationToken);
+    User? user = await _userFacade.ReadAsync(_user.Id.Value, _user.TenantId, _user.UniqueName, cancellationToken: CancellationToken);
     Assert.NotNull(user);
     Assert.Equal(_user.Id.Value, user.Id);
   }
@@ -429,7 +429,21 @@ public class UserFacadeTests : IntegrationTestingBase
   public async Task ReadAsync_it_should_read_the_correct_user_by_EmailAddress()
   {
     Assert.NotNull(_user.Email);
-    User? user = await _userFacade.ReadAsync(id: null, _user.TenantId, _user.Email.Address, CancellationToken);
+    User? user = await _userFacade.ReadAsync(id: null, _user.TenantId, _user.Email.Address, cancellationToken: CancellationToken);
+    Assert.NotNull(user);
+    Assert.Equal(_user.Id.Value, user.Id);
+  }
+
+  [Fact(DisplayName = "ReadAsync: it should read the correct user by ExternalIdentifier.")]
+  public async Task ReadAsync_it_should_read_the_correct_user_by_ExternalIdentifier()
+  {
+    string key = "  IdentityId  ";
+    string value = $" {Guid.NewGuid()} ";
+    _user.SetExternalIdentifier(key, value);
+    await _userRepository.SaveAsync(_user);
+
+    User? user = await _userFacade.ReadAsync(tenantId: _user.TenantId, externalIdentifierKey: key,
+      externalIdentifierValue: value, cancellationToken: CancellationToken);
     Assert.NotNull(user);
     Assert.Equal(_user.Id.Value, user.Id);
   }
@@ -449,7 +463,7 @@ public class UserFacadeTests : IntegrationTestingBase
     await _userRepository.SaveAsync(other);
 
     var exception = await Assert.ThrowsAsync<TooManyResultsException<User>>(
-      async () => await _userFacade.ReadAsync(_user.Id.Value, tenantId: null, other.UniqueName, CancellationToken));
+      async () => await _userFacade.ReadAsync(_user.Id.Value, tenantId: null, other.UniqueName, cancellationToken: CancellationToken));
     Assert.Equal(1, exception.Expected);
     Assert.Equal(2, exception.Actual);
   }
@@ -527,6 +541,28 @@ public class UserFacadeTests : IntegrationTestingBase
     };
     CreatedToken? createdToken = await _userFacade.RecoverPasswordAsync(payload, CancellationToken);
     Assert.Null(createdToken);
+  }
+
+  [Fact(DisplayName = "RemoveExternalIdentifierAsync: it should remove the correct external identifier.")]
+  public async Task RemoveExternalIdentifierAsync_it_should_remove_the_correct_external_identifier()
+  {
+    string key = "EmployeeId";
+
+    _user.SetExternalIdentifier("IdentityId", Guid.NewGuid().ToString());
+    _user.SetExternalIdentifier(key, "1234567890");
+    await _userRepository.SaveAsync(_user);
+
+    User? user = await _userFacade.RemoveExternalIdentifierAsync(_user.Id.Value, key, CancellationToken);
+    Assert.NotNull(user);
+    ExternalIdentifier externalIdentifier = Assert.Single(user.ExternalIdentifiers);
+    Assert.NotEqual(key, externalIdentifier.Key);
+  }
+
+  [Fact(DisplayName = "RemoveExternalIdentifierAsync: it should return null when user is not found.")]
+  public async Task RemoveExternalIdentifierAsync_it_should_return_null_when_user_is_not_found()
+  {
+    User? user = await _userFacade.RemoveExternalIdentifierAsync(Guid.Empty.ToString(), "key", CancellationToken);
+    Assert.Null(user);
   }
 
   [Fact(DisplayName = "ReplaceAsync: it should replace the correct user.")]
@@ -829,6 +865,66 @@ public class UserFacadeTests : IntegrationTestingBase
     Assert.Equal("Password", failure.PropertyName);
 
     Assert.False(await IdentityContext.TokenBlacklist.AnyAsync());
+  }
+
+  [Fact(DisplayName = "SaveExternalIdentifierAsync: it should create a new external identifier.")]
+  public async Task SaveExternalIdentifierAsync_it_should_create_a_new_external_identifier()
+  {
+    string key = "  IdentityId  ";
+    string value = $" {Guid.NewGuid()} ";
+
+    User? user = await _userFacade.SaveExternalIdentifierAsync(_user.Id.Value, key, value, CancellationToken);
+    Assert.NotNull(user);
+
+    ExternalIdentifier externalIdentifier = Assert.Single(user.ExternalIdentifiers);
+    Assert.NotEqual(default, externalIdentifier.Id);
+    Assert.Equal(key.Trim(), externalIdentifier.Key);
+    Assert.Equal(value.Trim(), externalIdentifier.Value);
+    Assert.Equal(externalIdentifier.CreatedBy, externalIdentifier.UpdatedBy);
+    Assert.Equal(externalIdentifier.CreatedOn, externalIdentifier.UpdatedOn);
+    Assert.Equal(1, externalIdentifier.Version);
+  }
+
+  [Fact(DisplayName = "SaveExternalIdentifierAsync: it should return null when user is not found.")]
+  public async Task SaveExternalIdentifierAsync_it_should_return_null_when_user_is_not_found()
+  {
+    User? user = await _userFacade.SaveExternalIdentifierAsync(Guid.Empty.ToString(), "key", "value", CancellationToken);
+    Assert.Null(user);
+  }
+
+  [Fact(DisplayName = "SaveExternalIdentifierAsync: it should throw ExternalIdentifierAlreadyUsedException when external identifier is already used.")]
+  public async Task SaveExternalIdentifierAsync_it_should_throw_ExternalIdentifierAlreadyUsedException_when_external_identifier_is_already_used()
+  {
+    string key = "Key";
+    string value = "Value";
+    _user.SetExternalIdentifier(key, value);
+    UserAggregate user = new(_userSettings.Value.UniqueNameSettings, $"{_user.UniqueName}2", _user.TenantId);
+    await _userRepository.SaveAsync(new[] { _user, user });
+
+    var exception = await Assert.ThrowsAsync<ExternalIdentifierAlreadyUsedException>(
+      async () => await _userFacade.SaveExternalIdentifierAsync(user.Id.Value, key, value, CancellationToken));
+    Assert.Equal(_user.TenantId, exception.TenantId);
+    Assert.Equal(key.Trim(), exception.Key);
+    Assert.Equal(value.Trim(), exception.Value);
+  }
+
+  [Fact(DisplayName = "SaveExternalIdentifierAsync: it should update an existing external identifier.")]
+  public async Task SaveExternalIdentifierAsync_it_should_update_an_existing_external_identifier()
+  {
+    string key = $"  IdentityId  ";
+    string value = $" {Guid.NewGuid()} ";
+
+    _user.SetExternalIdentifier("Key", "Value");
+    _user.SetExternalIdentifier(key, "34413888");
+    await _userRepository.SaveAsync(_user);
+
+    User? user = await _userFacade.SaveExternalIdentifierAsync(_user.Id.Value, key, value, CancellationToken);
+    Assert.NotNull(user);
+
+    Assert.Equal(2, user.ExternalIdentifiers.Count());
+    Assert.Contains(user.ExternalIdentifiers, x => x.Key == "Key" && x.Value == "Value");
+    Assert.Contains(user.ExternalIdentifiers, x => x.Id != Guid.Empty && x.Key == key.Trim()
+      && x.Value == value.Trim() && x.CreatedOn != x.UpdatedOn && x.Version == 2);
   }
 
   [Fact(DisplayName = "SearchAsync: it should return the correct search results.")]

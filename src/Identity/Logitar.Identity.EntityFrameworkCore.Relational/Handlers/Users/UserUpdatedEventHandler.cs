@@ -21,6 +21,8 @@ public class UserUpdatedEventHandler : INotificationHandler<UserUpdatedEvent>
   {
     ActorEntity actor = await _actorService.FindAsync(notification, cancellationToken);
     UserEntity user = await _context.Users
+      .Include(x => x.ExternalIdentifiers)
+      .Include(x => x.Roles)
       .SingleOrDefaultAsync(x => x.AggregateId == notification.AggregateId.Value, cancellationToken)
       ?? throw new EntityNotFoundException<UserEntity>(notification.AggregateId.Value);
 

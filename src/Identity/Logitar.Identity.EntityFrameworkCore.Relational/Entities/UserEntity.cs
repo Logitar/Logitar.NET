@@ -100,6 +100,7 @@ public record UserEntity : AggregateEntity, ICustomAttributesProvider
 
   public string? CustomAttributes { get; private set; }
 
+  public List<ExternalIdentifierEntity> ExternalIdentifiers { get; private set; } = new();
   public List<RoleEntity> Roles { get; private set; } = new();
   public List<SessionEntity> Sessions { get; private set; } = new();
 
@@ -321,6 +322,29 @@ public record UserEntity : AggregateEntity, ICustomAttributesProvider
     }
 
     CustomAttributes = this.UpdateCustomAttributes(updated.CustomAttributes);
+
+    Dictionary<string, ExternalIdentifierEntity> externalIdentifiers = ExternalIdentifiers.ToDictionary(x => x.Key, x => x);
+    foreach (var (key, value) in updated.ExternalIdentifiers)
+    {
+      _ = externalIdentifiers.TryGetValue(key, out ExternalIdentifierEntity? externalIdentifier);
+
+      if (value == null)
+      {
+        if (externalIdentifier != null)
+        {
+          ExternalIdentifiers.Remove(externalIdentifier);
+        }
+      }
+      else if (externalIdentifier == null)
+      {
+        externalIdentifier = new(updated, actor, this, key, value);
+        ExternalIdentifiers.Add(externalIdentifier);
+      }
+      else
+      {
+        externalIdentifier.Update(updated, actor, value);
+      }
+    }
 
     Dictionary<string, RoleEntity> rolesById = roles.ToDictionary(x => x.AggregateId, x => x);
     foreach (var (roleId, action) in updated.Roles)
