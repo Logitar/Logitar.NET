@@ -175,6 +175,37 @@ namespace Logitar.Identity.EntityFrameworkCore.PostgreSQL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ExternalIdentifiers",
+                columns: table => new
+                {
+                    ExternalIdentifierId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<int>(type: "integer", nullable: false),
+                    TenantId = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    Key = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    Value = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    ValueNormalized = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    CreatedById = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    CreatedBy = table.Column<string>(type: "character varying(3000)", maxLength: 3000, nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedById = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    UpdatedBy = table.Column<string>(type: "character varying(3000)", maxLength: 3000, nullable: false),
+                    UpdatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Version = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ExternalIdentifiers", x => x.ExternalIdentifierId);
+                    table.ForeignKey(
+                        name: "FK_ExternalIdentifiers_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Sessions",
                 columns: table => new
                 {
@@ -282,6 +313,33 @@ namespace Logitar.Identity.EntityFrameworkCore.PostgreSQL.Migrations
                 name: "IX_ApiKeys_Version",
                 table: "ApiKeys",
                 column: "Version");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ExternalIdentifiers_CreatedById",
+                table: "ExternalIdentifiers",
+                column: "CreatedById");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ExternalIdentifiers_Id",
+                table: "ExternalIdentifiers",
+                column: "Id",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ExternalIdentifiers_TenantId_Key_ValueNormalized",
+                table: "ExternalIdentifiers",
+                columns: new[] { "TenantId", "Key", "ValueNormalized" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ExternalIdentifiers_UpdatedById",
+                table: "ExternalIdentifiers",
+                column: "UpdatedById");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ExternalIdentifiers_UserId",
+                table: "ExternalIdentifiers",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Roles_AggregateId",
@@ -545,6 +603,9 @@ namespace Logitar.Identity.EntityFrameworkCore.PostgreSQL.Migrations
         {
             migrationBuilder.DropTable(
                 name: "ApiKeyRoles");
+
+            migrationBuilder.DropTable(
+                name: "ExternalIdentifiers");
 
             migrationBuilder.DropTable(
                 name: "Sessions");

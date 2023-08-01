@@ -62,6 +62,22 @@ public class ActorService : IActorService
       apiKey.SetActor(id, serialized);
     }
 
+    ExternalIdentifierEntity[] externalIdentifiers = await _context.ExternalIdentifiers
+      .Where(x => x.CreatedById == id || x.UpdatedById == id)
+      .ToArrayAsync(cancellationToken);
+    foreach (ExternalIdentifierEntity externalIdentifier in externalIdentifiers)
+    {
+      externalIdentifier.SetActor(id, serialized);
+    }
+
+    RoleEntity[] roles = await _context.Roles
+      .Where(x => x.CreatedById == id || x.UpdatedById == id)
+      .ToArrayAsync(cancellationToken);
+    foreach (RoleEntity role in roles)
+    {
+      role.SetActor(id, serialized);
+    }
+
     SessionEntity[] sessions = await _context.Sessions
       .Where(x => x.CreatedById == id || x.UpdatedById == id || x.SignedOutById == id)
       .ToArrayAsync(cancellationToken);

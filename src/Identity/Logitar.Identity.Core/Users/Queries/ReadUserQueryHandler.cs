@@ -19,7 +19,7 @@ public class ReadUserQueryHandler : IRequestHandler<ReadUserQuery, User?>
 
   public async Task<User?> Handle(ReadUserQuery query, CancellationToken cancellationToken)
   {
-    Dictionary<string, User> users = new(capacity: 2);
+    Dictionary<string, User> users = new(capacity: 3);
 
     if (query.Id != null)
     {
@@ -50,6 +50,16 @@ public class ReadUserQueryHandler : IRequestHandler<ReadUserQuery, User?>
             users[user.Id] = user;
           }
         }
+      }
+    }
+
+    if (query.ExternalIdentifierKey != null && query.ExternalIdentifierValue != null)
+    {
+      User? user = await _userQuerier.ReadAsync(query.TenantId, query.ExternalIdentifierKey,
+        query.ExternalIdentifierValue, cancellationToken);
+      if (user != null)
+      {
+        users[user.Id] = user;
       }
     }
 

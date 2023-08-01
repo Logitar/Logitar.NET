@@ -37,14 +37,20 @@ public class UserFacade : IUserFacade
     return await _mediator.Send(new DeleteUserCommand(id), cancellationToken);
   }
 
-  public virtual async Task<User?> ReadAsync(string? id, string? tenantId, string? uniqueName, CancellationToken cancellationToken)
+  public virtual async Task<User?> ReadAsync(string? id, string? tenantId, string? uniqueName,
+    string? externalIdentifierKey, string? externalIdentifierValue, CancellationToken cancellationToken)
   {
-    return await _mediator.Send(new ReadUserQuery(id, tenantId, uniqueName), cancellationToken);
+    return await _mediator.Send(new ReadUserQuery(id, tenantId, uniqueName, externalIdentifierKey, externalIdentifierValue), cancellationToken);
   }
 
   public virtual async Task<CreatedToken?> RecoverPasswordAsync(RecoverPasswordPayload payload, CancellationToken cancellationToken)
   {
     return await _mediator.Send(new RecoverPasswordCommand(payload), cancellationToken);
+  }
+
+  public virtual async Task<User?> RemoveExternalIdentifierAsync(string id, string key, CancellationToken cancellationToken)
+  {
+    return await _mediator.Send(new RemoveExternalIdentifierCommand(id, key), cancellationToken);
   }
 
   public virtual async Task<User?> ReplaceAsync(string id, ReplaceUserPayload payload, CancellationToken cancellationToken)
@@ -55,6 +61,11 @@ public class UserFacade : IUserFacade
   public virtual async Task<User?> ResetPasswordAsync(ResetPasswordPayload payload, CancellationToken cancellationToken)
   {
     return await _mediator.Send(new ResetPasswordCommand(payload), cancellationToken);
+  }
+
+  public virtual async Task<User?> SaveExternalIdentifierAsync(string id, string key, string value, CancellationToken cancellationToken)
+  {
+    return await _mediator.Send(new SaveExternalIdentifierCommand(id, key, value), cancellationToken);
   }
 
   public virtual async Task<SearchResults<User>> SearchAsync(SearchUserPayload payload, CancellationToken cancellationToken)

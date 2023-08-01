@@ -7,6 +7,7 @@ public interface IUserRepository
 {
   Task<UserAggregate?> LoadAsync(AggregateId id, CancellationToken cancellationToken = default);
   Task<UserAggregate?> LoadAsync(string? tenantId, string uniqueName, CancellationToken cancellationToken = default);
+  Task<UserAggregate?> LoadAsync(string? tenantId, string externalIdentifierKey, string externalIdentifierValue, CancellationToken cancellationToken = default);
   Task<IEnumerable<UserAggregate>> LoadAsync(string? tenantId, IEmailAddress email, CancellationToken cancellationToken = default);
   Task<IEnumerable<UserAggregate>> LoadAsync(RoleAggregate role, CancellationToken cancellationToken = default);
 
