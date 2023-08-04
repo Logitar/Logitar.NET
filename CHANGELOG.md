@@ -9,11 +9,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Identity API key management.
-- Identity Role management.
-- Identity Session management.
-- Identity Token management.
-- Identity User management.
 - Implemented query JOINs.
 
 ### Changed
