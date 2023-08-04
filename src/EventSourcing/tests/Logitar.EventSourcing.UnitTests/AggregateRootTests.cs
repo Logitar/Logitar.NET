@@ -127,6 +127,35 @@ public class AggregateRootTests
     Assert.False(_person.IsDeleted);
   }
 
+  [Fact(DisplayName = "Dispatch: it updates metadata correctly.")]
+  public void Dispatch_it_updates_metadata_correctly()
+  {
+    Assert.Equal("SYSTEM", _person.CreatedBy);
+    Assert.Equal("SYSTEM", _person.UpdatedBy);
+    Assert.True((DateTime.Now - _person.CreatedOn) < TimeSpan.FromSeconds(1));
+    Assert.True((DateTime.Now - _person.UpdatedOn) < TimeSpan.FromSeconds(1));
+    Assert.Equal(_person.CreatedOn, _person.UpdatedOn);
+    Assert.Equal(1, _person.Version);
+
+    DateTime createdOn = _person.CreatedOn;
+
+    PersonCreatedEvent renamed = new(new Faker().Person.FullName)
+    {
+      AggregateId = _person.Id,
+      Version = _person.Version + 1,
+      ActorId = Guid.NewGuid().ToString(),
+      OccurredOn = DateTime.Now
+    };
+    _person.Dispatch(renamed);
+
+    Assert.Equal("SYSTEM", _person.CreatedBy);
+    Assert.Equal(createdOn, _person.CreatedOn);
+    Assert.Equal(renamed.ActorId, _person.UpdatedBy);
+    Assert.Equal(renamed.OccurredOn, _person.UpdatedOn);
+    Assert.True(_person.CreatedOn < _person.UpdatedOn);
+    Assert.Equal(2, _person.Version);
+  }
+
   [Fact(DisplayName = "Equals: it is equal to the same type and identifier.")]
   public void Equals_it_is_not_equal_to_the_same_type_and_identifier()
   {

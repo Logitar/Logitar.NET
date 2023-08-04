@@ -6,6 +6,11 @@
 public abstract class AggregateRoot
 {
   /// <summary>
+  /// The default actor identifier.
+  /// </summary>
+  private const string DefaultActorId = "SYSTEM";
+
+  /// <summary>
   /// Initializes a new instance of the <see cref="AggregateRoot"/> class.
   /// </summary>
   /// <param name="id">The identifier of the aggregate.</param>
@@ -33,6 +38,23 @@ public abstract class AggregateRoot
   /// Gets or sets the version of the aggregate.
   /// </summary>
   public long Version { get; private set; }
+
+  /// <summary>
+  /// Gets or sets the identifier of the actor who created the aggregate.
+  /// </summary>
+  public string CreatedBy { get; private set; } = DefaultActorId;
+  /// <summary>
+  /// Gets or sets the date and time when the aggregate was created.
+  /// </summary>
+  public DateTime CreatedOn { get; private set; }
+  /// <summary>
+  /// Gets or sets the identifier of the actor who updated the aggregate lastly.
+  /// </summary>
+  public string UpdatedBy { get; private set; } = DefaultActorId;
+  /// <summary>
+  /// Gets or sets the date and time when the aggregate was updated lastly.
+  /// </summary>
+  public DateTime UpdatedOn { get; private set; }
 
   /// <summary>
   /// The uncommitted changes of the aggregate.
@@ -132,6 +154,14 @@ public abstract class AggregateRoot
     apply?.Invoke(this, new[] { change });
 
     Version = change.Version;
+
+    if (Version <= 1)
+    {
+      CreatedBy = change.ActorId ?? CreatedBy;
+      CreatedOn = change.OccurredOn;
+    }
+    UpdatedBy = change.ActorId ?? UpdatedBy;
+    UpdatedOn = change.OccurredOn;
 
     switch (change.DeleteAction)
     {
