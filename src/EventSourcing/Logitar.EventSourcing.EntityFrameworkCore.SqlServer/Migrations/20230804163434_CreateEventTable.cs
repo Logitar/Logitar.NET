@@ -19,9 +19,9 @@ namespace Logitar.EventSourcing.EntityFrameworkCore.SqlServer.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ActorId = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: true),
                     OccurredOn = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Version = table.Column<long>(type: "bigint", nullable: false),
-                    DeleteAction = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     AggregateType = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     AggregateId = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     EventType = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
@@ -57,6 +57,11 @@ namespace Logitar.EventSourcing.EntityFrameworkCore.SqlServer.Migrations
                 table: "Events",
                 column: "Id",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Events_IsDeleted",
+                table: "Events",
+                column: "IsDeleted");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Events_OccurredOn",

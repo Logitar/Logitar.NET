@@ -22,9 +22,9 @@ public abstract class AggregateRepositoryTests : Infrastructure.AggregateReposit
 
     Assert.Equal(expected.Id, actual.Id);
     Assert.Equal(expected.ActorId, actual.ActorId);
+    Assert.Equal(expected.IsDeleted, actual.IsDeleted);
     Assert.Equal(ToUnixTimeMilliseconds(expected.OccurredOn), ToUnixTimeMilliseconds(actual.OccurredOn));
     Assert.Equal(expected.Version, actual.Version);
-    Assert.Equal(expected.DeleteAction, actual.DeleteAction);
     Assert.Equal(expected.AggregateType, actual.AggregateType);
     Assert.Equal(expected.AggregateId, actual.AggregateId);
     Assert.Equal(expected.EventType, actual.EventType);

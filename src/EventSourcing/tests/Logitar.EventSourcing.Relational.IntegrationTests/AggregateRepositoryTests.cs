@@ -36,9 +36,9 @@ public abstract class AggregateRepositoryTests : Infrastructure.AggregateReposit
     {
       Id = change.Id,
       ActorId = change.ActorId.Value,
+      IsDeleted = change.IsDeleted,
       OccurredOn = change.OccurredOn.ToUniversalTime(),
       Version = change.Version,
-      DeleteAction = change.DeleteAction,
       AggregateType = aggregateType,
       AggregateId = aggregateId,
       EventType = change.GetType().GetName(),
@@ -81,8 +81,8 @@ public abstract class AggregateRepositoryTests : Infrastructure.AggregateReposit
   {
     Assert.NotNull(Connection);
 
-    ColumnId[] columns = new[] { Events.Id, Events.ActorId, Events.OccurredOn, Events.Version,
-      Events.DeleteAction, Events.AggregateType, Events.AggregateId, Events.EventType, Events.EventData };
+    ColumnId[] columns = new[] { Events.Id, Events.ActorId, Events.IsDeleted, Events.OccurredOn,
+      Events.Version, Events.AggregateType, Events.AggregateId, Events.EventType, Events.EventData };
     IInsertBuilder builder = CreateInsertBuilder(columns);
 
     foreach (AggregateRoot aggregate in aggregates)
@@ -94,8 +94,8 @@ public abstract class AggregateRepositoryTests : Infrastructure.AggregateReposit
 
         foreach (DomainEvent change in aggregate.Changes)
         {
-          builder = builder.Value(change.Id, change.ActorId.Value, change.OccurredOn.ToUniversalTime(),
-            change.Version, change.DeleteAction.ToString(), aggregateType, aggregateId,
+          builder = builder.Value(change.Id, change.ActorId.Value, change.IsDeleted,
+            change.OccurredOn.ToUniversalTime(), change.Version, aggregateType, aggregateId,
             change.GetType().GetName(), EventSerializer.Instance.Serialize(change));
         }
       }

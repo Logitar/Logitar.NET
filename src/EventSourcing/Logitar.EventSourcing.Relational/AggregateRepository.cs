@@ -140,8 +140,9 @@ public abstract class AggregateRepository : Infrastructure.AggregateRepository
   /// <returns>The asynchronous operation.</returns>
   protected override async Task SaveChangesAsync(IEnumerable<AggregateRoot> aggregates, CancellationToken cancellationToken)
   {
-    IInsertBuilder builder = InsertInto(Events.Id, Events.ActorId, Events.OccurredOn, Events.Version,
-      Events.DeleteAction, Events.AggregateType, Events.AggregateId, Events.EventType, Events.EventData);
+    IInsertBuilder builder = InsertInto(Events.Id, Events.ActorId, Events.IsDeleted,
+      Events.OccurredOn, Events.Version, Events.AggregateType, Events.AggregateId, Events.EventType,
+      Events.EventData);
 
     foreach (AggregateRoot aggregate in aggregates)
     {
@@ -152,8 +153,8 @@ public abstract class AggregateRepository : Infrastructure.AggregateRepository
 
         foreach (DomainEvent change in aggregate.Changes)
         {
-          builder = builder.Value(change.Id, change.ActorId.Value, change.OccurredOn.ToUniversalTime(),
-            change.Version, change.DeleteAction.ToString(), aggregateType, aggregateId,
+          builder = builder.Value(change.Id, change.ActorId.Value, change.IsDeleted,
+            change.OccurredOn.ToUniversalTime(), change.Version, aggregateType, aggregateId,
             change.GetType().GetName(), EventSerializer.Instance.Serialize(change));
         }
       }

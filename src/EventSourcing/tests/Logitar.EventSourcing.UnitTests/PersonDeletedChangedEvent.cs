@@ -2,8 +2,8 @@
 
 public record PersonDeletedChangedEvent : DomainEvent
 {
-  public PersonDeletedChangedEvent(DeleteAction deleteAction)
+  public PersonDeletedChangedEvent(bool? isDeleted)
   {
-    DeleteAction = deleteAction;
+    IsDeleted = isDeleted;
   }
 }

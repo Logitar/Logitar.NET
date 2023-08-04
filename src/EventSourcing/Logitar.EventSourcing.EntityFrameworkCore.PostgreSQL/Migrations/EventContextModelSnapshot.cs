@@ -45,11 +45,6 @@ namespace Logitar.EventSourcing.EntityFrameworkCore.PostgreSQL.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
-                    b.Property<string>("DeleteAction")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
                     b.Property<string>("EventData")
                         .IsRequired()
                         .HasColumnType("text");
@@ -61,6 +56,9 @@ namespace Logitar.EventSourcing.EntityFrameworkCore.PostgreSQL.Migrations
 
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
+
+                    b.Property<bool?>("IsDeleted")
+                        .HasColumnType("boolean");
 
                     b.Property<DateTime>("OccurredOn")
                         .HasColumnType("timestamp with time zone");
@@ -78,6 +76,8 @@ namespace Logitar.EventSourcing.EntityFrameworkCore.PostgreSQL.Migrations
 
                     b.HasIndex("Id")
                         .IsUnique();
+
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("OccurredOn");
 

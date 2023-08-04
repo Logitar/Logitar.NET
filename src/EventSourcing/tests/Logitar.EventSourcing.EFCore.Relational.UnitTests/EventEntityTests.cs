@@ -26,9 +26,9 @@ public class EventEntityTests
   {
     Assert.Equal(entity.Id, change.Id);
     Assert.Equal(entity.ActorId, change.ActorId.Value);
+    Assert.Equal(entity.IsDeleted, change.IsDeleted);
     Assert.Equal(entity.OccurredOn, change.OccurredOn.ToUniversalTime());
     Assert.Equal(entity.Version, change.Version);
-    Assert.Equal(entity.DeleteAction, change.DeleteAction);
     Assert.Equal(entity.AggregateType, aggregate.GetType().GetName());
     Assert.Equal(entity.AggregateId, aggregate.Id.Value);
     Assert.Equal(entity.EventType, change.GetType().GetName());

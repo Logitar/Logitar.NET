@@ -37,7 +37,7 @@ public class AggregateRootTests
     Assert.Equal(person.Version, e.Version);
     Assert.Equal(actorId, e.ActorId);
     Assert.Equal(occurredOn, e.OccurredOn);
-    Assert.Equal(DeleteAction.None, e.DeleteAction);
+    Assert.Null(e.IsDeleted);
   }
 
   [Fact(DisplayName = "ClearChanges: it should clear uncommitted changes correctly.")]
@@ -220,7 +220,7 @@ public class AggregateRootTests
         Version = 1,
         OccurredOn = DateTime.Now.AddYears(-20)
       },
-      new PersonDeletedChangedEvent(DeleteAction.Delete)
+      new PersonDeletedChangedEvent(isDeleted: true)
       {
         AggregateId = id,
         Version = 2,

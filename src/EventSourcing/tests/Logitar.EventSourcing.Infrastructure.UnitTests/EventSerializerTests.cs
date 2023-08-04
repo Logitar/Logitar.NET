@@ -125,7 +125,7 @@ public class EventSerializerTests
       OccurredOn = DateTime.Now
     };
 
-    string expected = $@"{{""Culture"":""en-CA"",""Id"":""{e.Id}"",""AggregateId"":""{e.AggregateId}"",""Version"":5,""ActorId"":""fpion"",""OccurredOn"":{JsonSerializer.Serialize(e.OccurredOn)},""DeleteAction"":""None""}}";
+    string expected = $@"{{""Culture"":""en-CA"",""Id"":""{e.Id}"",""AggregateId"":""{e.AggregateId}"",""Version"":5,""ActorId"":""fpion"",""OccurredOn"":{JsonSerializer.Serialize(e.OccurredOn)},""IsDeleted"":null}}";
     string actual = _serializer.Serialize(e);
 
     Assert.Equal(expected, actual);

@@ -14,8 +14,8 @@ public class PersonAggregate : AggregateRoot
 
   public string FullName { get; private set; } = string.Empty;
 
-  public void Delete() => ApplyChange(new PersonDeletedChangedEvent(DeleteAction.Delete));
-  public void Undelete() => ApplyChange(new PersonDeletedChangedEvent(DeleteAction.Undelete));
+  public void Delete() => ApplyChange(new PersonDeletedChangedEvent(isDeleted: true));
+  public void Undelete() => ApplyChange(new PersonDeletedChangedEvent(isDeleted: false));
 
   public void Dispatch(DomainEvent e)
   {
