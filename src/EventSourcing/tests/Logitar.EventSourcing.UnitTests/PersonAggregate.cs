@@ -8,7 +8,17 @@ public class PersonAggregate : AggregateRoot
 
   public PersonAggregate(string fullName, ActorId? actorId = null, DateTime? occurredOn = null) : base()
   {
-    ApplyChange(new PersonCreatedEvent(fullName), actorId, occurredOn);
+    PersonCreatedEvent created = new(fullName);
+    if (actorId.HasValue)
+    {
+      created.ActorId = actorId.Value;
+    }
+    if (occurredOn.HasValue)
+    {
+      created.OccurredOn = occurredOn.Value;
+    }
+
+    ApplyChange(created);
   }
   protected virtual void Apply(PersonCreatedEvent e) => FullName = e.FullName;
 

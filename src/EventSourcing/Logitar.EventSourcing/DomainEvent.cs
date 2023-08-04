@@ -3,12 +3,12 @@
 /// <summary>
 /// Represents a domain event that has been raised by an <see cref="AggregateRoot"/> and can be applied to it.
 /// </summary>
-public record DomainEvent
+public abstract record DomainEvent
 {
   /// <summary>
   /// Gets or sets the identifier of the event.
   /// </summary>
-  public Guid Id { get; set; }
+  public Guid Id { get; set; } = Guid.NewGuid();
 
   /// <summary>
   /// Gets or sets the identifier of the aggregate to which the event belongs to.
@@ -26,7 +26,7 @@ public record DomainEvent
   /// <summary>
   /// Gets or sets the date and time when the event occurred.
   /// </summary>
-  public DateTime OccurredOn { get; set; }
+  public DateTime OccurredOn { get; set; } = DateTime.Now;
 
   /// <summary>
   /// Gets or sets a value indicating whether or not the aggregate is deleted.

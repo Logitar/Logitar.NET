@@ -6,10 +6,9 @@ public class ContactAggregate : AggregateRoot
   {
   }
 
-  public ContactAggregate(PersonAggregate person, ContactType type, string value,
-    ActorId? actorId = null, DateTime? occurredOn = null) : base()
+  public ContactAggregate(PersonAggregate person, ContactType type, string value) : base()
   {
-    ApplyChange(new ContactCreatedEvent(person.Id, type, value), actorId, occurredOn);
+    ApplyChange(new ContactCreatedEvent(person.Id, type, value));
   }
   protected virtual void Apply(ContactCreatedEvent e)
   {

@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Reorganized the solution directory structure.
 - Upgraded NuGet packages and fixed EventSourcing project dependencies.
 - Replaced DeleteAction by a nullable boolean.
+- Refactored AggregateRoot & DomainEvent.
 
 ## [1.1.0] - 2023-07-11
 
