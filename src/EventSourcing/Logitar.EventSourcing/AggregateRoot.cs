@@ -98,30 +98,10 @@ public abstract class AggregateRoot
   /// Applies the specified change to the current aggregate.
   /// </summary>
   /// <param name="change">The change to apply.</param>
-  /// <param name="actorId">The identifier of the actor who triggered the event.</param>
-  /// <param name="occurredOn">The date and time when the event occurred.</param>
-  protected void ApplyChange(DomainEvent change, ActorId? actorId = null, DateTime? occurredOn = null)
+  protected void ApplyChange(DomainEvent change)
   {
-    if (change.Id == default)
-    {
-      change.Id = Guid.NewGuid();
-    }
-    if (change.AggregateId == default)
-    {
-      change.AggregateId = Id;
-    }
-    if (change.Version == default)
-    {
-      change.Version = Version + 1;
-    }
-    if (change.ActorId == default && actorId.HasValue)
-    {
-      change.ActorId = actorId.Value;
-    }
-    if (change.OccurredOn == default)
-    {
-      change.OccurredOn = occurredOn ?? DateTime.Now;
-    }
+    change.AggregateId = Id;
+    change.Version = Version + 1;
 
     Dispatch(change);
 
