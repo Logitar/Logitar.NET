@@ -21,6 +21,10 @@ public class EventEntity : IEventEntity
   /// </summary>
   public string ActorId { get; set; } = string.Empty;
   /// <summary>
+  /// Gets or sets a value indicating whether or not the aggregate is deleted.
+  /// </summary>
+  public bool? IsDeleted { get; set; }
+  /// <summary>
   /// Gets or sets the date and time when the event occurred.
   /// </summary>
   public DateTime OccurredOn { get; set; }
@@ -28,10 +32,6 @@ public class EventEntity : IEventEntity
   /// Gets or sets the version of the event.
   /// </summary>
   public long Version { get; set; }
-  /// <summary>
-  /// Gets or sets the delete action performed by the event.
-  /// </summary>
-  public DeleteAction DeleteAction { get; set; }
 
   /// <summary>
   /// Gets or sets the type of the aggregate to which the event belongs to.

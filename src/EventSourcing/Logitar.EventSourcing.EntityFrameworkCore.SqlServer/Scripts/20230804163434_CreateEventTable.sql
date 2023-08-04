@@ -15,9 +15,9 @@ CREATE TABLE [Events] (
     [EventId] bigint NOT NULL IDENTITY,
     [Id] uniqueidentifier NOT NULL,
     [ActorId] nvarchar(255) NOT NULL,
+    [IsDeleted] bit NULL,
     [OccurredOn] datetime2 NOT NULL,
     [Version] bigint NOT NULL,
-    [DeleteAction] nvarchar(255) NOT NULL,
     [AggregateType] nvarchar(255) NOT NULL,
     [AggregateId] nvarchar(255) NOT NULL,
     [EventType] nvarchar(255) NOT NULL,
@@ -41,6 +41,9 @@ GO
 CREATE UNIQUE INDEX [IX_Events_Id] ON [Events] ([Id]);
 GO
 
+CREATE INDEX [IX_Events_IsDeleted] ON [Events] ([IsDeleted]);
+GO
+
 CREATE INDEX [IX_Events_OccurredOn] ON [Events] ([OccurredOn]);
 GO
 
@@ -48,7 +51,7 @@ CREATE INDEX [IX_Events_Version] ON [Events] ([Version]);
 GO
 
 INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-VALUES (N'20230804160024_CreateEventTable', N'7.0.9');
+VALUES (N'20230804163434_CreateEventTable', N'7.0.9');
 GO
 
 COMMIT;

@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Logitar.EventSourcing.EntityFrameworkCore.Relational;
 
@@ -20,6 +19,7 @@ public class EventConfiguration : IEntityTypeConfiguration<EventEntity>
 
     builder.HasIndex(x => x.Id).IsUnique();
     builder.HasIndex(x => x.ActorId);
+    builder.HasIndex(x => x.IsDeleted);
     builder.HasIndex(x => x.OccurredOn);
     builder.HasIndex(x => x.Version);
     builder.HasIndex(x => x.AggregateId);
@@ -27,8 +27,6 @@ public class EventConfiguration : IEntityTypeConfiguration<EventEntity>
     builder.HasIndex(x => new { x.AggregateType, x.AggregateId });
 
     builder.Property(x => x.ActorId).HasMaxLength(byte.MaxValue);
-    builder.Property(x => x.DeleteAction).HasMaxLength(byte.MaxValue)
-      .HasConversion<EnumToStringConverter<DeleteAction>>();
     builder.Property(x => x.AggregateType).HasMaxLength(byte.MaxValue);
     builder.Property(x => x.AggregateId).HasMaxLength(byte.MaxValue);
     builder.Property(x => x.EventType).HasMaxLength(byte.MaxValue);

@@ -45,11 +45,6 @@ namespace Logitar.EventSourcing.EntityFrameworkCore.SqlServer.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<string>("DeleteAction")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
                     b.Property<string>("EventData")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -61,6 +56,9 @@ namespace Logitar.EventSourcing.EntityFrameworkCore.SqlServer.Migrations
 
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool?>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime>("OccurredOn")
                         .HasColumnType("datetime2");
@@ -78,6 +76,8 @@ namespace Logitar.EventSourcing.EntityFrameworkCore.SqlServer.Migrations
 
                     b.HasIndex("Id")
                         .IsUnique();
+
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("OccurredOn");
 

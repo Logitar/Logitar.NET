@@ -25,10 +25,6 @@ public static class Events
   /// </summary>
   public static ColumnId AggregateType => new(nameof(EventEntity.AggregateType), Table);
   /// <summary>
-  /// Gets the DeleteAction column of the Events table.
-  /// </summary>
-  public static ColumnId DeleteAction => new(nameof(EventEntity.DeleteAction), Table);
-  /// <summary>
   /// Gets the EventData column of the Events table.
   /// </summary>
   public static ColumnId EventData => new(nameof(EventEntity.EventData), Table);
@@ -44,6 +40,10 @@ public static class Events
   /// Gets the Id column of the Events table.
   /// </summary>
   public static ColumnId Id => new(nameof(EventEntity.Id), Table);
+  /// <summary>
+  /// Gets the IsDeleted column of the Events table.
+  /// </summary>
+  public static ColumnId IsDeleted => new(nameof(EventEntity.IsDeleted), Table);
   /// <summary>
   /// Gets the OccurredOn column of the Events table.
   /// </summary>

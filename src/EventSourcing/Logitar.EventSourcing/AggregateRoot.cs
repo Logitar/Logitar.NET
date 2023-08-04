@@ -148,6 +148,10 @@ public abstract class AggregateRoot
     MethodInfo? apply = GetType().GetMethod("Apply", BindingFlags.Instance | BindingFlags.NonPublic, new[] { change.GetType() });
     apply?.Invoke(this, new[] { change });
 
+    if (change.IsDeleted.HasValue)
+    {
+      IsDeleted = change.IsDeleted.Value;
+    }
     Version = change.Version;
 
     if (Version <= 1)
@@ -157,16 +161,6 @@ public abstract class AggregateRoot
     }
     UpdatedBy = change.ActorId;
     UpdatedOn = change.OccurredOn;
-
-    switch (change.DeleteAction)
-    {
-      case DeleteAction.Delete:
-        IsDeleted = true;
-        break;
-      case DeleteAction.Undelete:
-        IsDeleted = false;
-        break;
-    }
   }
 
   /// <summary>

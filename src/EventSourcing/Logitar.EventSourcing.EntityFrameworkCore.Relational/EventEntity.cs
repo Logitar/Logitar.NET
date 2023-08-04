@@ -28,6 +28,10 @@ public class EventEntity : IEventEntity
   /// </summary>
   public string ActorId { get; private set; } = string.Empty;
   /// <summary>
+  /// Gets or sets a value indicating whether or not the aggregate is deleted.
+  /// </summary>
+  public bool? IsDeleted { get; private set; }
+  /// <summary>
   /// Gets or sets the date and time when the event occurred.
   /// </summary>
   public DateTime OccurredOn { get; private set; }
@@ -35,10 +39,6 @@ public class EventEntity : IEventEntity
   /// Gets or sets the version of the event.
   /// </summary>
   public long Version { get; private set; }
-  /// <summary>
-  /// Gets or sets the delete action performed by the event.
-  /// </summary>
-  public DeleteAction DeleteAction { get; private set; }
 
   /// <summary>
   /// Gets or sets the type of the aggregate to which the event belongs to.
@@ -72,9 +72,9 @@ public class EventEntity : IEventEntity
     {
       Id = change.Id,
       ActorId = change.ActorId.Value,
+      IsDeleted = change.IsDeleted,
       OccurredOn = change.OccurredOn.ToUniversalTime(),
       Version = change.Version,
-      DeleteAction = change.DeleteAction,
       AggregateType = aggregateType,
       AggregateId = aggregateId,
       EventType = change.GetType().GetName(),

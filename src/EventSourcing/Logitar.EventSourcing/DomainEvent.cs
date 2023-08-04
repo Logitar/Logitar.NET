@@ -29,7 +29,7 @@ public record DomainEvent
   public DateTime OccurredOn { get; set; }
 
   /// <summary>
-  /// Gets or sets the delete action performed by the event.
+  /// Gets or sets a value indicating whether or not the aggregate is deleted.
   /// </summary>
-  public DeleteAction DeleteAction { get; set; }
+  public bool? IsDeleted { get; set; }
 }

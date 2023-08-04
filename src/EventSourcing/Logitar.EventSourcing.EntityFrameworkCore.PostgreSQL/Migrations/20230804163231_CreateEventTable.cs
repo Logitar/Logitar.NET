@@ -20,9 +20,9 @@ namespace Logitar.EventSourcing.EntityFrameworkCore.PostgreSQL.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     ActorId = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: true),
                     OccurredOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Version = table.Column<long>(type: "bigint", nullable: false),
-                    DeleteAction = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     AggregateType = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     AggregateId = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     EventType = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
@@ -58,6 +58,11 @@ namespace Logitar.EventSourcing.EntityFrameworkCore.PostgreSQL.Migrations
                 table: "Events",
                 column: "Id",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Events_IsDeleted",
+                table: "Events",
+                column: "IsDeleted");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Events_OccurredOn",
