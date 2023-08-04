@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Reorganized the solution directory structure.
+- Upgraded NuGet packages and fixed EventSourcing project dependencies.
 
 ## [1.1.0] - 2023-07-11
 
