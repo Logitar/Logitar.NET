@@ -3,5 +3,6 @@
 internal enum DatabaseProvider
 {
   EntityFrameworkCorePostgreSQL,
-  EntityFrameworkCoreSqlServer
+  EntityFrameworkCoreSqlServer,
+  InMemory
 }
