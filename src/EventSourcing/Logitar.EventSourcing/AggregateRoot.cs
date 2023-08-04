@@ -6,11 +6,6 @@
 public abstract class AggregateRoot
 {
   /// <summary>
-  /// The default actor identifier.
-  /// </summary>
-  private const string DefaultActorId = "SYSTEM";
-
-  /// <summary>
   /// Initializes a new instance of the <see cref="AggregateRoot"/> class.
   /// </summary>
   /// <param name="id">The identifier of the aggregate.</param>
@@ -42,7 +37,7 @@ public abstract class AggregateRoot
   /// <summary>
   /// Gets or sets the identifier of the actor who created the aggregate.
   /// </summary>
-  public string CreatedBy { get; private set; } = DefaultActorId;
+  public ActorId CreatedBy { get; private set; }
   /// <summary>
   /// Gets or sets the date and time when the aggregate was created.
   /// </summary>
@@ -50,7 +45,7 @@ public abstract class AggregateRoot
   /// <summary>
   /// Gets or sets the identifier of the actor who updated the aggregate lastly.
   /// </summary>
-  public string UpdatedBy { get; private set; } = DefaultActorId;
+  public ActorId UpdatedBy { get; private set; }
   /// <summary>
   /// Gets or sets the date and time when the aggregate was updated lastly.
   /// </summary>
@@ -105,7 +100,7 @@ public abstract class AggregateRoot
   /// <param name="change">The change to apply.</param>
   /// <param name="actorId">The identifier of the actor who triggered the event.</param>
   /// <param name="occurredOn">The date and time when the event occurred.</param>
-  protected void ApplyChange(DomainEvent change, string? actorId = null, DateTime? occurredOn = null)
+  protected void ApplyChange(DomainEvent change, ActorId? actorId = null, DateTime? occurredOn = null)
   {
     if (change.Id == default)
     {
@@ -119,9 +114,9 @@ public abstract class AggregateRoot
     {
       change.Version = Version + 1;
     }
-    if (string.IsNullOrWhiteSpace(change.ActorId))
+    if (change.ActorId == default && actorId.HasValue)
     {
-      change.ActorId = actorId;
+      change.ActorId = actorId.Value;
     }
     if (change.OccurredOn == default)
     {
@@ -157,10 +152,10 @@ public abstract class AggregateRoot
 
     if (Version <= 1)
     {
-      CreatedBy = change.ActorId ?? CreatedBy;
+      CreatedBy = change.ActorId;
       CreatedOn = change.OccurredOn;
     }
-    UpdatedBy = change.ActorId ?? UpdatedBy;
+    UpdatedBy = change.ActorId;
     UpdatedOn = change.OccurredOn;
 
     switch (change.DeleteAction)

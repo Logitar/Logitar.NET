@@ -1,10 +1,20 @@
+IF OBJECT_ID(N'[__EFMigrationsHistory]') IS NULL
+BEGIN
+    CREATE TABLE [__EFMigrationsHistory] (
+        [MigrationId] nvarchar(150) NOT NULL,
+        [ProductVersion] nvarchar(32) NOT NULL,
+        CONSTRAINT [PK___EFMigrationsHistory] PRIMARY KEY ([MigrationId])
+    );
+END;
+GO
+
 BEGIN TRANSACTION;
 GO
 
 CREATE TABLE [Events] (
     [EventId] bigint NOT NULL IDENTITY,
     [Id] uniqueidentifier NOT NULL,
-    [ActorId] nvarchar(255) NULL,
+    [ActorId] nvarchar(255) NOT NULL,
     [OccurredOn] datetime2 NOT NULL,
     [Version] bigint NOT NULL,
     [DeleteAction] nvarchar(255) NOT NULL,
@@ -35,6 +45,10 @@ CREATE INDEX [IX_Events_OccurredOn] ON [Events] ([OccurredOn]);
 GO
 
 CREATE INDEX [IX_Events_Version] ON [Events] ([Version]);
+GO
+
+INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+VALUES (N'20230804160024_CreateEventTable', N'7.0.9');
 GO
 
 COMMIT;

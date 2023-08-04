@@ -16,6 +16,7 @@ public class EventSerializerTests
     JsonSerializerOptions? options = (JsonSerializerOptions?)optionsField.GetValue(serializer);
     Assert.NotNull(options);
 
+    Assert.Contains(options.Converters, converter => converter is ActorIdConverter);
     Assert.Contains(options.Converters, converter => converter is AggregateIdConverter);
     Assert.Contains(options.Converters, converter => converter is JsonStringEnumConverter);
   }
@@ -31,6 +32,7 @@ public class EventSerializerTests
     JsonSerializerOptions? options = (JsonSerializerOptions?)optionsField.GetValue(serializer);
     Assert.NotNull(options);
 
+    Assert.Contains(options.Converters, converter => converter is ActorIdConverter);
     Assert.Contains(options.Converters, converter => converter is AggregateIdConverter);
     Assert.Contains(options.Converters, converter => converter is JsonStringEnumConverter);
     Assert.Contains(options.Converters, converter => converter is CultureInfoConverter);
@@ -44,7 +46,7 @@ public class EventSerializerTests
       Id = Guid.NewGuid(),
       AggregateId = AggregateId.NewId(),
       Version = 5,
-      ActorId = "fpion",
+      ActorId = new ActorId("fpion"),
       OccurredOn = DateTime.Now
     };
     EventEntityMock entity = new()
@@ -119,7 +121,7 @@ public class EventSerializerTests
       Id = Guid.NewGuid(),
       AggregateId = AggregateId.NewId(),
       Version = 5,
-      ActorId = "fpion",
+      ActorId = new ActorId("fpion"),
       OccurredOn = DateTime.Now
     };
 

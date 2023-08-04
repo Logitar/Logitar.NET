@@ -6,7 +6,7 @@ public class PersonAggregate : AggregateRoot
   {
   }
 
-  public PersonAggregate(string fullName, string? actorId = null, DateTime? occurredOn = null) : base()
+  public PersonAggregate(string fullName, ActorId? actorId = null, DateTime? occurredOn = null) : base()
   {
     ApplyChange(new PersonCreatedEvent(fullName), actorId, occurredOn);
   }

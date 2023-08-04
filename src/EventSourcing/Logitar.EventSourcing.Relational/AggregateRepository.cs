@@ -152,7 +152,7 @@ public abstract class AggregateRepository : Infrastructure.AggregateRepository
 
         foreach (DomainEvent change in aggregate.Changes)
         {
-          builder = builder.Value(change.Id, change.ActorId, change.OccurredOn.ToUniversalTime(),
+          builder = builder.Value(change.Id, change.ActorId.Value, change.OccurredOn.ToUniversalTime(),
             change.Version, change.DeleteAction.ToString(), aggregateType, aggregateId,
             change.GetType().GetName(), EventSerializer.Instance.Serialize(change));
         }

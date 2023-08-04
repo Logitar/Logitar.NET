@@ -12,4 +12,10 @@ directory.
 
 Execute the following command to create a new migration. Do not forget to specify a migration name!
 
-`dotnet ef migrations add <YOUR_MIGRATION_NAME> --project src/Logitar.EventSourcing.EntityFrameworkCore.SqlServer --startup-project src/Logitar.Demo.Ui`
+`dotnet ef migrations add <YOUR_MIGRATION_NAME> --context EventContext --project src/EventSourcing/Logitar.EventSourcing.EntityFrameworkCore.SqlServer --startup-project src/Demo/Logitar.Demo.Ui`
+
+### Generate a script
+
+Execute the following command to generate a new script. Do not forget to specify a source migration name!
+
+`dotnet ef migrations script <FROM_MIGRATION_NAME> --context EventContext --project src/EventSourcing/Logitar.EventSourcing.EntityFrameworkCore.SqlServer --startup-project src/Demo/Logitar.Demo.Ui`

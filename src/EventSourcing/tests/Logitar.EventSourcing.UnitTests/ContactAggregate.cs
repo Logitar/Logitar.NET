@@ -7,7 +7,7 @@ public class ContactAggregate : AggregateRoot
   }
 
   public ContactAggregate(PersonAggregate person, ContactType type, string value,
-    string? actorId = null, DateTime? occurredOn = null) : base()
+    ActorId? actorId = null, DateTime? occurredOn = null) : base()
   {
     ApplyChange(new ContactCreatedEvent(person.Id, type, value), actorId, occurredOn);
   }

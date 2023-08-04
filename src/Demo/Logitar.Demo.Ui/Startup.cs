@@ -1,5 +1,6 @@
 ﻿using Logitar.EventSourcing.EntityFrameworkCore.PostgreSQL;
 using Logitar.EventSourcing.EntityFrameworkCore.SqlServer;
+using Logitar.EventSourcing.Infrastructure;
 
 namespace Logitar.Demo.Ui;
 
@@ -46,6 +47,8 @@ internal class Startup : StartupBase
       default:
         throw new NotSupportedException($"The database provider '{provider}' is not supported.");
     }
+
+    services.AddSingleton<IEventBus, EventBus>();
   }
 
   public override void Configure(IApplicationBuilder builder)
