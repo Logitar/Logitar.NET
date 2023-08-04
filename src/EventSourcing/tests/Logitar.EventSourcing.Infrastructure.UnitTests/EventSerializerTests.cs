@@ -88,14 +88,6 @@ public class EventSerializerTests
     Assert.Equal(entity.EventType, exception.TypeName);
   }
 
-  [Fact(DisplayName = "Instance: it should always be the same singleton.")]
-  public void Instance_it_should_always_be_the_same_singleton()
-  {
-    EventSerializer instance = EventSerializer.Instance;
-    EventSerializer other = EventSerializer.Instance;
-    Assert.Same(instance, other);
-  }
-
   [Fact(DisplayName = "RegisterConverter: it should register the specified converter.")]
   public void RegisterConverter_it_should_register_the_specified_converter()
   {

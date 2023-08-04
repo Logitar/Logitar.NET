@@ -33,7 +33,7 @@ public class AggregateRepositoryTests : Relational.AggregateRepositoryTests
 
     Connection = new NpgsqlConnection(connectionString);
 
-    return new AggregateRepository(Connection, eventBus);
+    return new AggregateRepository(Connection, eventBus, EventSerializer);
   }
 
   protected override async Task RecreateDatabaseAsync(CancellationToken cancellationToken)

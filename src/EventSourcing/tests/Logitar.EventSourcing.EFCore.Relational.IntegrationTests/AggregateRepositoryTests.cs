@@ -48,12 +48,12 @@ public abstract class AggregateRepositoryTests : Infrastructure.AggregateReposit
     _context.Database.EnsureDeleted();
     _context.Database.Migrate();
 
-    return new AggregateRepository(eventBus, _context);
+    return new AggregateRepository(eventBus, _context, EventSerializer);
   }
 
   protected override IEnumerable<IEventEntity> GetEventEntities(AggregateRoot aggregate)
   {
-    return EventEntity.FromChanges(aggregate);
+    return EventEntity.FromChanges(aggregate, EventSerializer);
   }
 
   protected override async Task<IEnumerable<IEventEntity>> LoadEventsAsync(CancellationToken cancellationToken)
@@ -67,7 +67,7 @@ public abstract class AggregateRepositoryTests : Infrastructure.AggregateReposit
   {
     Assert.NotNull(_context);
 
-    IEnumerable<EventEntity> events = aggregates.SelectMany(EventEntity.FromChanges);
+    IEnumerable<EventEntity> events = aggregates.SelectMany(aggregate => EventEntity.FromChanges(aggregate, EventSerializer));
     _context.Events.AddRange(events);
 
     await _context.SaveChangesAsync(cancellationToken);

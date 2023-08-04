@@ -31,6 +31,8 @@ public abstract class AggregateRepositoryTests
     _repository = CreateRepository(_eventBus.Object);
   }
 
+  protected IEventSerializer EventSerializer { get; } = new EventSerializer();
+
   private IEnumerable<AggregateRoot> Aggregates => new AggregateRoot[] { _person1, _person2, _person3, _deleted, _contact };
 
   [Theory(DisplayName = "It should load the correct aggregate by id.")]

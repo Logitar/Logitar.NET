@@ -9,12 +9,13 @@ public class AggregateRepositoryTests
   private readonly CancellationToken _cancellationToken = default;
 
   private readonly Mock<IEventBus> _eventBus = new();
+  private readonly EventSerializer _eventSerializer = new();
 
   private readonly AggregateRepositoryMock _repository;
 
   public AggregateRepositoryTests()
   {
-    _repository = new(_eventBus.Object);
+    _repository = new(_eventBus.Object, _eventSerializer);
   }
 
   [Fact(DisplayName = "LoadAsync: it should load the correct aggregates from events.")]
