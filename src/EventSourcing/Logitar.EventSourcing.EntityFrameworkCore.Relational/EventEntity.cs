@@ -62,8 +62,9 @@ public class EventEntity : IEventEntity
   /// Converts the changes of the specified aggregate to the storage model.
   /// </summary>
   /// <param name="aggregate">The aggregate to convert the changes from.</param>
+  /// <param name="eventSerializer">The serializer for events.</param>
   /// <returns>The list of storage models.</returns>
-  public static IEnumerable<EventEntity> FromChanges(AggregateRoot aggregate)
+  public static IEnumerable<EventEntity> FromChanges(AggregateRoot aggregate, IEventSerializer eventSerializer)
   {
     string aggregateId = aggregate.Id.Value;
     string aggregateType = aggregate.GetType().GetName();
@@ -78,7 +79,7 @@ public class EventEntity : IEventEntity
       AggregateType = aggregateType,
       AggregateId = aggregateId,
       EventType = change.GetType().GetName(),
-      EventData = EventSerializer.Instance.Serialize(change)
+      EventData = eventSerializer.Serialize(change)
     });
   }
 }

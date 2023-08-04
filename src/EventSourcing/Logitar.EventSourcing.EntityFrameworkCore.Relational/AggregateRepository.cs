@@ -13,7 +13,9 @@ public class AggregateRepository : Infrastructure.AggregateRepository
   /// </summary>
   /// <param name="eventBus">The event bus.</param>
   /// <param name="eventContext">The event database context.</param>
-  public AggregateRepository(IEventBus eventBus, EventContext eventContext) : base(eventBus)
+  /// <param name="eventSerializer">The serializer for events.</param>
+  public AggregateRepository(IEventBus eventBus, EventContext eventContext,
+    IEventSerializer eventSerializer) : base(eventBus, eventSerializer)
   {
     EventContext = eventContext;
   }
@@ -41,7 +43,7 @@ public class AggregateRepository : Infrastructure.AggregateRepository
       .OrderBy(e => e.Version)
       .ToArrayAsync(cancellationToken);
 
-    return events.Select(EventSerializer.Instance.Deserialize);
+    return events.Select(EventSerializer.Deserialize);
   }
 
   /// <summary>
@@ -59,7 +61,7 @@ public class AggregateRepository : Infrastructure.AggregateRepository
       .OrderBy(e => e.Version)
       .ToArrayAsync(cancellationToken);
 
-    return events.Select(EventSerializer.Instance.Deserialize);
+    return events.Select(EventSerializer.Deserialize);
   }
 
   /// <summary>
@@ -79,7 +81,7 @@ public class AggregateRepository : Infrastructure.AggregateRepository
       .OrderBy(e => e.Version)
       .ToArrayAsync(cancellationToken);
 
-    return events.Select(EventSerializer.Instance.Deserialize);
+    return events.Select(EventSerializer.Deserialize);
   }
 
   /// <summary>
@@ -90,7 +92,7 @@ public class AggregateRepository : Infrastructure.AggregateRepository
   /// <returns>The asynchronous operation.</returns>
   protected override async Task SaveChangesAsync(IEnumerable<AggregateRoot> aggregates, CancellationToken cancellationToken)
   {
-    IEnumerable<EventEntity> events = aggregates.SelectMany(EventEntity.FromChanges);
+    IEnumerable<EventEntity> events = aggregates.SelectMany(aggregate => EventEntity.FromChanges(aggregate, EventSerializer));
 
     EventContext.Events.AddRange(events);
     await EventContext.SaveChangesAsync(cancellationToken);

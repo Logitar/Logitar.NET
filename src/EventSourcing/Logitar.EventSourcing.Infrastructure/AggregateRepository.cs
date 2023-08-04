@@ -9,15 +9,21 @@ public abstract class AggregateRepository : IAggregateRepository
   /// Initializes a new instance of the <see cref="AggregateRepository"/> class.
   /// </summary>
   /// <param name="eventBus">The event bus to publish the events to.</param>
-  protected AggregateRepository(IEventBus eventBus)
+  /// <param name="eventSerializer">The serializer for events.</param>
+  protected AggregateRepository(IEventBus eventBus, IEventSerializer eventSerializer)
   {
     EventBus = eventBus;
+    EventSerializer = eventSerializer;
   }
 
   /// <summary>
   /// Gets the event bus to publish the events to.
   /// </summary>
   protected IEventBus EventBus { get; }
+  /// <summary>
+  /// Gets the serializer for events.
+  /// </summary>
+  protected IEventSerializer EventSerializer { get; }
 
   /// <summary>
   /// Loads an aggregate from the event store.

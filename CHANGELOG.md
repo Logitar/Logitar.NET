@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Upgraded NuGet packages and fixed EventSourcing project dependencies.
 - Replaced DeleteAction by a nullable boolean.
 - Refactored AggregateRoot & DomainEvent.
+- Injecting IEventSerializer as a dependency.
 
 ## [1.1.0] - 2023-07-11
 

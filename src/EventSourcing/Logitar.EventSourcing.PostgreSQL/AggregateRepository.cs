@@ -14,7 +14,9 @@ public class AggregateRepository : Relational.AggregateRepository
   /// </summary>
   /// <param name="connection">The database connection.</param>
   /// <param name="eventBus">The event bus.</param>
-  public AggregateRepository(DbConnection connection, IEventBus eventBus) : base(connection, eventBus)
+  /// <param name="eventSerializer">The serializer for events.</param>
+  public AggregateRepository(DbConnection connection, IEventBus eventBus,
+    IEventSerializer eventSerializer) : base(connection, eventBus, eventSerializer)
   {
   }
 
