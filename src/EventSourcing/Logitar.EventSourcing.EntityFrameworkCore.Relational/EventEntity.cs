@@ -26,7 +26,7 @@ public class EventEntity : IEventEntity
   /// <summary>
   /// Gets or sets the identifier of the actor who triggered the event.
   /// </summary>
-  public string? ActorId { get; private set; }
+  public string ActorId { get; private set; } = string.Empty;
   /// <summary>
   /// Gets or sets the date and time when the event occurred.
   /// </summary>
@@ -71,7 +71,7 @@ public class EventEntity : IEventEntity
     return aggregate.Changes.Select(change => new EventEntity
     {
       Id = change.Id,
-      ActorId = change.ActorId,
+      ActorId = change.ActorId.Value,
       OccurredOn = change.OccurredOn.ToUniversalTime(),
       Version = change.Version,
       DeleteAction = change.DeleteAction,

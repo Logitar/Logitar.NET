@@ -38,6 +38,7 @@ public class EventSerializer : IEventSerializer
   /// </summary>
   public EventSerializer()
   {
+    RegisterConverter(new ActorIdConverter());
     RegisterConverter(new AggregateIdConverter());
     RegisterConverter(new JsonStringEnumConverter());
   }

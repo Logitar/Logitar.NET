@@ -10,7 +10,7 @@ GO
 CREATE TABLE [Events] (
     [EventId] bigint NOT NULL IDENTITY,
     [Id] uniqueidentifier NOT NULL,
-    [ActorId] nvarchar(255) NULL,
+    [ActorId] nvarchar(255) NOT NULL,
     [OccurredOn] datetime2 NOT NULL,
     [Version] bigint NOT NULL,
     [DeleteAction] nvarchar(255) NOT NULL,

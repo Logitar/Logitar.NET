@@ -25,7 +25,7 @@ public class EventEntityTests
   private static void AssertEqual(EventEntity entity, DomainEvent change, AggregateRoot aggregate)
   {
     Assert.Equal(entity.Id, change.Id);
-    Assert.Equal(entity.ActorId, change.ActorId);
+    Assert.Equal(entity.ActorId, change.ActorId.Value);
     Assert.Equal(entity.OccurredOn, change.OccurredOn.ToUniversalTime());
     Assert.Equal(entity.Version, change.Version);
     Assert.Equal(entity.DeleteAction, change.DeleteAction);

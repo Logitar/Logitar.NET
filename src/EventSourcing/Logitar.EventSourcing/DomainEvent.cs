@@ -22,7 +22,7 @@ public record DomainEvent
   /// <summary>
   /// Gets or sets the identifier of the actor who triggered the event.
   /// </summary>
-  public string? ActorId { get; set; }
+  public ActorId ActorId { get; set; }
   /// <summary>
   /// Gets or sets the date and time when the event occurred.
   /// </summary>

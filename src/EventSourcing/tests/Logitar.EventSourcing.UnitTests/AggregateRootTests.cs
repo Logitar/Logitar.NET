@@ -18,7 +18,7 @@ public class AggregateRootTests
   public void ApplyChange_it_applies_the_change_correctly()
   {
     string name = _faker.Person.FullName;
-    string actorId = Guid.NewGuid().ToString();
+    ActorId actorId = ActorId.NewId();
     DateTime occurredOn = DateTime.Now.AddYears(-20);
 
     PersonAggregate person = new(name, actorId, occurredOn);
@@ -130,8 +130,8 @@ public class AggregateRootTests
   [Fact(DisplayName = "Dispatch: it updates metadata correctly.")]
   public void Dispatch_it_updates_metadata_correctly()
   {
-    Assert.Equal("SYSTEM", _person.CreatedBy);
-    Assert.Equal("SYSTEM", _person.UpdatedBy);
+    Assert.Equal("SYSTEM", _person.CreatedBy.Value);
+    Assert.Equal("SYSTEM", _person.UpdatedBy.Value);
     Assert.True((DateTime.Now - _person.CreatedOn) < TimeSpan.FromSeconds(1));
     Assert.True((DateTime.Now - _person.UpdatedOn) < TimeSpan.FromSeconds(1));
     Assert.Equal(_person.CreatedOn, _person.UpdatedOn);
@@ -143,12 +143,12 @@ public class AggregateRootTests
     {
       AggregateId = _person.Id,
       Version = _person.Version + 1,
-      ActorId = Guid.NewGuid().ToString(),
+      ActorId = ActorId.NewId(),
       OccurredOn = DateTime.Now
     };
     _person.Dispatch(renamed);
 
-    Assert.Equal("SYSTEM", _person.CreatedBy);
+    Assert.Equal("SYSTEM", _person.CreatedBy.Value);
     Assert.Equal(createdOn, _person.CreatedOn);
     Assert.Equal(renamed.ActorId, _person.UpdatedBy);
     Assert.Equal(renamed.OccurredOn, _person.UpdatedOn);
