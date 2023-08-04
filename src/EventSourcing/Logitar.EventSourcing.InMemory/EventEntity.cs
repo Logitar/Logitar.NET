@@ -18,7 +18,7 @@ public class EventEntity : IEventEntity
   public string EventType { get; private set; } = string.Empty;
   public string EventData { get; private set; } = string.Empty;
 
-  public static IEnumerable<EventEntity> FromChanges(AggregateRoot aggregate)
+  public static IEnumerable<EventEntity> FromChanges(AggregateRoot aggregate, IEventSerializer eventSerializer)
   {
     string aggregateId = aggregate.Id.Value;
     string aggregateType = aggregate.GetType().GetName();
@@ -30,7 +30,7 @@ public class EventEntity : IEventEntity
       AggregateType = aggregateType,
       AggregateId = aggregateId,
       EventType = change.GetType().GetName(),
-      EventData = EventSerializer.Instance.Serialize(change)
+      EventData = eventSerializer.Serialize(change)
     });
   }
 }

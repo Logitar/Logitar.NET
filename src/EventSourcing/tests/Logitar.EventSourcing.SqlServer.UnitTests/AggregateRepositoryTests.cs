@@ -10,13 +10,14 @@ namespace Logitar.EventSourcing.SqlServer;
 public class AggregateRepositoryTests
 {
   private readonly Mock<IEventBus> _eventBus = new();
+  private readonly EventSerializer _eventSerializer = new();
 
   private readonly AggregateRepository _repository;
 
   public AggregateRepositoryTests()
   {
     SqlConnection connection = new();
-    _repository = new(connection, _eventBus.Object);
+    _repository = new(connection, _eventBus.Object, _eventSerializer);
   }
 
   [Fact(DisplayName = "From: it should return the correct query builder.")]

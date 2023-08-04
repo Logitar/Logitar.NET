@@ -6,6 +6,7 @@ namespace Logitar.EventSourcing.EntityFrameworkCore.Relational;
 [Trait(Traits.Category, Categories.Unit)]
 public class EventEntityTests
 {
+  private readonly EventSerializer _eventSerializer = new();
   private readonly Faker _faker = new();
 
   [Fact(DisplayName = "FromChanges: it should return the correct changes.")]
@@ -17,12 +18,12 @@ public class EventEntityTests
     PersonCreatedEvent created = (PersonCreatedEvent)person.Changes.First();
     PersonDeletedChangedEvent deleted = (PersonDeletedChangedEvent)person.Changes.Skip(1).Single();
 
-    EventEntity[] events = EventEntity.FromChanges(person).ToArray();
+    EventEntity[] events = EventEntity.FromChanges(person, _eventSerializer).ToArray();
     AssertEqual(events[0], created, person);
     AssertEqual(events[1], deleted, person);
   }
 
-  private static void AssertEqual(EventEntity entity, DomainEvent change, AggregateRoot aggregate)
+  private void AssertEqual(EventEntity entity, DomainEvent change, AggregateRoot aggregate)
   {
     Assert.Equal(entity.Id, change.Id);
     Assert.Equal(entity.ActorId, change.ActorId.Value);
@@ -32,6 +33,6 @@ public class EventEntityTests
     Assert.Equal(entity.AggregateType, aggregate.GetType().GetName());
     Assert.Equal(entity.AggregateId, aggregate.Id.Value);
     Assert.Equal(entity.EventType, change.GetType().GetName());
-    Assert.Equal(entity.EventData, EventSerializer.Instance.Serialize(change));
+    Assert.Equal(entity.EventData, _eventSerializer.Serialize(change));
   }
 }

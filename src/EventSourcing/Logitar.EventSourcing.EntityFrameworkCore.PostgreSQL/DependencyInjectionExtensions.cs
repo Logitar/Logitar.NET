@@ -19,7 +19,8 @@ public static class DependencyInjectionExtensions
   {
     return services
       .AddDbContext<EventContext>(options => options.UseNpgsql(connectionString,
-        options => options.MigrationsAssembly("Logitar.EventSourcing.EntityFrameworkCore.PostgreSQL")))
-      .AddScoped<IAggregateRepository, AggregateRepository>();
+        options => options.MigrationsAssembly("Logitar.EventSourcing.EntityFrameworkCore.PostgreSQL")
+      ))
+      .AddLogitarEventSourcingWithEntityFrameworkCoreRelational();
   }
 }

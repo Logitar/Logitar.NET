@@ -42,7 +42,7 @@ public abstract class AggregateRepositoryTests : Infrastructure.AggregateReposit
       AggregateType = aggregateType,
       AggregateId = aggregateId,
       EventType = change.GetType().GetName(),
-      EventData = EventSerializer.Instance.Serialize(change)
+      EventData = EventSerializer.Serialize(change)
     });
   }
 
@@ -96,7 +96,7 @@ public abstract class AggregateRepositoryTests : Infrastructure.AggregateReposit
         {
           builder = builder.Value(change.Id, change.ActorId.Value, change.IsDeleted,
             change.OccurredOn.ToUniversalTime(), change.Version, aggregateType, aggregateId,
-            change.GetType().GetName(), EventSerializer.Instance.Serialize(change));
+            change.GetType().GetName(), EventSerializer.Serialize(change));
         }
       }
     }

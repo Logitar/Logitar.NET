@@ -2,7 +2,8 @@
 
 internal class AggregateRepositoryMock : AggregateRepository
 {
-  public AggregateRepositoryMock(IEventBus eventBus) : base(eventBus)
+  public AggregateRepositoryMock(IEventBus eventBus, IEventSerializer eventSerializer)
+    : base(eventBus, eventSerializer)
   {
   }
 

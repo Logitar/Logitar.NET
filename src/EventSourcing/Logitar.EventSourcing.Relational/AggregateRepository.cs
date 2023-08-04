@@ -13,7 +13,9 @@ public abstract class AggregateRepository : Infrastructure.AggregateRepository
   /// </summary>
   /// <param name="connection">The database connection.</param>
   /// <param name="eventBus">The event bus.</param>
-  public AggregateRepository(DbConnection connection, IEventBus eventBus) : base(eventBus)
+  /// <param name="eventSerializer">The serializer for events.</param>
+  public AggregateRepository(DbConnection connection, IEventBus eventBus,
+    IEventSerializer eventSerializer) : base(eventBus, eventSerializer)
   {
     Connection = connection;
   }
@@ -125,7 +127,7 @@ public abstract class AggregateRepository : Infrastructure.AggregateRepository
           EventData = reader.GetString(2)
         };
 
-        changes.Add(EventSerializer.Instance.Deserialize(entity));
+        changes.Add(EventSerializer.Deserialize(entity));
       }
     }
 
@@ -155,7 +157,7 @@ public abstract class AggregateRepository : Infrastructure.AggregateRepository
         {
           builder = builder.Value(change.Id, change.ActorId.Value, change.IsDeleted,
             change.OccurredOn.ToUniversalTime(), change.Version, aggregateType, aggregateId,
-            change.GetType().GetName(), EventSerializer.Instance.Serialize(change));
+            change.GetType().GetName(), EventSerializer.Serialize(change));
         }
       }
     }

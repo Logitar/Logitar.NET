@@ -6,29 +6,6 @@
 public class EventSerializer : IEventSerializer
 {
   /// <summary>
-  /// The lock to the singleton instance of the serializer.
-  /// </summary>
-  private static readonly object _lock = new();
-  /// <summary>
-  /// The singleton instance of the serializer.
-  /// </summary>
-  private static EventSerializer? _instance = null;
-  /// <summary>
-  /// Gets the singleton instance of the serializer.
-  /// </summary>
-  public static EventSerializer Instance
-  {
-    get
-    {
-      lock (_lock)
-      {
-        _instance ??= new();
-        return _instance;
-      }
-    }
-  }
-
-  /// <summary>
   /// The serialization options.
   /// </summary>
   private readonly JsonSerializerOptions _options = new();
