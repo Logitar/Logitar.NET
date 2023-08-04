@@ -1,4 +1,11 @@
+DROP TABLE IF EXISTS "__EFMigrationsHistory";
 DROP TABLE IF EXISTS "Events";
+
+CREATE TABLE "__EFMigrationsHistory" (
+    "MigrationId" character varying(150) NOT NULL,
+    "ProductVersion" character varying(32) NOT NULL,
+    CONSTRAINT "PK___EFMigrationsHistory" PRIMARY KEY ("MigrationId")
+);
 
 START TRANSACTION;
 
@@ -26,8 +33,13 @@ CREATE INDEX "IX_Events_EventType" ON "Events" ("EventType");
 
 CREATE UNIQUE INDEX "IX_Events_Id" ON "Events" ("Id");
 
+CREATE INDEX "IX_Events_IsDeleted" ON "Events" ("IsDeleted");
+
 CREATE INDEX "IX_Events_OccurredOn" ON "Events" ("OccurredOn");
 
 CREATE INDEX "IX_Events_Version" ON "Events" ("Version");
+
+INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+VALUES ('20230804163231_CreateEventTable', '7.0.9');
 
 COMMIT;
