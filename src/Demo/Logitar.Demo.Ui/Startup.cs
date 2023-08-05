@@ -2,6 +2,7 @@
 using Logitar.EventSourcing.EntityFrameworkCore.SqlServer;
 using Logitar.EventSourcing.Infrastructure;
 using Logitar.EventSourcing.InMemory;
+using Logitar.EventSourcing.MongoDB;
 
 namespace Logitar.Demo.Ui;
 
@@ -34,7 +35,6 @@ internal class Startup : StartupBase
     DatabaseProvider databaseProvider = _configuration.GetValue<DatabaseProvider?>("DatabaseProvider")
       ?? DatabaseProvider.EntityFrameworkCoreSqlServer;
     string connectionString;
-    // TODO(fpion): implement MongoDB
     switch (databaseProvider)
     {
       case DatabaseProvider.EntityFrameworkCorePostgreSQL:
@@ -47,6 +47,9 @@ internal class Startup : StartupBase
         break;
       case DatabaseProvider.InMemory:
         services.AddLogitarEventSourcingInMemory();
+        break;
+      case DatabaseProvider.MongoDB:
+        services.AddLogitarEventSourcingMongoDB(_configuration);
         break;
       default:
         throw new DatabaseProviderNotSupportedException(databaseProvider);

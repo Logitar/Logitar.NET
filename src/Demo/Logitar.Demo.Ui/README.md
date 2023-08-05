@@ -22,3 +22,7 @@ are already configured in the `appsettings.Development.json` file.
 ### PostgreSQL
 
 `docker run --name Logitar.Demo.Ui_postgres -e POSTGRES_PASSWORD=P@s$W0rD -p 2443:5432 -d postgres`
+
+### MongoDB
+
+`docker run --name Logitar.Demo.Ui_mongo -e MONGO_INITDB_ROOT_USERNAME=demo -e MONGO_INITDB_ROOT_PASSWORD=P@s$W0rD -p 7532:27017 -d mongo`

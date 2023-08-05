@@ -1,29 +1,29 @@
 ﻿using Logitar.EventSourcing.Infrastructure;
-using Microsoft.EntityFrameworkCore;
+using MongoDB.Driver;
 
-namespace Logitar.EventSourcing.EntityFrameworkCore.Relational;
+namespace Logitar.EventSourcing.MongoDB;
 
 /// <summary>
-/// Represents an interface that allows retrieving and storing events in an Entity Framework Core relational event store.
+/// Represents the MongoDB implementation of an interface that allows retrieving and storing events in an event store.
 /// </summary>
 public class AggregateRepository : Infrastructure.AggregateRepository
 {
   /// <summary>
-  /// Initializes a new instance of the <see cref="AggregateRepository"/> class.
+  /// The MongoDB collection of events.
   /// </summary>
-  /// <param name="eventBus">The event bus.</param>
-  /// <param name="eventContext">The event database context.</param>
-  /// <param name="eventSerializer">The serializer for events.</param>
-  public AggregateRepository(IEventBus eventBus, EventContext eventContext,
-    IEventSerializer eventSerializer) : base(eventBus, eventSerializer)
-  {
-    EventContext = eventContext;
-  }
+  private readonly IMongoCollection<EventEntity> _events;
 
   /// <summary>
-  /// Gets the event database context.
+  /// Initializes a new instance of the <see cref="AggregateRepository"/> class.
   /// </summary>
-  protected EventContext EventContext { get; }
+  /// <param name="eventBus">The event bus to publish the events to.</param>
+  /// <param name="eventSerializer">The serializer for events.</param>
+  /// <param name="mongoDatabase">The MongoDB database.</param>
+  public AggregateRepository(IEventBus eventBus, IEventSerializer eventSerializer,
+    IMongoDatabase mongoDatabase) : base(eventBus, eventSerializer)
+  {
+    _events = mongoDatabase.GetCollection<EventEntity>("events");
+  }
 
   /// <summary>
   /// Loads the events of an aggregate from the event store.
@@ -35,13 +35,20 @@ public class AggregateRepository : Infrastructure.AggregateRepository
   /// <returns>The loaded events.</returns>
   protected override async Task<IEnumerable<DomainEvent>> LoadChangesAsync<T>(AggregateId id, long? version, CancellationToken cancellationToken)
   {
-    string aggregateType = typeof(T).GetName();
-    string aggregateId = id.Value;
+    List<FilterDefinition<EventEntity>> filters = new(capacity: 3)
+    {
+      Builders<EventEntity>.Filter.Eq(x => x.AggregateType, typeof(T).GetName()),
+      Builders<EventEntity>.Filter.Eq(x => x.AggregateId, id.Value)
+    };
+    if (version.HasValue)
+    {
+      filters.Add(Builders<EventEntity>.Filter.Lte(x => x.Version, version.Value));
+    }
 
-    EventEntity[] events = await EventContext.Events.AsNoTracking()
-      .Where(e => e.AggregateType == aggregateType && e.AggregateId == aggregateId && (!version.HasValue || e.Version <= version.Value))
-      .OrderBy(e => e.Version)
-      .ToArrayAsync(cancellationToken);
+    List<EventEntity> events = await _events
+      .Find(Builders<EventEntity>.Filter.And(filters.ToArray()))
+      .Sort(Builders<EventEntity>.Sort.Ascending(x => x.Version))
+      .ToListAsync(cancellationToken);
 
     return events.Select(EventSerializer.Deserialize);
   }
@@ -54,12 +61,10 @@ public class AggregateRepository : Infrastructure.AggregateRepository
   /// <returns>The list of loaded events.</returns>
   protected override async Task<IEnumerable<DomainEvent>> LoadChangesAsync<T>(CancellationToken cancellationToken)
   {
-    string aggregateType = typeof(T).GetName();
-
-    EventEntity[] events = await EventContext.Events.AsNoTracking()
-      .Where(e => e.AggregateType == aggregateType)
-      .OrderBy(e => e.Version)
-      .ToArrayAsync(cancellationToken);
+    List<EventEntity> events = await _events
+      .Find(Builders<EventEntity>.Filter.Eq(x => x.AggregateType, typeof(T).GetName()))
+      .Sort(Builders<EventEntity>.Sort.Ascending(x => x.Version))
+      .ToListAsync(cancellationToken);
 
     return events.Select(EventSerializer.Deserialize);
   }
@@ -73,13 +78,17 @@ public class AggregateRepository : Infrastructure.AggregateRepository
   /// <returns>The list of loaded events.</returns>
   protected override async Task<IEnumerable<DomainEvent>> LoadChangesAsync<T>(IEnumerable<AggregateId> ids, CancellationToken cancellationToken)
   {
-    string aggregateType = typeof(T).GetName();
     HashSet<string> aggregateIds = ids.Select(id => id.Value).ToHashSet();
+    List<FilterDefinition<EventEntity>> filters = new(capacity: 3)
+    {
+      Builders<EventEntity>.Filter.Eq(x => x.AggregateType, typeof(T).GetName()),
+      Builders<EventEntity>.Filter.In(x => x.AggregateId, aggregateIds)
+    };
 
-    EventEntity[] events = await EventContext.Events.AsNoTracking()
-      .Where(e => e.AggregateType == aggregateType && aggregateIds.Contains(e.AggregateId))
-      .OrderBy(e => e.Version)
-      .ToArrayAsync(cancellationToken);
+    List<EventEntity> events = await _events
+      .Find(Builders<EventEntity>.Filter.And(filters.ToArray()))
+      .Sort(Builders<EventEntity>.Sort.Ascending(x => x.Version))
+      .ToListAsync(cancellationToken);
 
     return events.Select(EventSerializer.Deserialize);
   }
@@ -93,8 +102,6 @@ public class AggregateRepository : Infrastructure.AggregateRepository
   protected override async Task SaveChangesAsync(IEnumerable<AggregateRoot> aggregates, CancellationToken cancellationToken)
   {
     IEnumerable<EventEntity> events = aggregates.SelectMany(aggregate => EventEntity.FromChanges(aggregate, EventSerializer));
-
-    EventContext.Events.AddRange(events);
-    await EventContext.SaveChangesAsync(cancellationToken);
+    await _events.InsertManyAsync(events, new InsertManyOptions(), cancellationToken);
   }
 }

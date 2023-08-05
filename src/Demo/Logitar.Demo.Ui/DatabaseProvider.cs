@@ -4,5 +4,6 @@ internal enum DatabaseProvider
 {
   EntityFrameworkCorePostgreSQL,
   EntityFrameworkCoreSqlServer,
-  InMemory
+  InMemory,
+  MongoDB
 }

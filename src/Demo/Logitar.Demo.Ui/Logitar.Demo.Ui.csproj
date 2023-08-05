@@ -32,6 +32,7 @@
     <ProjectReference Include="..\..\EventSourcing\Logitar.EventSourcing.EntityFrameworkCore.PostgreSQL\Logitar.EventSourcing.EntityFrameworkCore.PostgreSQL.csproj" />
     <ProjectReference Include="..\..\EventSourcing\Logitar.EventSourcing.EntityFrameworkCore.SqlServer\Logitar.EventSourcing.EntityFrameworkCore.SqlServer.csproj" />
     <ProjectReference Include="..\..\EventSourcing\Logitar.EventSourcing.InMemory\Logitar.EventSourcing.InMemory.csproj" />
+    <ProjectReference Include="..\..\EventSourcing\Logitar.EventSourcing.MongoDB\Logitar.EventSourcing.MongoDB.csproj" />
   </ItemGroup>
 
   <ItemGroup>
