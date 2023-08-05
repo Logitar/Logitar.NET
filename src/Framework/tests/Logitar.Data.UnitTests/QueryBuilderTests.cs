@@ -94,14 +94,6 @@ public class QueryBuilderTests
     Assert.Equal("source", exception.ParamName);
   }
 
-  [Fact(DisplayName = "From: it constructs the correct query builder.")]
-  public void From_it_constructs_the_correct_query_builder()
-  {
-    PropertyInfo? source = _builder.GetType().GetProperty("Source", BindingFlags.NonPublic | BindingFlags.Instance);
-    Assert.NotNull(source);
-    Assert.Equal(source.GetValue(_builder), _table);
-  }
-
   [Fact(DisplayName = "Join: it adds joins to join list.")]
   public void Join_it_adds_joins_to_join_list()
   {

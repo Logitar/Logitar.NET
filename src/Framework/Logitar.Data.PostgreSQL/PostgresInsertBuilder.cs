@@ -38,7 +38,7 @@ public class PostgresInsertBuilder : InsertBuilder
   public static PostgresInsertBuilder Into(params ColumnId[] columns) => new(columns);
 
   /// <summary>
-  /// Creates a new Postgres query parameter.
+  /// Creates a new Postgres command parameter.
   /// </summary>
   /// <param name="parameter">The parameter information.</param>
   /// <returns>The Postgres parameter.</returns>

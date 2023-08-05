@@ -38,7 +38,7 @@ public class SqlServerInsertBuilder : InsertBuilder
   public static SqlServerInsertBuilder Into(params ColumnId[] columns) => new(columns);
 
   /// <summary>
-  /// Creates a new SQL Server query parameter.
+  /// Creates a new SQL Server command parameter.
   /// </summary>
   /// <param name="parameter">The parameter information.</param>
   /// <returns>The SQL Server parameter.</returns>
