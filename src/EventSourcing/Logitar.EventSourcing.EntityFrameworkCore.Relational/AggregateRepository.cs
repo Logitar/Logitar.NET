@@ -35,8 +35,8 @@ public class AggregateRepository : Infrastructure.AggregateRepository
   /// <returns>The loaded events.</returns>
   protected override async Task<IEnumerable<DomainEvent>> LoadChangesAsync<T>(AggregateId id, long? version, CancellationToken cancellationToken)
   {
-    string aggregateId = id.Value;
     string aggregateType = typeof(T).GetName();
+    string aggregateId = id.Value;
 
     EventEntity[] events = await EventContext.Events.AsNoTracking()
       .Where(e => e.AggregateType == aggregateType && e.AggregateId == aggregateId && (!version.HasValue || e.Version <= version.Value))
