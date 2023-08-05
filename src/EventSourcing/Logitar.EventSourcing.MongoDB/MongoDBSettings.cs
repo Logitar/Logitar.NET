@@ -6,6 +6,11 @@
 public record MongoDBSettings
 {
   /// <summary>
+  /// The key of the configuration section of the settings.
+  /// </summary>
+  public const string SectionKey = "MongoDB";
+
+  /// <summary>
   /// Gets or sets the connection string, or MongoDB URI, to the MongoDB server.
   /// </summary>
   public string ConnectionString { get; set; } = string.Empty;

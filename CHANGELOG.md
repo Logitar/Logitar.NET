@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added AggregateRoot metadata.
 - Created a struct for actor identifiers.
 - Implemented an EventSourcing MongoDB store.
+- Added a demo TodoController with CRUD endpoints.
 
 ### Changed
 

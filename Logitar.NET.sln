@@ -82,9 +82,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.EventSourcing.SqlSe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Demo.Ui", "src\Demo\Logitar.Demo.Ui\Logitar.Demo.Ui.csproj", "{74FC91C6-EE18-43E6-9FEF-AA611F242DF1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.EventSourcing.MongoDB", "src\EventSourcing\Logitar.EventSourcing.MongoDB\Logitar.EventSourcing.MongoDB.csproj", "{A2700671-1C42-432D-95A9-A1A4D0171832}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.EventSourcing.MongoDB", "src\EventSourcing\Logitar.EventSourcing.MongoDB\Logitar.EventSourcing.MongoDB.csproj", "{A2700671-1C42-432D-95A9-A1A4D0171832}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.EventSourcing.MongoDB.IntegrationTests", "src\EventSourcing\tests\Logitar.EventSourcing.MongoDB.IntegrationTests\Logitar.EventSourcing.MongoDB.IntegrationTests.csproj", "{CEEFD05A-DC09-4756-8473-527539E478F1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.EventSourcing.MongoDB.IntegrationTests", "src\EventSourcing\tests\Logitar.EventSourcing.MongoDB.IntegrationTests\Logitar.EventSourcing.MongoDB.IntegrationTests.csproj", "{CEEFD05A-DC09-4756-8473-527539E478F1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demo", "Demo", "{3A2114E4-433C-401E-896F-3D6A8D3FC3DF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -256,6 +258,7 @@ Global
 		{A5D21724-ABAF-4EB1-8C62-F08532A2CEC7} = {D092FA68-D3D5-460E-9A38-61033D6F9692}
 		{5FBFB540-E143-4C73-837E-5672E71D18B6} = {D092FA68-D3D5-460E-9A38-61033D6F9692}
 		{FD1A7AF8-FEDF-4EA1-9966-C46677584BB2} = {D092FA68-D3D5-460E-9A38-61033D6F9692}
+		{74FC91C6-EE18-43E6-9FEF-AA611F242DF1} = {3A2114E4-433C-401E-896F-3D6A8D3FC3DF}
 		{A2700671-1C42-432D-95A9-A1A4D0171832} = {256A2893-962F-4A7E-B58B-DE766D12F9CC}
 		{CEEFD05A-DC09-4756-8473-527539E478F1} = {D092FA68-D3D5-460E-9A38-61033D6F9692}
 	EndGlobalSection
