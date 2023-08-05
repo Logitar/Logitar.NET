@@ -170,7 +170,7 @@ public abstract class InsertBuilder : IInsertBuilder
   }
 
   /// <summary>
-  /// Adds a new parameter to the query.
+  /// Adds a new parameter to the command.
   /// </summary>
   /// <param name="value">The value of the parameter.</param>
   /// <returns>The new parameter.</returns>
