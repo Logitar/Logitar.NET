@@ -1,7 +1,7 @@
 ﻿namespace Logitar.Data;
 
 /// <summary>
-/// Represents a update data command builder. It exposes methods to configure and build a update data command.
+/// Represents an update data command builder. It exposes methods to configure and build an update data command.
 /// </summary>
 public interface IUpdateBuilder : ICommandBuilder
 {
