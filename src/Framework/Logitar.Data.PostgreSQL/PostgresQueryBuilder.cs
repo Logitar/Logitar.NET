@@ -30,7 +30,7 @@ public class PostgresQueryBuilder : QueryBuilder
   protected override string? IdentifierSuffix => "\"";
 
   /// <summary>
-  /// Gets the ILIKE clause in the generic dialect.
+  /// Gets the ILIKE clause in the Postgres dialect.
   /// </summary>
   protected virtual string InsensitiveLikeClause => "ILIKE";
 
