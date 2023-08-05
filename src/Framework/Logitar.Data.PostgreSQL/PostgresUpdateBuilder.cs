@@ -1,6 +1,4 @@
-﻿using Npgsql;
-
-namespace Logitar.Data.PostgreSQL;
+﻿namespace Logitar.Data.PostgreSQL;
 
 /// <summary>
 /// Represents the implementation of the SQL update command builder for PostgreSQL.
@@ -28,14 +26,4 @@ public class PostgresUpdateBuilder : UpdateBuilder
   /// <returns>The Postgres update builder.</returns>
   /// <exception cref="ArgumentException">The source table name is missing.</exception>
   public static PostgresUpdateBuilder From(TableId source) => new(source);
-
-  /// <summary>
-  /// Creates a new Postgres command parameter.
-  /// </summary>
-  /// <param name="parameter">The parameter information.</param>
-  /// <returns>The Postgres parameter.</returns>
-  protected override object CreateParameter(IParameter parameter)
-  {
-    return new NpgsqlParameter(parameter.Name, parameter.Value);
-  }
 }

@@ -1,6 +1,4 @@
-﻿using Microsoft.Data.SqlClient;
-
-namespace Logitar.Data.SqlServer;
+﻿namespace Logitar.Data.SqlServer;
 
 /// <summary>
 /// Represents the implementation of the SQL delete command builder for Microsoft SQL Server.
@@ -28,14 +26,4 @@ public class SqlServerDeleteBuilder : DeleteBuilder
   /// <returns>The SQL Server delete builder.</returns>
   /// <exception cref="ArgumentException">The source table name has not been specified.</exception>
   public static SqlServerDeleteBuilder From(TableId source) => new(source);
-
-  /// <summary>
-  /// Creates a new SQL Server command parameter.
-  /// </summary>
-  /// <param name="parameter">The parameter information.</param>
-  /// <returns>The SQL Server parameter.</returns>
-  protected override object CreateParameter(IParameter parameter)
-  {
-    return new SqlParameter(parameter.Name, parameter.Value);
-  }
 }

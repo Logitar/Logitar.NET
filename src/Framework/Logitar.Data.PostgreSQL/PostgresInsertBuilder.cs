@@ -1,6 +1,4 @@
-﻿using Npgsql;
-
-namespace Logitar.Data.PostgreSQL;
+﻿namespace Logitar.Data.PostgreSQL;
 
 /// <summary>
 /// Represents the implementation of the SQL insert command builder for PostgreSQL.
@@ -28,14 +26,4 @@ public class PostgresInsertBuilder : InsertBuilder
   /// <returns>The Postgres insert builder.</returns>
   /// <exception cref="ArgumentException">No column has been specified, or a column name or table has not been specified, or multiple tables have been specified.</exception>
   public static PostgresInsertBuilder Into(params ColumnId[] columns) => new(columns);
-
-  /// <summary>
-  /// Creates a new Postgres command parameter.
-  /// </summary>
-  /// <param name="parameter">The parameter information.</param>
-  /// <returns>The Postgres parameter.</returns>
-  protected override object CreateParameter(IParameter parameter)
-  {
-    return new NpgsqlParameter(parameter.Name, parameter.Value);
-  }
 }

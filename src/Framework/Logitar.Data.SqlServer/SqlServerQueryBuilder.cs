@@ -1,6 +1,4 @@
-﻿using Microsoft.Data.SqlClient;
-
-namespace Logitar.Data.SqlServer;
+﻿namespace Logitar.Data.SqlServer;
 
 /// <summary>
 /// Represents the implementation of the SQL query builder for Microsoft SQL Server.
@@ -27,14 +25,4 @@ public class SqlServerQueryBuilder : QueryBuilder
   /// <param name="source">The source table.</param>
   /// <returns>The SQL Server query builder.</returns>
   public static SqlServerQueryBuilder From(TableId source) => new(source);
-
-  /// <summary>
-  /// Creates a new SQL Server query parameter.
-  /// </summary>
-  /// <param name="parameter">The parameter information.</param>
-  /// <returns>The SQL Server parameter.</returns>
-  protected override object CreateParameter(IParameter parameter)
-  {
-    return new SqlParameter(parameter.Name, parameter.Value);
-  }
 }

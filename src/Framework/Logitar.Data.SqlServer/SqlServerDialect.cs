@@ -1,4 +1,6 @@
-﻿namespace Logitar.Data.SqlServer;
+﻿using Microsoft.Data.SqlClient;
+
+namespace Logitar.Data.SqlServer;
 
 /// <summary>
 /// Represents the dialect of Microsoft SQL Server.
@@ -17,4 +19,14 @@ public record SqlServerDialect : Dialect
   /// Gets the suffix of identifiers in the SQL Server dialect.
   /// </summary>
   public override string? IdentifierSuffix => "]";
+
+  /// <summary>
+  /// Creates a new SQL Server command parameter.
+  /// </summary>
+  /// <param name="parameter">The parameter information.</param>
+  /// <returns>The SQL Server parameter.</returns>
+  public override object CreateParameter(IParameter parameter)
+  {
+    return new SqlParameter(parameter.Name, parameter.Value);
+  }
 }

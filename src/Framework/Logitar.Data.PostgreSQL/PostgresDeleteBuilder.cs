@@ -1,6 +1,4 @@
-﻿using Npgsql;
-
-namespace Logitar.Data.PostgreSQL;
+﻿namespace Logitar.Data.PostgreSQL;
 
 /// <summary>
 /// Represents the implementation of the SQL delete command builder for PostgreSQL.
@@ -28,14 +26,4 @@ public class PostgresDeleteBuilder : DeleteBuilder
   /// <returns>The Postgres delete builder.</returns>
   /// <exception cref="ArgumentException">The source table name is missing.</exception>
   public static PostgresDeleteBuilder From(TableId source) => new(source);
-
-  /// <summary>
-  /// Creates a new Postgres command parameter.
-  /// </summary>
-  /// <param name="parameter">The parameter information.</param>
-  /// <returns>The Postgres parameter.</returns>
-  protected override object CreateParameter(IParameter parameter)
-  {
-    return new NpgsqlParameter(parameter.Name, parameter.Value);
-  }
 }

@@ -16,6 +16,4 @@ internal class UpdateBuilderMock : UpdateBuilder
   }
 
   public override Dialect Dialect { get; set; } = new DialectMock();
-
-  protected override object CreateParameter(IParameter parameter) => parameter;
 }

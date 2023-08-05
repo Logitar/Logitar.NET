@@ -7,6 +7,4 @@ internal class InsertBuilderMock : InsertBuilder
   }
 
   public override Dialect Dialect { get; set; } = new DialectMock();
-
-  protected override object CreateParameter(IParameter parameter) => parameter;
 }

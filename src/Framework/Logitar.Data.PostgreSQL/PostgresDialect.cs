@@ -1,4 +1,6 @@
-﻿namespace Logitar.Data.PostgreSQL;
+﻿using Npgsql;
+
+namespace Logitar.Data.PostgreSQL;
 
 /// <summary>
 /// Represents the dialect of PostgreSQL.
@@ -17,4 +19,14 @@ public record PostgresDialect : Dialect
   /// Gets the suffix of identifiers in the Postgres dialect.
   /// </summary>
   public override string? IdentifierSuffix => "\"";
+
+  /// <summary>
+  /// Creates a new Postgres command parameter.
+  /// </summary>
+  /// <param name="parameter">The parameter information.</param>
+  /// <returns>The Postgres parameter.</returns>
+  public override object CreateParameter(IParameter parameter)
+  {
+    return new NpgsqlParameter(parameter.Name, parameter.Value);
+  }
 }

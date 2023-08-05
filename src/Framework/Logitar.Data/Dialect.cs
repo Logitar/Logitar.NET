@@ -126,4 +126,11 @@ public record Dialect
   /// Gets the DESC clause in the generic dialect.
   /// </summary>
   public virtual string DescendingClause => "DESC";
+
+  /// <summary>
+  /// Creates a new implementation-specific query parameter.
+  /// </summary>
+  /// <param name="parameter">The parameter information.</param>
+  /// <returns>The implementation-specific parameter.</returns>
+  public virtual object CreateParameter(IParameter parameter) => parameter;
 }
