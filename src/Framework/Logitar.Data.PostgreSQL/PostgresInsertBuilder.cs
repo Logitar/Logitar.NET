@@ -17,17 +17,9 @@ public class PostgresInsertBuilder : InsertBuilder
   }
 
   /// <summary>
-  /// Gets the default schema of the Postgres dialect.
+  /// Gets or sets the dialect used to format to SQL.
   /// </summary>
-  protected override string? DefaultSchema => "public";
-  /// <summary>
-  /// Gets the prefix of identifiers in the Postgres dialect.
-  /// </summary>
-  protected override string? IdentifierPrefix => "\"";
-  /// <summary>
-  /// Gets the suffix of identifiers in the Postgres dialect.
-  /// </summary>
-  protected override string? IdentifierSuffix => "\"";
+  public override Dialect Dialect { get; set; } = new PostgresDialect();
 
   /// <summary>
   /// Initializes a new instance of the <see cref="PostgresInsertBuilder"/> class.

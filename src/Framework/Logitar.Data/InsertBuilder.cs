@@ -41,6 +41,11 @@ public abstract class InsertBuilder : IInsertBuilder
   }
 
   /// <summary>
+  /// Gets or sets the dialect used to format to SQL.
+  /// </summary>
+  public virtual Dialect Dialect { get; set; } = new();
+
+  /// <summary>
   /// Gets the table in which the command will insert data into.
   /// </summary>
   protected TableId Table { get; }
@@ -56,45 +61,6 @@ public abstract class InsertBuilder : IInsertBuilder
   /// Gets the list of rows that will be inserted by the command.
   /// </summary>
   protected ICollection<object?[]> Rows { get; } = new List<object?[]>();
-
-  /// <summary>
-  /// Gets the default schema of the generic dialect.
-  /// </summary>
-  protected virtual string? DefaultSchema => null;
-  /// <summary>
-  /// Gets the prefix of identifiers in the generic dialect.
-  /// </summary>
-  protected virtual string? IdentifierPrefix => null;
-  /// <summary>
-  /// Gets the suffix of identifiers in the generic dialect.
-  /// </summary>
-  protected virtual string? IdentifierSuffix => null;
-  /// <summary>
-  /// Gets the identifier separator in the generic dialect.
-  /// </summary>
-  protected virtual string IdentifierSeparator => ".";
-  /// <summary>
-  /// Gets the prefix of parameters in the generic dialect.
-  /// </summary>
-  protected virtual string? ParameterPrefix => "@";
-  /// <summary>
-  /// Gets the suffix of parameters in the generic dialect.
-  /// </summary>
-  protected virtual string? ParameterSuffix => null;
-
-  /// <summary>
-  /// Gets the INSERT INTO clause in the generic dialect.
-  /// </summary>
-  protected virtual string InsertIntoClause => "INSERT INTO";
-  /// <summary>
-  /// Gets the VALUES clause in the generic dialect.
-  /// </summary>
-  protected virtual string ValuesClause => "VALUES";
-
-  /// <summary>
-  /// Gets the NULL clause in the generic dialect.
-  /// </summary>
-  protected virtual string NullClause => "NULL";
 
   /// <summary>
   /// Inserts the specified row values in the command builder.
@@ -126,16 +92,16 @@ public abstract class InsertBuilder : IInsertBuilder
 
     StringBuilder text = new();
 
-    text.Append(InsertIntoClause).Append(' ').Append(Format(Table)).Append(" (")
+    text.Append(Dialect.InsertIntoClause).Append(' ').Append(Format(Table)).Append(" (")
       .Append(string.Join(", ", Columns.Select(column => Format(column.Name!))))
-      .Append(") ").AppendLine(ValuesClause);
+      .Append(") ").AppendLine(Dialect.ValuesClause);
 
     for (int i = 0; i < Rows.Count; i++)
     {
       object?[] row = Rows.ElementAt(i);
 
       text.Append('(')
-        .Append(string.Join(", ", row.Select(cell => cell == null ? NullClause : Format(AddParameter(cell)))))
+        .Append(string.Join(", ", row.Select(cell => cell == null ? Dialect.NullClause : Format(AddParameter(cell)))))
         .Append(')');
 
       if (i < (Rows.Count - 1))
@@ -158,10 +124,10 @@ public abstract class InsertBuilder : IInsertBuilder
   {
     StringBuilder formatted = new();
 
-    string? schema = table.Schema ?? DefaultSchema;
+    string? schema = table.Schema ?? Dialect.DefaultSchema;
     if (schema != null)
     {
-      formatted.Append(Format(schema)).Append(IdentifierSeparator);
+      formatted.Append(Format(schema)).Append(Dialect.IdentifierSeparator);
     }
 
     formatted.Append(Format(table.Table ?? string.Empty));
@@ -188,7 +154,7 @@ public abstract class InsertBuilder : IInsertBuilder
   /// <returns>The formatted SQL.</returns>
   protected virtual string Format(IParameter parameter)
   {
-    return string.Concat(ParameterPrefix, parameter.Name, ParameterSuffix);
+    return string.Concat(Dialect.ParameterPrefix, parameter.Name, Dialect.ParameterSuffix);
   }
 
   /// <summary>
@@ -198,7 +164,7 @@ public abstract class InsertBuilder : IInsertBuilder
   /// <returns>The formatted SQL.</returns>
   protected virtual string Format(string identifier)
   {
-    return string.Concat(IdentifierPrefix, identifier, IdentifierSuffix);
+    return string.Concat(Dialect.IdentifierPrefix, identifier, Dialect.IdentifierSuffix);
   }
 
   /// <summary>

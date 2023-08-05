@@ -17,17 +17,9 @@ public class SqlServerUpdateBuilder : UpdateBuilder
   }
 
   /// <summary>
-  /// Gets the default schema of the SQL Server dialect.
+  /// Gets or sets the dialect used to format to Microsoft SQL Server.
   /// </summary>
-  protected override string? DefaultSchema => "dbo";
-  /// <summary>
-  /// Gets the prefix of identifiers in the SQL Server dialect.
-  /// </summary>
-  protected override string? IdentifierPrefix => "[";
-  /// <summary>
-  /// Gets the suffix of identifiers in the SQL Server dialect.
-  /// </summary>
-  protected override string? IdentifierSuffix => "]";
+  public override Dialect Dialect { get; set; } = new SqlServerDialect();
 
   /// <summary>
   /// Initializes a new instance of the <see cref="SqlServerUpdateBuilder"/> class.

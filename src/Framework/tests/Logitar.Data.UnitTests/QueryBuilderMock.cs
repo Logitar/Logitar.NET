@@ -4,48 +4,23 @@ internal class QueryBuilderMock : QueryBuilder
 {
   public QueryBuilderMock(TableId source) : base(source)
   {
-    JoinClauses[JoinKind.Full] = "JOINDRE COMPLÈTEMENT";
-    JoinClauses[JoinKind.Inner] = "JOINDRE À L'INTÉRIEUR";
-    JoinClauses[JoinKind.Left] = "JOINDRE À GAUCHE";
-    JoinClauses[JoinKind.Right] = "JOINDRE À DROITE";
+    Dialect.JoinClauses[JoinKind.Full] = "JOINDRE COMPLÈTEMENT";
+    Dialect.JoinClauses[JoinKind.Inner] = "JOINDRE À L'INTÉRIEUR";
+    Dialect.JoinClauses[JoinKind.Left] = "JOINDRE À GAUCHE";
+    Dialect.JoinClauses[JoinKind.Right] = "JOINDRE À DROITE";
 
-    ComparisonOperators["="] = "==";
-    ComparisonOperators[">"] = ">>";
-    ComparisonOperators[">="] = ">>==";
-    ComparisonOperators["<"] = "<<";
-    ComparisonOperators["<="] = "<<==";
-    ComparisonOperators["<>"] = "!=";
+    Dialect.ComparisonOperators["="] = "==";
+    Dialect.ComparisonOperators[">"] = ">>";
+    Dialect.ComparisonOperators[">="] = ">>==";
+    Dialect.ComparisonOperators["<"] = "<<";
+    Dialect.ComparisonOperators["<="] = "<<==";
+    Dialect.ComparisonOperators["<>"] = "!=";
 
-    GroupOperators["AND"] = "ET";
-    GroupOperators["OR"] = "OU";
+    Dialect.GroupOperators["AND"] = "ET";
+    Dialect.GroupOperators["OR"] = "OU";
   }
 
-  protected override string? DefaultSchema => "défaut";
-  protected override string? IdentifierPrefix => "«";
-  protected override string? IdentifierSuffix => "»";
-  protected override string IdentifierSeparator => "·";
-  protected override string? ParameterPrefix => "Π";
-  protected override string? ParameterSuffix => "Θ";
-
-  protected override string SelectClause => "SÉLECTIONNER";
-  protected override string AllColumnsClause => "Ω";
-
-  protected override string FromClause => "DEPUIS";
-
-  protected override string OnClause => "SUR";
-
-  protected override string WhereClause => "OÙ";
-  protected override string IsClause => "EST";
-  protected override string NotClause => "NON";
-  protected override string BetweenClause => "DANS L'INTERVALLE";
-  protected override string InClause => "DANS";
-  protected override string LikeClause => "COMME";
-  protected override string NullClause => "NUL";
-
-  protected override string OrderByClause => "ORDONNER PAR";
-  protected override string ThenByClause => "PUIS PAR";
-  protected override string AscendingClause => "↑";
-  protected override string DescendingClause => "↓";
+  public override Dialect Dialect { get; set; } = new DialectMock();
 
   protected override object CreateParameter(IParameter parameter) => parameter;
 }

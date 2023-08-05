@@ -21,6 +21,11 @@ public abstract class QueryBuilder : IQueryBuilder
   }
 
   /// <summary>
+  /// Gets or sets the dialect used to format to SQL.
+  /// </summary>
+  public virtual Dialect Dialect { get; set; } = new();
+
+  /// <summary>
   /// Gets the source table of the query.
   /// </summary>
   protected TableId Source { get; }
@@ -44,108 +49,6 @@ public abstract class QueryBuilder : IQueryBuilder
   /// Gets the list of sort parameters of the query.
   /// </summary>
   protected ICollection<OrderBy> OrderByList { get; } = new List<OrderBy>();
-
-  /// <summary>
-  /// Gets the default schema of the generic dialect.
-  /// </summary>
-  protected virtual string? DefaultSchema => null;
-  /// <summary>
-  /// Gets the prefix of identifiers in the generic dialect.
-  /// </summary>
-  protected virtual string? IdentifierPrefix => null;
-  /// <summary>
-  /// Gets the suffix of identifiers in the generic dialect.
-  /// </summary>
-  protected virtual string? IdentifierSuffix => null;
-  /// <summary>
-  /// Gets the identifier separator in the generic dialect.
-  /// </summary>
-  protected virtual string IdentifierSeparator => ".";
-  /// <summary>
-  /// Gets the prefix of parameters in the generic dialect.
-  /// </summary>
-  protected virtual string? ParameterPrefix => "@";
-  /// <summary>
-  /// Gets the suffix of parameters in the generic dialect.
-  /// </summary>
-  protected virtual string? ParameterSuffix => null;
-
-  /// <summary>
-  /// Gets the SELECT clause in the generic dialect.
-  /// </summary>
-  protected virtual string SelectClause => "SELECT";
-  /// <summary>
-  /// Gets the all-columns (*) clause in the generic dialect.
-  /// </summary>
-  protected virtual string AllColumnsClause => "*";
-
-  /// <summary>
-  /// Gets the FROM clause in the generic dialect.
-  /// </summary>
-  protected virtual string FromClause => "FROM";
-
-  /// <summary>
-  /// Gets the join clauses of the current dialect.
-  /// </summary>
-  protected virtual Dictionary<JoinKind, string> JoinClauses { get; } = new();
-  /// <summary>
-  /// Gets the ON clause in the generic dialect.
-  /// </summary>
-  protected virtual string OnClause => "ON";
-
-  /// <summary>
-  /// Gets the WHERE clause in the generic dialect.
-  /// </summary>
-  protected virtual string WhereClause => "WHERE";
-  /// <summary>
-  /// Gets the IS clause in the generic dialect.
-  /// </summary>
-  protected virtual string IsClause => "IS";
-  /// <summary>
-  /// Gets the NOT clause in the generic dialect.
-  /// </summary>
-  protected virtual string NotClause => "NOT";
-  /// <summary>
-  /// Gets the BETWEEN clause in the generic dialect.
-  /// </summary>
-  protected virtual string BetweenClause => "BETWEEN";
-  /// <summary>
-  /// Gets the IN clause in the generic dialect.
-  /// </summary>
-  protected virtual string InClause => "IN";
-  /// <summary>
-  /// Gets the LIKE clause in the generic dialect.
-  /// </summary>
-  protected virtual string LikeClause => "LIKE";
-  /// <summary>
-  /// Gets the NULL clause in the generic dialect.
-  /// </summary>
-  protected virtual string NullClause => "NULL";
-  /// <summary>
-  /// Gets the comparison operators of the current dialect.
-  /// </summary>
-  protected virtual Dictionary<string, string> ComparisonOperators { get; } = new();
-  /// <summary>
-  /// Gets the group operators of the current dialect.
-  /// </summary>
-  protected virtual Dictionary<string, string> GroupOperators { get; } = new();
-
-  /// <summary>
-  /// Gets the ORDER BY clause in the generic dialect.
-  /// </summary>
-  protected virtual string OrderByClause => "ORDER BY";
-  /// <summary>
-  /// Gets the THEN BY clause in the generic dialect.
-  /// </summary>
-  protected virtual string ThenByClause => "THEN BY";
-  /// <summary>
-  /// Gets the ASC clause in the generic dialect.
-  /// </summary>
-  protected virtual string AscendingClause => "ASC";
-  /// <summary>
-  /// Gets the DESC clause in the generic dialect.
-  /// </summary>
-  protected virtual string DescendingClause => "DESC";
 
   /// <summary>
   /// Selects the specified columns in the query results.
@@ -202,10 +105,10 @@ public abstract class QueryBuilder : IQueryBuilder
 
     if (Selections.Any())
     {
-      text.Append(SelectClause).Append(' ').AppendLine(string.Join(", ", Selections.Select(Format)));
+      text.Append(Dialect.SelectClause).Append(' ').AppendLine(string.Join(", ", Selections.Select(Format)));
     }
 
-    text.Append(FromClause).Append(' ').AppendLine(Format(Source, fullName: true));
+    text.Append(Dialect.FromClause).Append(' ').AppendLine(Format(Source, fullName: true));
 
     if (Joins.Any())
     {
@@ -217,15 +120,17 @@ public abstract class QueryBuilder : IQueryBuilder
 
     if (Conditions.Any())
     {
-      _ = GroupOperators.TryGetValue("AND", out string? andOperator);
+      _ = Dialect.GroupOperators.TryGetValue("AND", out string? andOperator);
       andOperator ??= "AND";
 
-      text.Append(WhereClause).Append(' ').AppendLine(string.Join($" {andOperator} ", Conditions.Select(Format)));
+      text.Append(Dialect.WhereClause).Append(' ')
+        .AppendLine(string.Join($" {andOperator} ", Conditions.Select(Format)));
     }
 
     if (OrderByList.Any())
     {
-      text.Append(OrderByClause).Append(' ').AppendLine(string.Join($" {ThenByClause} ", OrderByList.Select(Format)));
+      text.Append(Dialect.OrderByClause).Append(' ')
+        .AppendLine(string.Join($" {Dialect.ThenByClause} ", OrderByList.Select(Format)));
     }
 
     IEnumerable<object> parameters = Parameters.Select(CreateParameter);
@@ -242,22 +147,22 @@ public abstract class QueryBuilder : IQueryBuilder
   {
     StringBuilder formatted = new();
 
-    if (!JoinClauses.TryGetValue(join.Kind, out string? joinClause))
+    if (!Dialect.JoinClauses.TryGetValue(join.Kind, out string? joinClause))
     {
       joinClause = $"{join.Kind.ToString().ToUpper()} JOIN";
     }
-    if (!ComparisonOperators.TryGetValue("=", out string? equalOperator))
+    if (!Dialect.ComparisonOperators.TryGetValue("=", out string? equalOperator))
     {
       equalOperator = "=";
     }
 
     formatted.Append(joinClause).Append(' ').Append(Format(join.Left.Table!, fullName: true))
-      .Append(' ').Append(OnClause).Append(' ').Append(Format(join.Left)).Append(' ')
+      .Append(' ').Append(Dialect.OnClause).Append(' ').Append(Format(join.Left)).Append(' ')
       .Append(equalOperator).Append(' ').Append(Format(join.Right));
 
     if (join.Condition != null)
     {
-      _ = GroupOperators.TryGetValue("AND", out string? andOperator);
+      _ = Dialect.GroupOperators.TryGetValue("AND", out string? andOperator);
       andOperator ??= "AND";
 
       formatted.Append(' ').Append(andOperator).Append(' ').Append(Format(join.Condition));
@@ -279,7 +184,7 @@ public abstract class QueryBuilder : IQueryBuilder
       case OperatorCondition @operator:
         return string.Join(' ', Format(@operator.Column), Format(@operator.Operator));
       case ConditionGroup group:
-        _ = GroupOperators.TryGetValue(group.Operator, out string? groupOperator);
+        _ = Dialect.GroupOperators.TryGetValue(group.Operator, out string? groupOperator);
         groupOperator ??= group.Operator;
         return string.Concat('(', string.Join($" {groupOperator} ", group.Conditions.Select(Format)), ')');
       default:
@@ -313,15 +218,15 @@ public abstract class QueryBuilder : IQueryBuilder
   {
     StringBuilder formatted = new();
 
-    _ = GroupOperators.TryGetValue("AND", out string? andOperator);
+    _ = Dialect.GroupOperators.TryGetValue("AND", out string? andOperator);
     andOperator ??= "AND";
 
     if (between.NotBetween)
     {
-      formatted.Append(NotClause).Append(' ');
+      formatted.Append(Dialect.NotClause).Append(' ');
     }
 
-    formatted.Append(BetweenClause).Append(' ').Append(Format(AddParameter(between.MinValue)))
+    formatted.Append(Dialect.BetweenClause).Append(' ').Append(Format(AddParameter(between.MinValue)))
       .Append($" {andOperator} ").Append(Format(AddParameter(between.MaxValue)));
 
     return formatted.ToString();
@@ -333,7 +238,7 @@ public abstract class QueryBuilder : IQueryBuilder
   /// <returns>The formatted SQL.</returns>
   protected virtual string Format(ComparisonOperator comparison)
   {
-    _ = ComparisonOperators.TryGetValue(comparison.Operator, out string? comparisonOperator);
+    _ = Dialect.ComparisonOperators.TryGetValue(comparison.Operator, out string? comparisonOperator);
     comparisonOperator ??= comparison.Operator;
 
     return string.Join(' ', comparisonOperator, Format(AddParameter(comparison.Value)));
@@ -349,10 +254,10 @@ public abstract class QueryBuilder : IQueryBuilder
 
     if (@in.NotIn)
     {
-      formatted.Append(NotClause).Append(' ');
+      formatted.Append(Dialect.NotClause).Append(' ');
     }
 
-    formatted.Append(InClause).Append(" (")
+    formatted.Append(Dialect.InClause).Append(" (")
       .Append(string.Join(", ", @in.Values.Select(value => Format(AddParameter(value)))))
       .Append(')');
 
@@ -369,10 +274,10 @@ public abstract class QueryBuilder : IQueryBuilder
 
     if (like.NotLike)
     {
-      formatted.Append(NotClause).Append(' ');
+      formatted.Append(Dialect.NotClause).Append(' ');
     }
 
-    formatted.Append(LikeClause).Append(' ').Append(Format(AddParameter(like.Pattern)));
+    formatted.Append(Dialect.LikeClause).Append(' ').Append(Format(AddParameter(like.Pattern)));
 
     return formatted.ToString();
   }
@@ -385,14 +290,14 @@ public abstract class QueryBuilder : IQueryBuilder
   {
     StringBuilder formatted = new();
 
-    formatted.Append(IsClause).Append(' ');
+    formatted.Append(Dialect.IsClause).Append(' ');
 
     if (@null.NotNull)
     {
-      formatted.Append(NotClause).Append(' ');
+      formatted.Append(Dialect.NotClause).Append(' ');
     }
 
-    formatted.Append(NullClause);
+    formatted.Append(Dialect.NullClause);
 
     return formatted.ToString();
   }
@@ -404,7 +309,7 @@ public abstract class QueryBuilder : IQueryBuilder
   /// <returns>The formatted SQL.</returns>
   protected virtual string Format(OrderBy orderBy)
   {
-    return string.Join(' ', Format(orderBy.Column), orderBy.IsDescending ? DescendingClause : AscendingClause);
+    return string.Join(' ', Format(orderBy.Column), orderBy.IsDescending ? Dialect.DescendingClause : Dialect.AscendingClause);
   }
 
   /// <summary>
@@ -418,10 +323,10 @@ public abstract class QueryBuilder : IQueryBuilder
 
     if (column.Table != null)
     {
-      formatted.Append(Format(column.Table)).Append(IdentifierSeparator);
+      formatted.Append(Format(column.Table)).Append(Dialect.IdentifierSeparator);
     }
 
-    formatted.Append(column.Name == null ? AllColumnsClause : Format(column.Name));
+    formatted.Append(column.Name == null ? Dialect.AllColumnsClause : Format(column.Name));
 
     return formatted.ToString();
   }
@@ -440,10 +345,10 @@ public abstract class QueryBuilder : IQueryBuilder
 
     StringBuilder formatted = new();
 
-    string? schema = table.Schema ?? DefaultSchema;
+    string? schema = table.Schema ?? Dialect.DefaultSchema;
     if (schema != null)
     {
-      formatted.Append(Format(schema)).Append(IdentifierSeparator);
+      formatted.Append(Format(schema)).Append(Dialect.IdentifierSeparator);
     }
 
     formatted.Append(Format(table.Table ?? string.Empty));
@@ -475,7 +380,7 @@ public abstract class QueryBuilder : IQueryBuilder
   /// <returns>The formatted SQL.</returns>
   protected virtual string Format(IParameter parameter)
   {
-    return string.Concat(ParameterPrefix, parameter.Name, ParameterSuffix);
+    return string.Concat(Dialect.ParameterPrefix, parameter.Name, Dialect.ParameterSuffix);
   }
 
   /// <summary>
@@ -485,7 +390,7 @@ public abstract class QueryBuilder : IQueryBuilder
   /// <returns>The formatted SQL.</returns>
   protected virtual string Format(string identifier)
   {
-    return string.Concat(IdentifierPrefix, identifier, IdentifierSuffix);
+    return string.Concat(Dialect.IdentifierPrefix, identifier, Dialect.IdentifierSuffix);
   }
 
   /// <summary>
