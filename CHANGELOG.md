@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Created a struct for actor identifiers.
 - Implemented an EventSourcing MongoDB store.
 - Added a demo TodoController with CRUD endpoints.
-- Implemented DeleteBuilders for PostgreSQL and Microsoft SQL Server.
+- Implemented DeleteBuilders and UpdateBuilders for PostgreSQL and Microsoft SQL Server.
 
 ### Changed
 
