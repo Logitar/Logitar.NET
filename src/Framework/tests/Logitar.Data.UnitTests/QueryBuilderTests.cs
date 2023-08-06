@@ -3,13 +3,16 @@
 [Trait(Traits.Category, Categories.Unit)]
 public class QueryBuilderTests
 {
-  private readonly TableId _table = new("MaTable", "x");
+  private static readonly TableId _table = new("MaTable", "x");
 
-  private readonly QueryBuilderMock _builder;
+  private readonly QueryBuilder _builder;
 
   public QueryBuilderTests()
   {
-    _builder = new(_table);
+    _builder = new(_table)
+    {
+      Dialect = new DialectMock()
+    };
   }
 
   [Fact(DisplayName = "Build: it constructs the correct query.")]
@@ -90,7 +93,7 @@ public class QueryBuilderTests
   [Fact(DisplayName = "Ctor: it throws ArgumentException when table name is null.")]
   public void Ctor_it_throws_ArgumentException_when_table_name_is_null()
   {
-    var exception = Assert.Throws<ArgumentException>(() => new QueryBuilderMock(TableId.FromAlias("alias")));
+    var exception = Assert.Throws<ArgumentException>(() => new QueryBuilder(TableId.FromAlias("alias")));
     Assert.Equal("source", exception.ParamName);
   }
 

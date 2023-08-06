@@ -3,13 +3,16 @@
 [Trait(Traits.Category, Categories.Unit)]
 public class DeleteBuilderTests
 {
-  private readonly TableId _table = new("MaTable", "x");
+  private static readonly TableId _table = new("Events");
 
-  private readonly DeleteBuilderMock _builder;
+  private readonly DeleteBuilder _builder;
 
   public DeleteBuilderTests()
   {
-    _builder = new(_table);
+    _builder = new(_table)
+    {
+      Dialect = new DialectMock()
+    };
   }
 
   [Fact(DisplayName = "Build: it throws NotSupportedException when condition type is not supported.")]
@@ -36,7 +39,7 @@ public class DeleteBuilderTests
   [Fact(DisplayName = "Ctor: it throws ArgumentException when table name is null.")]
   public void Ctor_it_throws_ArgumentException_when_table_name_is_null()
   {
-    var exception = Assert.Throws<ArgumentException>(() => new DeleteBuilderMock(TableId.FromAlias("alias")));
+    var exception = Assert.Throws<ArgumentException>(() => new DeleteBuilder(TableId.FromAlias("alias")));
     Assert.Equal("source", exception.ParamName);
   }
 
@@ -44,11 +47,10 @@ public class DeleteBuilderTests
   public void It_should_build_the_correct_delete_command()
   {
     DateTime moment = DateTime.Now.AddYears(-1);
-    TableId source = new("Events");
-    ICommand command = new DeleteBuilderMock(source)
+    ICommand command = _builder
       .Where(
-        new OperatorCondition(new ColumnId("Status", source), Operators.IsEqualTo("Completed")),
-        new OperatorCondition(new ColumnId("OccurredOn", source), Operators.IsLessThanOrEqualTo(moment))
+        new OperatorCondition(new ColumnId("Status", _table), Operators.IsEqualTo("Completed")),
+        new OperatorCondition(new ColumnId("OccurredOn", _table), Operators.IsLessThanOrEqualTo(moment))
       )
       .Build();
 

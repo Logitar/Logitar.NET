@@ -10,7 +10,7 @@ public class QueryBuilder : SqlBuilder, IQueryBuilder
   /// </summary>
   /// <param name="source">The source table.</param>
   /// <exception cref="ArgumentException">The source table name is missing.</exception>
-  protected QueryBuilder(TableId source)
+  public QueryBuilder(TableId source)
   {
     if (source.Table == null)
     {

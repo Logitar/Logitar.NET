@@ -10,7 +10,7 @@ public class InsertBuilder : SqlBuilder, IInsertBuilder
   /// </summary>
   /// <param name="columns">The columns to insert into.</param>
   /// <exception cref="ArgumentException">No column has been specified, or a column name or table has not been specified, or multiple tables have been specified.</exception>
-  protected InsertBuilder(params ColumnId[] columns)
+  public InsertBuilder(params ColumnId[] columns)
   {
     if (!columns.Any())
     {

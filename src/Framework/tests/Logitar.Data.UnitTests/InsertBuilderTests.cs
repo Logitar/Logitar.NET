@@ -3,14 +3,19 @@
 [Trait(Traits.Category, Categories.Unit)]
 public class InsertBuilderTests
 {
+  private static readonly TableId _table = new("Events");
+
   [Fact(DisplayName = "It should build the correct insert command.")]
   public void It_should_build_the_correct_insert_command()
   {
     object?[] row1 = new object?[] { 123, "SYSTEM", DateTime.Now };
     object?[] row2 = new object?[] { 456, null, DateTime.Now.AddHours(-1) };
 
-    TableId events = new("Events");
-    ICommand command = new InsertBuilderMock(new ColumnId("Id", events), new ColumnId("ActorId", events), new ColumnId("OccurredOn", events))
+    InsertBuilder builder = new(new ColumnId("Id", _table), new ColumnId("ActorId", _table), new ColumnId("OccurredOn", _table))
+    {
+      Dialect = new DialectMock()
+    };
+    ICommand command = builder
       .Value(row1)
       .Value(row2)
       .Build();
@@ -36,7 +41,7 @@ public class InsertBuilderTests
   {
     TableId table = new(tableName);
     ColumnId[] columns = new[] { firstColumn }.Concat(otherColumns).Select(name => new ColumnId(name, table)).ToArray();
-    InsertBuilderMock builder = new(columns);
+    InsertBuilder builder = new(columns);
 
     PropertyInfo? tableProperty = typeof(InsertBuilder).GetProperty("Table", BindingFlags.Instance | BindingFlags.NonPublic);
     Assert.NotNull(tableProperty);
@@ -53,7 +58,7 @@ public class InsertBuilderTests
     TableId table = new("MaTable");
     ColumnId firstColumn = new("MaColonne", table);
     ColumnId otherColumns = ColumnId.All(table);
-    var exception = Assert.Throws<ArgumentException>(() => new InsertBuilderMock(firstColumn, otherColumns));
+    var exception = Assert.Throws<ArgumentException>(() => new InsertBuilder(firstColumn, otherColumns));
     Assert.Equal("columns", exception.ParamName);
     Assert.StartsWith("The column name is required (index: 1).", exception.Message);
   }
@@ -63,7 +68,7 @@ public class InsertBuilderTests
   {
     ColumnId firstColumn = new("MaColonne");
     ColumnId otherColumn = new("MaTableId", new TableId("MaTable"));
-    var exception = Assert.Throws<ArgumentException>(() => new InsertBuilderMock(firstColumn, otherColumn));
+    var exception = Assert.Throws<ArgumentException>(() => new InsertBuilder(firstColumn, otherColumn));
     Assert.Equal("columns", exception.ParamName);
     Assert.StartsWith("The column table cannot be null (index: 0).", exception.Message);
   }
@@ -71,7 +76,7 @@ public class InsertBuilderTests
   [Fact(DisplayName = "It should throw ArgumentException when inserting no value.")]
   public void It_should_throw_ArgumentException_when_inserting_no_value()
   {
-    InsertBuilderMock builder = new(new ColumnId("MaColonne", new TableId("MaTable")));
+    InsertBuilder builder = new(new ColumnId("MaColonne", new TableId("MaTable")));
     var exception = Assert.Throws<ArgumentException>(() => builder.Value());
     Assert.Equal("values", exception.ParamName);
     Assert.StartsWith("At least one value must be inserted.", exception.Message);
@@ -80,7 +85,7 @@ public class InsertBuilderTests
   [Fact(DisplayName = "It should throw ArgumentException when no column has been specified.")]
   public void It_should_throw_ArgumentException_when_no_column_has_been_specified()
   {
-    var exception = Assert.Throws<ArgumentException>(() => new InsertBuilderMock());
+    var exception = Assert.Throws<ArgumentException>(() => new InsertBuilder());
     Assert.Equal("columns", exception.ParamName);
     Assert.StartsWith("At least one column must be specified.", exception.Message);
   }
@@ -90,7 +95,7 @@ public class InsertBuilderTests
   {
     ColumnId firstColumn = new("MaColonne", new TableId("MaTable"));
     ColumnId otherColumn = new("MonAutreColonne", new TableId("MonAutreTable"));
-    var exception = Assert.Throws<ArgumentException>(() => new InsertBuilderMock(firstColumn, otherColumn));
+    var exception = Assert.Throws<ArgumentException>(() => new InsertBuilder(firstColumn, otherColumn));
     Assert.Equal("columns", exception.ParamName);
     Assert.StartsWith("An insert command cannot insert into multiple tables.", exception.Message);
   }
@@ -98,7 +103,7 @@ public class InsertBuilderTests
   [Fact(DisplayName = "It should throw InvalidOperationException when building without any row.")]
   public void It_should_throw_InvalidOperationException_when_building_without_any_row()
   {
-    InsertBuilderMock builder = new(new ColumnId("MaColonne", new TableId("MaTable")));
+    InsertBuilder builder = new(new ColumnId("MaColonne", new TableId("MaTable")));
     var exception = Assert.Throws<InvalidOperationException>(builder.Build);
     Assert.Equal("At least one row must be inserted.", exception.Message);
   }

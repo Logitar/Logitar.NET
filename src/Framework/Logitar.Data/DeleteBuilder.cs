@@ -10,7 +10,7 @@ public class DeleteBuilder : SqlBuilder, IDeleteBuilder
   /// </summary>
   /// <param name="source">The source table.</param>
   /// <exception cref="ArgumentException">The source table name has not been specified.</exception>
-  protected DeleteBuilder(TableId source)
+  public DeleteBuilder(TableId source)
   {
     if (source.Table == null)
     {

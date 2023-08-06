@@ -2,6 +2,24 @@
 
 public record DialectMock : Dialect
 {
+  public DialectMock() : base()
+  {
+    JoinClauses[JoinKind.Full] = "JOINDRE COMPLÈTEMENT";
+    JoinClauses[JoinKind.Inner] = "JOINDRE À L'INTÉRIEUR";
+    JoinClauses[JoinKind.Left] = "JOINDRE À GAUCHE";
+    JoinClauses[JoinKind.Right] = "JOINDRE À DROITE";
+
+    ComparisonOperators["="] = "==";
+    ComparisonOperators[">"] = ">>";
+    ComparisonOperators[">="] = ">>==";
+    ComparisonOperators["<"] = "<<";
+    ComparisonOperators["<="] = "<<==";
+    ComparisonOperators["<>"] = "!=";
+
+    GroupOperators["AND"] = "ET";
+    GroupOperators["OR"] = "OU";
+  }
+
   public override string? DefaultSchema => "défaut";
   public override string? IdentifierPrefix => "«";
   public override string? IdentifierSuffix => "»";

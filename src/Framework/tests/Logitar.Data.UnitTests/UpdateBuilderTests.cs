@@ -3,13 +3,16 @@
 [Trait(Traits.Category, Categories.Unit)]
 public class UpdateBuilderTests
 {
-  private readonly TableId _table = new("MaTable", "x");
+  private static readonly TableId _table = new("Events");
 
-  private readonly UpdateBuilderMock _builder;
+  private readonly UpdateBuilder _builder;
 
   public UpdateBuilderTests()
   {
-    _builder = new();
+    _builder = new()
+    {
+      Dialect = new DialectMock()
+    };
   }
 
   [Fact(DisplayName = "Build: it throws InvalidOperationException when there are multiple tables updated.")]
@@ -69,13 +72,12 @@ public class UpdateBuilderTests
   [Fact(DisplayName = "It should build the correct update command.")]
   public void It_should_build_the_correct_update_command()
   {
-    TableId source = new("Events");
-    ICommand command = new UpdateBuilderMock()
+    ICommand command = _builder
       .Set(
-        new Update(new ColumnId("Status", source), "Completed"),
-        new Update(new ColumnId("Trace", source), value: null)
+        new Update(new ColumnId("Status", _table), "Completed"),
+        new Update(new ColumnId("Trace", _table), value: null)
       )
-      .Where(new OperatorCondition(new ColumnId("Status", source), Operators.IsEqualTo("InProgress")))
+      .Where(new OperatorCondition(new ColumnId("Status", _table), Operators.IsEqualTo("InProgress")))
       .Build();
 
     string text = string.Join(Environment.NewLine, "MODIFIER «défaut»·«Events»",
