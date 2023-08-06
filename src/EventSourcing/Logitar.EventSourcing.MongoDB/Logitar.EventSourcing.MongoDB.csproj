@@ -1,0 +1,53 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <WarningsAsErrors>Nullable</WarningsAsErrors>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>Logitar.EventSourcing.MongoDB</Title>
+    <Authors>Francis Pion</Authors>
+    <Product>Logitar.NET</Product>
+    <Description>Provides an implementation of an event store to be used with the Event Sourcing architecture pattern, and MongoDB.</Description>
+    <Copyright>© 2023 Logitar All Rights Reserved.</Copyright>
+    <PackageIcon>logitar.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/Logitar/Logitar.NET</RepositoryUrl>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+    <FileVersion>$(AssemblyVersion)</FileVersion>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+    <Version>4.0.0</Version>
+    <NeutralLanguage>en-CA</NeutralLanguage>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <PackageReleaseNotes>Implemented an EventSourcing MongoDB store.</PackageReleaseNotes>
+    <PackageTags>logitar net framework event sourcing mongodb</PackageTags>
+    <PackageProjectUrl>https://github.com/Logitar/Logitar.NET/tree/dev/src/Logitar.EventSourcing.MongoDB</PackageProjectUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MongoDB.Driver" Version="2.20.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Logitar.EventSourcing.Infrastructure\Logitar.EventSourcing.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="LICENSE">
+      <PackagePath>\</PackagePath>
+      <Pack>True</Pack>
+    </None>
+    <None Update="logitar.png">
+      <PackagePath>\</PackagePath>
+      <Pack>True</Pack>
+    </None>
+    <None Update="README.md">
+      <PackagePath>\</PackagePath>
+      <Pack>True</Pack>
+    </None>
+  </ItemGroup>
+
+</Project>

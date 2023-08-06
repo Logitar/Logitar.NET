@@ -1,0 +1,9 @@
+﻿namespace Logitar.Demo.Ui;
+
+internal enum DatabaseProvider
+{
+  EntityFrameworkCorePostgreSQL,
+  EntityFrameworkCoreSqlServer,
+  InMemory,
+  MongoDB
+}

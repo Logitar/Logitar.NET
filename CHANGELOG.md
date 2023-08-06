@@ -9,6 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Nothing yet.
 
+## [1.2.0] - 2023-08-06
+
+### Added
+
+- Implemented query JOINs.
+- Added AggregateRoot metadata.
+- Created a struct for actor identifiers.
+- Implemented an EventSourcing MongoDB store.
+- Added a demo TodoController with CRUD endpoints.
+- Implemented DeleteBuilders and UpdateBuilders for PostgreSQL and Microsoft SQL Server.
+
+### Changed
+
+- Reorganized the solution directory structure.
+- Upgraded NuGet packages and fixed EventSourcing project dependencies.
+- Replaced DeleteAction by a nullable boolean.
+- Refactored AggregateRoot & DomainEvent.
+- Injecting IEventSerializer as a dependency.
+
 ## [1.1.0] - 2023-07-11
 
 ### Added
@@ -24,6 +43,7 @@ Nothing yet.
 
 - Implemented StringExtensions.
 
-[unreleased]: https://github.com/Logitar/Logitar.NET/compare/v1.1.0...HEAD
+[unreleased]: https://github.com/Logitar/Logitar.NET/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/Logitar/Logitar.NET/releases/tag/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/Logitar/Logitar.NET/releases/tag/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/Logitar/Logitar.NET/releases/tag/v1.0.0
