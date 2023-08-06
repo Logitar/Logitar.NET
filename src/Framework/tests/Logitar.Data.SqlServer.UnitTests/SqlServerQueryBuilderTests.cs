@@ -44,7 +44,7 @@ public class SqlServerQueryBuilderTests
       "INNER JOIN [dbo].[MesTâches] [t] ON [t].[MaTableId] = [x].[MaTableId] AND [t].[IsClosed] = @p0",
       "FULL JOIN [dbo].[MesProjets] ON [dbo].[MesProjets].[ProjectId] = [x].[ProjectId]",
       "WHERE ([x].[Priority] BETWEEN @p1 AND @p2 OR [x].[Priority] IS NULL) AND [Status] <> @p3 AND [x].[MaTableId] NOT IN (@p4, @p5, @p6) AND [Trace] LIKE @p7",
-      "ORDER BY [x].[DisplayName] ASC THEN BY [UpdatedOn] DESC");
+      "ORDER BY [x].[DisplayName] ASC, [UpdatedOn] DESC");
     Assert.Equal(text, query.Text);
 
     Dictionary<string, SqlParameter> parameters = query.Parameters.Select(p => (SqlParameter)p)

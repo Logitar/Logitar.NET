@@ -1,6 +1,4 @@
-﻿using Npgsql;
-
-namespace Logitar.Data.PostgreSQL;
+﻿namespace Logitar.Data.PostgreSQL;
 
 /// <summary>
 /// Represents the implementation of the SQL delete command builder for PostgreSQL.
@@ -17,17 +15,14 @@ public class PostgresDeleteBuilder : DeleteBuilder
   }
 
   /// <summary>
-  /// Gets the default schema of the Postgres dialect.
+  /// Gets or sets the dialect used to format to SQL.
   /// </summary>
-  protected override string? DefaultSchema => "public";
+  public override Dialect Dialect { get; set; } = new PostgresDialect();
+
   /// <summary>
-  /// Gets the prefix of identifiers in the Postgres dialect.
+  /// Gets the ILIKE clause in the Postgres dialect.
   /// </summary>
-  protected override string? IdentifierPrefix => "\"";
-  /// <summary>
-  /// Gets the suffix of identifiers in the Postgres dialect.
-  /// </summary>
-  protected override string? IdentifierSuffix => "\"";
+  protected virtual string InsensitiveLikeClause => "ILIKE";
 
   /// <summary>
   /// Initializes a new instance of the <see cref="PostgresDeleteBuilder"/> class.
@@ -38,12 +33,35 @@ public class PostgresDeleteBuilder : DeleteBuilder
   public static PostgresDeleteBuilder From(TableId source) => new(source);
 
   /// <summary>
-  /// Creates a new Postgres command parameter.
+  /// Formats the specified conditional operator to SQL.
   /// </summary>
-  /// <param name="parameter">The parameter information.</param>
-  /// <returns>The Postgres parameter.</returns>
-  protected override object CreateParameter(IParameter parameter)
+  /// <param name="operator">The operator to format.</param>
+  /// <returns>The formatted SQL.</returns>
+  /// <exception cref="NotSupportedException">The conditional operator type is not supported.</exception>
+  protected override string Format(ConditionalOperator @operator)
   {
-    return new NpgsqlParameter(parameter.Name, parameter.Value);
+    return @operator switch
+    {
+      InsensitiveLikeOperator insensitiveLike => Format(insensitiveLike),
+      _ => base.Format(@operator),
+    };
+  }
+  /// <summary>
+  /// Formats the specified ILIKE operator to SQL.
+  /// </summary>
+  /// <param name="insensitiveLike">The operator to format.</param>
+  /// <returns>The formatted SQL.</returns>
+  protected virtual string Format(InsensitiveLikeOperator insensitiveLike)
+  {
+    StringBuilder formatted = new();
+
+    if (insensitiveLike.NotLike)
+    {
+      formatted.Append(Dialect.NotClause).Append(' ');
+    }
+
+    formatted.Append(InsensitiveLikeClause).Append(' ').Append(Format(AddParameter(insensitiveLike.Pattern)));
+
+    return formatted.ToString();
   }
 }

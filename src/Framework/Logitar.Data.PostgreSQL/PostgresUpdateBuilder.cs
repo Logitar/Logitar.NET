@@ -1,6 +1,4 @@
-﻿using Npgsql;
-
-namespace Logitar.Data.PostgreSQL;
+﻿namespace Logitar.Data.PostgreSQL;
 
 /// <summary>
 /// Represents the implementation of the SQL update command builder for PostgreSQL.
@@ -8,42 +6,67 @@ namespace Logitar.Data.PostgreSQL;
 public class PostgresUpdateBuilder : UpdateBuilder
 {
   /// <summary>
-  /// Initializes a new instance of the <see cref="PostgresUpdateBuilder"/> class.
+  /// Gets or sets the dialect used to format to SQL.
   /// </summary>
-  /// <param name="source">The source table.</param>
-  /// <exception cref="ArgumentException">The source table name is missing.</exception>
-  public PostgresUpdateBuilder(TableId source) : base(source)
+  public override Dialect Dialect { get; set; } = new PostgresDialect();
+
+  /// <summary>
+  /// Gets the ILIKE clause in the Postgres dialect.
+  /// </summary>
+  protected virtual string InsensitiveLikeClause => "ILIKE";
+
+  /// <summary>
+  /// Formats the specified column update to SQL.
+  /// </summary>
+  /// <param name="update">The column update to format.</param>
+  /// <returns>The formatted SQL.</returns>
+  protected override string Format(Update update)
   {
+    if (update.Column.Name == null)
+    {
+      throw new ArgumentException("The column name is required.", nameof(update));
+    }
+
+    if (!Dialect.ComparisonOperators.TryGetValue("=", out string? equalOperator))
+    {
+      equalOperator = "=";
+    }
+
+    string newValue = update.Value == null ? Dialect.NullClause : Format(AddParameter(update.Value));
+
+    return string.Join(' ', Format(update.Column.Name), equalOperator, newValue);
   }
 
   /// <summary>
-  /// Gets the default schema of the Postgres dialect.
+  /// Formats the specified conditional operator to SQL.
   /// </summary>
-  protected override string? DefaultSchema => "public";
-  /// <summary>
-  /// Gets the prefix of identifiers in the Postgres dialect.
-  /// </summary>
-  protected override string? IdentifierPrefix => "\"";
-  /// <summary>
-  /// Gets the suffix of identifiers in the Postgres dialect.
-  /// </summary>
-  protected override string? IdentifierSuffix => "\"";
-
-  /// <summary>
-  /// Initializes a new instance of the <see cref="PostgresUpdateBuilder"/> class.
-  /// </summary>
-  /// <param name="source">The source table.</param>
-  /// <returns>The Postgres update builder.</returns>
-  /// <exception cref="ArgumentException">The source table name is missing.</exception>
-  public static PostgresUpdateBuilder From(TableId source) => new(source);
-
-  /// <summary>
-  /// Creates a new Postgres command parameter.
-  /// </summary>
-  /// <param name="parameter">The parameter information.</param>
-  /// <returns>The Postgres parameter.</returns>
-  protected override object CreateParameter(IParameter parameter)
+  /// <param name="operator">The operator to format.</param>
+  /// <returns>The formatted SQL.</returns>
+  /// <exception cref="NotSupportedException">The conditional operator type is not supported.</exception>
+  protected override string Format(ConditionalOperator @operator)
   {
-    return new NpgsqlParameter(parameter.Name, parameter.Value);
+    return @operator switch
+    {
+      InsensitiveLikeOperator insensitiveLike => Format(insensitiveLike),
+      _ => base.Format(@operator),
+    };
+  }
+  /// <summary>
+  /// Formats the specified ILIKE operator to SQL.
+  /// </summary>
+  /// <param name="insensitiveLike">The operator to format.</param>
+  /// <returns>The formatted SQL.</returns>
+  protected virtual string Format(InsensitiveLikeOperator insensitiveLike)
+  {
+    StringBuilder formatted = new();
+
+    if (insensitiveLike.NotLike)
+    {
+      formatted.Append(Dialect.NotClause).Append(' ');
+    }
+
+    formatted.Append(InsensitiveLikeClause).Append(' ').Append(Format(AddParameter(insensitiveLike.Pattern)));
+
+    return formatted.ToString();
   }
 }

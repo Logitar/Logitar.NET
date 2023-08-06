@@ -1,6 +1,4 @@
-﻿using Npgsql;
-
-namespace Logitar.Data.PostgreSQL;
+﻿namespace Logitar.Data.PostgreSQL;
 
 /// <summary>
 /// Represents the implementation of the SQL insert command builder for PostgreSQL.
@@ -17,17 +15,9 @@ public class PostgresInsertBuilder : InsertBuilder
   }
 
   /// <summary>
-  /// Gets the default schema of the Postgres dialect.
+  /// Gets or sets the dialect used to format to SQL.
   /// </summary>
-  protected override string? DefaultSchema => "public";
-  /// <summary>
-  /// Gets the prefix of identifiers in the Postgres dialect.
-  /// </summary>
-  protected override string? IdentifierPrefix => "\"";
-  /// <summary>
-  /// Gets the suffix of identifiers in the Postgres dialect.
-  /// </summary>
-  protected override string? IdentifierSuffix => "\"";
+  public override Dialect Dialect { get; set; } = new PostgresDialect();
 
   /// <summary>
   /// Initializes a new instance of the <see cref="PostgresInsertBuilder"/> class.
@@ -36,14 +26,4 @@ public class PostgresInsertBuilder : InsertBuilder
   /// <returns>The Postgres insert builder.</returns>
   /// <exception cref="ArgumentException">No column has been specified, or a column name or table has not been specified, or multiple tables have been specified.</exception>
   public static PostgresInsertBuilder Into(params ColumnId[] columns) => new(columns);
-
-  /// <summary>
-  /// Creates a new Postgres command parameter.
-  /// </summary>
-  /// <param name="parameter">The parameter information.</param>
-  /// <returns>The Postgres parameter.</returns>
-  protected override object CreateParameter(IParameter parameter)
-  {
-    return new NpgsqlParameter(parameter.Name, parameter.Value);
-  }
 }

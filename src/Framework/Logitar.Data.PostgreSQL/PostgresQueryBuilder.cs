@@ -1,6 +1,4 @@
-﻿using Npgsql;
-
-namespace Logitar.Data.PostgreSQL;
+﻿namespace Logitar.Data.PostgreSQL;
 
 /// <summary>
 /// Represents the implementation of the SQL query builder for PostgreSQL.
@@ -17,17 +15,9 @@ public class PostgresQueryBuilder : QueryBuilder
   }
 
   /// <summary>
-  /// Gets the default schema of the Postgres dialect.
+  /// Gets or sets the dialect used to format to SQL.
   /// </summary>
-  protected override string? DefaultSchema => "public";
-  /// <summary>
-  /// Gets the prefix of identifiers in the Postgres dialect.
-  /// </summary>
-  protected override string? IdentifierPrefix => "\"";
-  /// <summary>
-  /// Gets the suffix of identifiers in the Postgres dialect.
-  /// </summary>
-  protected override string? IdentifierSuffix => "\"";
+  public override Dialect Dialect { get; set; } = new PostgresDialect();
 
   /// <summary>
   /// Gets the ILIKE clause in the Postgres dialect.
@@ -66,21 +56,11 @@ public class PostgresQueryBuilder : QueryBuilder
 
     if (insensitiveLike.NotLike)
     {
-      formatted.Append(NotClause).Append(' ');
+      formatted.Append(Dialect.NotClause).Append(' ');
     }
 
     formatted.Append(InsensitiveLikeClause).Append(' ').Append(Format(AddParameter(insensitiveLike.Pattern)));
 
     return formatted.ToString();
-  }
-
-  /// <summary>
-  /// Creates a new Postgres query parameter.
-  /// </summary>
-  /// <param name="parameter">The parameter information.</param>
-  /// <returns>The Postgres parameter.</returns>
-  protected override object CreateParameter(IParameter parameter)
-  {
-    return new NpgsqlParameter(parameter.Name, parameter.Value);
   }
 }
