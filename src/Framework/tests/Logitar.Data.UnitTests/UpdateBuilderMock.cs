@@ -2,7 +2,7 @@
 
 internal class UpdateBuilderMock : UpdateBuilder
 {
-  public UpdateBuilderMock(TableId source) : base(source)
+  public UpdateBuilderMock() : base()
   {
     Dialect.ComparisonOperators["="] = "==";
     Dialect.ComparisonOperators[">"] = ">>";

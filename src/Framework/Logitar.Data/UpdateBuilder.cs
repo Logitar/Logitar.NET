@@ -1,29 +1,10 @@
 ﻿namespace Logitar.Data;
 
 /// <summary>
-/// Represents an abstraction of a generic SQL update command builder, to be used by specific implementations.
+/// Represents a generic SQL update command builder, to be used by specific implementations.
 /// </summary>
-public abstract class UpdateBuilder : SqlBuilder, IUpdateBuilder
+public class UpdateBuilder : SqlBuilder, IUpdateBuilder
 {
-  /// <summary>
-  /// Initializes a new instance of the <see cref="UpdateBuilder"/> class.
-  /// </summary>
-  /// <param name="source">The source table.</param>
-  /// <exception cref="ArgumentException">The source table name has not been specified.</exception>
-  protected UpdateBuilder(TableId source)
-  {
-    if (source.Table == null)
-    {
-      throw new ArgumentException("The table name is required.", nameof(source));
-    }
-
-    Source = source;
-  }
-
-  /// <summary>
-  /// Gets the table in which the command will update data from.
-  /// </summary>
-  protected TableId Source { get; }
   /// <summary>
   /// Gets the list of conditions of the command.
   /// </summary>
@@ -66,9 +47,19 @@ public abstract class UpdateBuilder : SqlBuilder, IUpdateBuilder
       throw new InvalidOperationException("At least one column must be updated.");
     }
 
+    IEnumerable<string> formattedTables = Updates.Where(x => x.Column.Table != null)
+      .Select(x => Format(x.Column.Table!))
+      .Distinct();
+    if (formattedTables.Count() > 1)
+    {
+      throw new InvalidOperationException("An update command cannot update multiple tables.");
+    }
+    string formattedTable = formattedTables.SingleOrDefault()
+      ?? throw new InvalidOperationException("At least one column must specify a table.");
+
     StringBuilder text = new();
 
-    text.Append(Dialect.UpdateClause).Append(' ').AppendLine(Format(Source));
+    text.Append(Dialect.UpdateClause).Append(' ').AppendLine(formattedTable);
 
     text.Append(Dialect.SetClause).Append(' ').AppendLine(string.Join(", ", Updates.Select(Format)));
 

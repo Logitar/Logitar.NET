@@ -12,19 +12,19 @@ public class PostgresDeleteBuilderTests
     TableId source = new("Events");
     ICommand command = PostgresDeleteBuilder.From(source)
       .Where(
-        new OperatorCondition(new ColumnId("Status", source), Operators.IsEqualTo("Completed")),
+        new OperatorCondition(new ColumnId("Status", source), PostgresOperators.IsLikeInsensitive("completed")),
         new OperatorCondition(new ColumnId("OccurredOn", source), Operators.IsLessThanOrEqualTo(moment))
       )
       .Build();
 
     string text = string.Join(Environment.NewLine, @"DELETE FROM ""public"".""Events""",
-      @"WHERE ""public"".""Events"".""Status"" = @p0 AND ""public"".""Events"".""OccurredOn"" <= @p1");
+      @"WHERE ""public"".""Events"".""Status"" ILIKE @p0 AND ""public"".""Events"".""OccurredOn"" <= @p1");
     Assert.Equal(text, command.Text);
 
     Dictionary<string, NpgsqlParameter> parameters = command.Parameters.Select(p => (NpgsqlParameter)p)
       .ToDictionary(p => p.ParameterName, p => p);
     Assert.Equal(2, parameters.Count);
-    Assert.Equal("Completed", parameters["p0"].Value);
+    Assert.Equal("completed", parameters["p0"].Value);
     Assert.Equal(moment, parameters["p1"].Value);
   }
 

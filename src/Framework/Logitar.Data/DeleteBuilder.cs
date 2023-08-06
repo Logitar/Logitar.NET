@@ -1,9 +1,9 @@
 ﻿namespace Logitar.Data;
 
 /// <summary>
-/// Represents an abstraction of a generic SQL delete command builder, to be used by specific implementations.
+/// Represents a generic SQL delete command builder, to be used by specific implementations.
 /// </summary>
-public abstract class DeleteBuilder : SqlBuilder, IDeleteBuilder
+public class DeleteBuilder : SqlBuilder, IDeleteBuilder
 {
   /// <summary>
   /// Initializes a new instance of the <see cref="DeleteBuilder"/> class.

@@ -115,10 +115,6 @@ public record Dialect
   /// </summary>
   public virtual string OrderByClause => "ORDER BY";
   /// <summary>
-  /// Gets the THEN BY clause in the generic dialect.
-  /// </summary>
-  public virtual string ThenByClause => "THEN BY";
-  /// <summary>
   /// Gets the ASC clause in the generic dialect.
   /// </summary>
   public virtual string AscendingClause => "ASC";

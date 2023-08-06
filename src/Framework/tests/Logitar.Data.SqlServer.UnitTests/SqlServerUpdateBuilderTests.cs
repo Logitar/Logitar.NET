@@ -10,7 +10,7 @@ public class SqlServerUpdateBuilderTests
   {
     DateTime moment = DateTime.Now.AddYears(-1);
     TableId source = new("Events");
-    ICommand command = SqlServerUpdateBuilder.From(source)
+    ICommand command = new SqlServerUpdateBuilder()
       .Set(
         new Update(new ColumnId("Status", source), "Completed"),
         new Update(new ColumnId("Trace", source), value: null)
@@ -28,27 +28,5 @@ public class SqlServerUpdateBuilderTests
     Assert.Equal(2, parameters.Count);
     Assert.Equal("Completed", parameters["p0"].Value);
     Assert.Equal("InProgress", parameters["p1"].Value);
-  }
-
-  [Fact(DisplayName = "Ctor: it should create the correct SqlServerUpdateBuilder.")]
-  public void Ctor_it_should_create_the_correct_SqlServerUpdateBuilder()
-  {
-    TableId source = new("MySchema", "MyTable", "x");
-    SqlServerUpdateBuilder builder = new(source);
-
-    PropertyInfo? sourceProperty = typeof(UpdateBuilder).GetProperty("Source", BindingFlags.Instance | BindingFlags.NonPublic);
-    Assert.NotNull(sourceProperty);
-    Assert.Same(source, sourceProperty.GetValue(builder));
-  }
-
-  [Fact(DisplayName = "From: it should create the correct SqlServerUpdateBuilder.")]
-  public void From_it_should_create_the_correct_SqlServerUpdateBuilder()
-  {
-    TableId source = new("MyTable");
-    SqlServerUpdateBuilder builder = SqlServerUpdateBuilder.From(source);
-
-    PropertyInfo? sourceProperty = typeof(UpdateBuilder).GetProperty("Source", BindingFlags.Instance | BindingFlags.NonPublic);
-    Assert.NotNull(sourceProperty);
-    Assert.Same(source, sourceProperty.GetValue(builder));
   }
 }

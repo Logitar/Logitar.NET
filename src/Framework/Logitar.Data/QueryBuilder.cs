@@ -1,9 +1,9 @@
 ﻿namespace Logitar.Data;
 
 /// <summary>
-/// Represents an abstraction of a generic SQL query builder, to be used by specific implementations.
+/// Represents a generic SQL query builder, to be used by specific implementations.
 /// </summary>
-public abstract class QueryBuilder : SqlBuilder, IQueryBuilder
+public class QueryBuilder : SqlBuilder, IQueryBuilder
 {
   /// <summary>
   /// Initializes a new instance of the <see cref="QueryBuilder"/> class.
@@ -121,7 +121,7 @@ public abstract class QueryBuilder : SqlBuilder, IQueryBuilder
     if (OrderByList.Any())
     {
       text.Append(Dialect.OrderByClause).Append(' ')
-        .AppendLine(string.Join($" {Dialect.ThenByClause} ", OrderByList.Select(Format)));
+        .AppendLine(string.Join(", ", OrderByList.Select(Format)));
     }
 
     IEnumerable<object> parameters = Parameters.Select(Dialect.CreateParameter);

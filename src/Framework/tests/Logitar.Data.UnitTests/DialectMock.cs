@@ -30,7 +30,6 @@ public record DialectMock : Dialect
   public override string NullClause => "NUL";
 
   public override string OrderByClause => "ORDONNER PAR";
-  public override string ThenByClause => "PUIS PAR";
   public override string AscendingClause => "↑";
   public override string DescendingClause => "↓";
 }

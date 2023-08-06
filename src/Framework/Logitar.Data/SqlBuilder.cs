@@ -1,9 +1,9 @@
 ﻿namespace Logitar.Data;
 
 /// <summary>
-/// Represents an abstraction of a generic SQL command/query builder, to be used by specific implementations.
+/// Represents a generic SQL command/query builder, to be used by specific implementations.
 /// </summary>
-public abstract class SqlBuilder
+public class SqlBuilder
 {
   /// <summary>
   /// Gets or sets the dialect used to format to SQL.

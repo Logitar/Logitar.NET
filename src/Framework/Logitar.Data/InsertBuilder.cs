@@ -1,9 +1,9 @@
 ﻿namespace Logitar.Data;
 
 /// <summary>
-/// Represents an abstraction of a generic SQL insert command builder, to be used by specific implementations.
+/// Represents a generic SQL insert command builder, to be used by specific implementations.
 /// </summary>
-public abstract class InsertBuilder : SqlBuilder, IInsertBuilder
+public class InsertBuilder : SqlBuilder, IInsertBuilder
 {
   /// <summary>
   /// Initializes a new instance of the <see cref="InsertBuilder"/> class.

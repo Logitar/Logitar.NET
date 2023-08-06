@@ -9,7 +9,18 @@ public class UpdateBuilderTests
 
   public UpdateBuilderTests()
   {
-    _builder = new(_table);
+    _builder = new();
+  }
+
+  [Fact(DisplayName = "Build: it throws InvalidOperationException when there are multiple tables updated.")]
+  public void Build_it_throws_InvalidOperationException_when_there_are_multiple_tables_updated()
+  {
+    _builder.Set(
+      new Update(new ColumnId("MaColonne1", _table), value: null),
+      new Update(new ColumnId("MaColonne2", new TableId("MonAutreTable")), 123)
+    );
+    var exception = Assert.Throws<InvalidOperationException>(_builder.Build);
+    Assert.StartsWith("An update command cannot update multiple tables.", exception.Message);
   }
 
   [Fact(DisplayName = "Build: it throws InvalidOperationException when there are no column update.")]
@@ -17,6 +28,17 @@ public class UpdateBuilderTests
   {
     var exception = Assert.Throws<InvalidOperationException>(_builder.Build);
     Assert.StartsWith("At least one column must be updated.", exception.Message);
+  }
+
+  [Fact(DisplayName = "Build: it throws InvalidOperationException when there is no table specified.")]
+  public void Build_it_throws_InvalidOperationException_when_there_is_no_table_specified()
+  {
+    _builder.Set(
+      new Update(new ColumnId("MaColonne1"), value: null),
+      new Update(new ColumnId("MaColonne2"), 123)
+    );
+    var exception = Assert.Throws<InvalidOperationException>(_builder.Build);
+    Assert.StartsWith("At least one column must specify a table.", exception.Message);
   }
 
   [Fact(DisplayName = "Build: it throws NotSupportedException when condition type is not supported.")]
@@ -44,18 +66,11 @@ public class UpdateBuilderTests
     Assert.Equal(message, exception.Message);
   }
 
-  [Fact(DisplayName = "Ctor: it throws ArgumentException when table name is null.")]
-  public void Ctor_it_throws_ArgumentException_when_table_name_is_null()
-  {
-    var exception = Assert.Throws<ArgumentException>(() => new UpdateBuilderMock(TableId.FromAlias("alias")));
-    Assert.Equal("source", exception.ParamName);
-  }
-
   [Fact(DisplayName = "It should build the correct update command.")]
   public void It_should_build_the_correct_update_command()
   {
     TableId source = new("Events");
-    ICommand command = new UpdateBuilderMock(source)
+    ICommand command = new UpdateBuilderMock()
       .Set(
         new Update(new ColumnId("Status", source), "Completed"),
         new Update(new ColumnId("Trace", source), value: null)
@@ -73,14 +88,6 @@ public class UpdateBuilderTests
     Assert.Equal(2, parameters.Count);
     Assert.Equal("Completed", parameters["p0"].Value);
     Assert.Equal("InProgress", parameters["p1"].Value);
-  }
-
-  [Fact(DisplayName = "It should construct the correct UpdateBuilder.")]
-  public void It_should_construct_the_correct_UpdateBuilder()
-  {
-    PropertyInfo? source = _builder.GetType().GetProperty("Source", BindingFlags.Instance | BindingFlags.NonPublic);
-    Assert.NotNull(source);
-    Assert.Equal(source.GetValue(_builder), _table);
   }
 
   [Fact(DisplayName = "Set: it adds column updates to column update list.")]
