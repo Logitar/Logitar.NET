@@ -46,9 +46,9 @@ public class EventAggregateMismatchException : Exception
   /// <summary>
   /// Gets or sets the identifier of the event.
   /// </summary>
-  public Guid? EventId
+  public Guid EventId
   {
-    get => (Guid?)Data[nameof(EventId)];
+    get => (Guid)Data[nameof(EventId)]!;
     private set => Data[nameof(EventId)] = value;
   }
   /// <summary>
@@ -57,7 +57,7 @@ public class EventAggregateMismatchException : Exception
   public string EventAggregateId
   {
     get => (string)Data[nameof(EventAggregateId)]!;
-    private set => Data[nameof(EventId)] = value;
+    private set => Data[nameof(EventAggregateId)] = value;
   }
 
   /// <summary>

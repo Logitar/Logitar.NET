@@ -2,6 +2,7 @@
 using Logitar.EventSourcing;
 using Logitar.Identity.Domain.Passwords;
 using Logitar.Identity.Domain.Roles;
+using Logitar.Identity.Domain.Sessions;
 using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.Domain.Users.Events;
 using Logitar.Identity.Domain.Users.Validators;
@@ -374,6 +375,39 @@ public class UserAggregate : AggregateRoot
     UserUpdatedEvent updated = GetLatestEvent<UserUpdatedEvent>();
     updated.UniqueName = uniqueName;
     Apply(updated);
+  }
+
+  public SessionAggregate SignIn(IUserSettings userSettings, Password? secret = null,
+    ActorId? actorId = null) => SignIn(userSettings, password: null, secret, actorId);
+  public SessionAggregate SignIn(IUserSettings userSettings, string? password = null,
+    Password? secret = null, ActorId? actorId = null)
+  {
+    if (password != null && _password?.IsMatch(password) != true)
+    {
+      throw new IncorrectUserPasswordException(this, password);
+    }
+    else if (IsDisabled)
+    {
+      throw new UserIsDisabledException(this);
+    }
+    else if (userSettings.RequireConfirmedAccount && !IsConfirmed)
+    {
+      throw new UserIsNotConfirmedException(this);
+    }
+
+    if (!actorId.HasValue)
+    {
+      actorId = new(Id.Value);
+    }
+
+    SessionAggregate session = new(this, secret, actorId.Value);
+    ApplyChange(new UserSignedInEvent
+    {
+      ActorId = actorId.Value,
+      OccurredOn = session.CreatedOn
+    });
+
+    return session;
   }
 
   public void Update(ActorId actorId = default)
