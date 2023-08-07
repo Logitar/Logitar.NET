@@ -88,9 +88,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.EventSourcing.Mongo
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demo", "Demo", "{3A2114E4-433C-401E-896F-3D6A8D3FC3DF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Data.SqlServer.IntegrationTests", "src\Framework\tests\Logitar.Data.SqlServer.IntegrationTests\Logitar.Data.SqlServer.IntegrationTests.csproj", "{2FD541D4-DB3E-492C-960A-30DC00F3DC7E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Data.SqlServer.IntegrationTests", "src\Framework\tests\Logitar.Data.SqlServer.IntegrationTests\Logitar.Data.SqlServer.IntegrationTests.csproj", "{2FD541D4-DB3E-492C-960A-30DC00F3DC7E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Data.PostgreSQL.IntegrationTests", "src\Framework\tests\Logitar.Data.PostgreSQL.IntegrationTests\Logitar.Data.PostgreSQL.IntegrationTests.csproj", "{75296C91-0FF6-44A5-901A-A2A1DD3F1905}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Data.PostgreSQL.IntegrationTests", "src\Framework\tests\Logitar.Data.PostgreSQL.IntegrationTests\Logitar.Data.PostgreSQL.IntegrationTests.csproj", "{75296C91-0FF6-44A5-901A-A2A1DD3F1905}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Identity", "Identity", "{1EF18D07-619E-4818-B43F-A964BF563F7A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Identity.Domain", "src\Identity\Logitar.Identity.Domain\Logitar.Identity.Domain.csproj", "{80705F20-97FE-44FA-99EE-779B76509392}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -234,6 +238,10 @@ Global
 		{75296C91-0FF6-44A5-901A-A2A1DD3F1905}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{75296C91-0FF6-44A5-901A-A2A1DD3F1905}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{75296C91-0FF6-44A5-901A-A2A1DD3F1905}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80705F20-97FE-44FA-99EE-779B76509392}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80705F20-97FE-44FA-99EE-779B76509392}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80705F20-97FE-44FA-99EE-779B76509392}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80705F20-97FE-44FA-99EE-779B76509392}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -275,6 +283,7 @@ Global
 		{CEEFD05A-DC09-4756-8473-527539E478F1} = {D092FA68-D3D5-460E-9A38-61033D6F9692}
 		{2FD541D4-DB3E-492C-960A-30DC00F3DC7E} = {746BA5D1-0E1A-4191-9645-88D14B1C69BF}
 		{75296C91-0FF6-44A5-901A-A2A1DD3F1905} = {746BA5D1-0E1A-4191-9645-88D14B1C69BF}
+		{80705F20-97FE-44FA-99EE-779B76509392} = {1EF18D07-619E-4818-B43F-A964BF563F7A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B0AA9E53-02AD-4000-8ED5-53AFF5D1B32D}
