@@ -17,13 +17,17 @@ public class MissingAggregateConstructorException : Exception
       throw new ArgumentOutOfRangeException(nameof(type), $"The type must be a subclass of the '{nameof(AggregateRoot)}' type.");
     }
 
-    Data[nameof(AggregateType)] = type.GetName();
+    AggregateType = type.GetName();
   }
 
   /// <summary>
-  /// Gets the type of the aggregate.
+  /// Gets or sets the type of the aggregate.
   /// </summary>
-  public string AggregateType => (string)Data[nameof(AggregateType)]!;
+  public string AggregateType
+  {
+    get => (string)Data[nameof(AggregateType)]!;
+    private set => Data[nameof(AggregateType)] = value;
+  }
 
   /// <summary>
   /// Builds the exception message.

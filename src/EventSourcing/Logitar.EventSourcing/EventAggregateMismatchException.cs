@@ -12,33 +12,53 @@ public class EventAggregateMismatchException : Exception
   /// <param name="change">The event belonging to another aggregate.</param>
   public EventAggregateMismatchException(AggregateRoot aggregate, DomainEvent change) : base(BuildMessage(aggregate, change))
   {
-    Data[nameof(Aggregate)] = aggregate.ToString();
-    Data[nameof(AggregateId)] = aggregate.Id.ToString();
-    Data[nameof(Event)] = change.ToString();
-    Data[nameof(EventId)] = change.Id;
-    Data[nameof(EventAggregateId)] = change.AggregateId.ToString();
+    Aggregate = aggregate.ToString();
+    AggregateId = aggregate.Id.ToString();
+    Event = change.ToString();
+    EventId = change.Id;
+    EventAggregateId = change.AggregateId.ToString();
   }
 
   /// <summary>
-  /// Gets the string representation of the aggregate.
+  /// Gets or sets the string representation of the aggregate.
   /// </summary>
-  public string Aggregate => (string)Data[nameof(Aggregate)]!;
+  public string Aggregate
+  {
+    get => (string)Data[nameof(Aggregate)]!;
+    private set => Data[nameof(Aggregate)] = value;
+  }
   /// <summary>
-  /// Gets the string representation of the aggregate identifier.
+  /// Gets or sets the string representation of the aggregate identifier.
   /// </summary>
-  public string AggregateId => (string)Data[nameof(AggregateId)]!;
+  public string AggregateId
+  {
+    get => (string)Data[nameof(AggregateId)]!;
+    private set => Data[nameof(AggregateId)] = value;
+  }
   /// <summary>
-  /// Gets the string representation of the event.
+  /// Gets or sets the string representation of the event.
   /// </summary>
-  public string Event => (string)Data[nameof(Event)]!;
+  public string Event
+  {
+    get => (string)Data[nameof(Event)]!;
+    private set => Data[nameof(Event)] = value;
+  }
   /// <summary>
-  /// Gets the identifier of the event.
+  /// Gets or sets the identifier of the event.
   /// </summary>
-  public Guid? EventId => (Guid?)Data[nameof(EventId)];
+  public Guid? EventId
+  {
+    get => (Guid?)Data[nameof(EventId)];
+    private set => Data[nameof(EventId)] = value;
+  }
   /// <summary>
-  /// Gets the string representation of the event aggregate identifier.
+  /// Gets or sets the string representation of the event aggregate identifier.
   /// </summary>
-  public string EventAggregateId => (string)Data[nameof(EventAggregateId)]!;
+  public string EventAggregateId
+  {
+    get => (string)Data[nameof(EventAggregateId)]!;
+    private set => Data[nameof(EventId)] = value;
+  }
 
   /// <summary>
   /// Builds the exception message.
