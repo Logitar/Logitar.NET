@@ -12,38 +12,62 @@ public class CannotApplyPastEventException : Exception
   /// <param name="change">The event of a past state.</param>
   public CannotApplyPastEventException(AggregateRoot aggregate, DomainEvent change) : base(BuildMessage(aggregate, change))
   {
-    Data[nameof(Aggregate)] = aggregate.ToString();
-    Data[nameof(AggregateId)] = aggregate.Id.ToString();
-    Data[nameof(AggregateVersion)] = aggregate.Version;
-    Data[nameof(Event)] = change.ToString();
-    Data[nameof(EventId)] = change.Id;
-    Data[nameof(EventVersion)] = change.Version;
+    Aggregate = aggregate.ToString();
+    AggregateId = aggregate.Id.ToString();
+    AggregateVersion = aggregate.Version;
+    Event = change.ToString();
+    EventId = change.Id;
+    EventVersion = change.Version;
   }
 
   /// <summary>
-  /// Gets the string representation of the aggregate.
+  /// Gets or sets the string representation of the aggregate.
   /// </summary>
-  public string Aggregate => (string)Data[nameof(Aggregate)]!;
+  public string Aggregate
+  {
+    get => (string)Data[nameof(Aggregate)]!;
+    private set => Data[nameof(Aggregate)] = value;
+  }
   /// <summary>
-  /// Gets the string representation of the aggregate identifier.
+  /// Gets or sets the string representation of the aggregate identifier.
   /// </summary>
-  public string AggregateId => (string)Data[nameof(AggregateId)]!;
+  public string AggregateId
+  {
+    get => (string)Data[nameof(AggregateId)]!;
+    private set => Data[nameof(AggregateId)] = value;
+  }
   /// <summary>
-  /// Gets the version of the aggregate.
+  /// Gets or sets the version of the aggregate.
   /// </summary>
-  public long AggregateVersion => (long)Data[nameof(AggregateVersion)]!;
+  public long AggregateVersion
+  {
+    get => (long)Data[nameof(AggregateVersion)]!;
+    private set => Data[nameof(AggregateVersion)] = value;
+  }
   /// <summary>
-  /// Gets the string representation of the event.
+  /// Gets or sets the string representation of the event.
   /// </summary>
-  public string Event => (string)Data[nameof(Event)]!;
+  public string Event
+  {
+    get => (string)Data[nameof(Event)]!;
+    private set => Data[nameof(Event)] = value;
+  }
   /// <summary>
-  /// Gets the identifier of the event.
+  /// Gets or sets the identifier of the event.
   /// </summary>
-  public Guid? EventId => (Guid?)Data[nameof(EventId)];
+  public Guid? EventId
+  {
+    get => (Guid?)Data[nameof(EventId)];
+    private set => Data[nameof(EventId)] = value;
+  }
   /// <summary>
-  /// Gets the version of the event.
+  /// Gets or sets the version of the event.
   /// </summary>
-  public long? EventVersion => (long?)Data[nameof(EventVersion)];
+  public long? EventVersion
+  {
+    get => (long?)Data[nameof(EventVersion)];
+    private set => Data[nameof(EventVersion)] = value;
+  }
 
   /// <summary>
   /// Builds the exception message.
