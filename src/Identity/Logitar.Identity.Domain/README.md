@@ -1,3 +1,3 @@
 # Logitar.Identity.Domain
 
-Exposes domain aggregates &amp; events of an Identity system.
+Exposes domain aggregates and events of an Identity system.

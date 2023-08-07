@@ -20,10 +20,12 @@ public class RoleAggregate : AggregateRoot
   {
   }
 
-  public RoleAggregate(IUniqueNameSettings uniqueNameSettings, string uniqueName, string? tenantId = null) : base()
+  public RoleAggregate(IUniqueNameSettings uniqueNameSettings, string uniqueName,
+    string? tenantId = null, ActorId actorId = default) : base()
   {
     RoleCreatedEvent created = new()
     {
+      ActorId = actorId,
       UniqueName = uniqueName.Trim(),
       TenantId = tenantId?.CleanTrim()
     };
@@ -78,7 +80,7 @@ public class RoleAggregate : AggregateRoot
 
   public IReadOnlyDictionary<string, string> CustomAttributes => _customAttributes;
 
-  public void Delete() => ApplyChange(new RoleDeletedEvent());
+  public void Delete(ActorId actorId = default) => ApplyChange(new RoleDeletedEvent(actorId));
 
   public void RemoveCustomAttribute(string key)
   {
@@ -113,6 +115,22 @@ public class RoleAggregate : AggregateRoot
     RoleUpdatedEvent updated = GetLatestEvent<RoleUpdatedEvent>();
     updated.UniqueName = uniqueName;
     Apply(updated);
+  }
+
+  public void Update(ActorId actorId = default)
+  {
+    foreach (DomainEvent change in Changes)
+    {
+      if (change is RoleUpdatedEvent)
+      {
+        change.ActorId = actorId;
+
+        if (change.Version == Version)
+        {
+          UpdatedBy = actorId;
+        }
+      }
+    }
   }
 
   protected virtual void Apply(RoleUpdatedEvent updated)
