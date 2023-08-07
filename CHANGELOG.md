@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Created a RoleAggregate.
 - Created an UserAggregate.
+- Created a SessionAggregate.
 
 ### Changed
 

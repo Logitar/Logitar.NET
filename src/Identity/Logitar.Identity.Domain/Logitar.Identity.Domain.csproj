@@ -55,6 +55,7 @@
   <ItemGroup>
     <Using Include="System.Collections.Immutable" />
     <Using Include="System.Globalization" />
+    <Using Include="System.Text" />
   </ItemGroup>
 
 </Project>
