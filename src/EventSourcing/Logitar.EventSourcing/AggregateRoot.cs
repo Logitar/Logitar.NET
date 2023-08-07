@@ -37,19 +37,19 @@ public abstract class AggregateRoot
   /// <summary>
   /// Gets or sets the identifier of the actor who created the aggregate.
   /// </summary>
-  public ActorId CreatedBy { get; private set; }
+  public ActorId CreatedBy { get; protected set; }
   /// <summary>
   /// Gets or sets the date and time when the aggregate was created.
   /// </summary>
-  public DateTime CreatedOn { get; private set; }
+  public DateTime CreatedOn { get; protected set; }
   /// <summary>
   /// Gets or sets the identifier of the actor who updated the aggregate lastly.
   /// </summary>
-  public ActorId UpdatedBy { get; private set; }
+  public ActorId UpdatedBy { get; protected set; }
   /// <summary>
   /// Gets or sets the date and time when the aggregate was updated lastly.
   /// </summary>
-  public DateTime UpdatedOn { get; private set; }
+  public DateTime UpdatedOn { get; protected set; }
 
   /// <summary>
   /// The uncommitted changes of the aggregate.

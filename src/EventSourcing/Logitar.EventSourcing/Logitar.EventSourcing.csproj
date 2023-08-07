@@ -15,14 +15,14 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/Logitar/Logitar.NET</RepositoryUrl>
-    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+    <AssemblyVersion>4.0.1.0</AssemblyVersion>
     <FileVersion>$(AssemblyVersion)</FileVersion>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-    <Version>4.0.0</Version>
+    <Version>4.0.1</Version>
     <NeutralLanguage>en-CA</NeutralLanguage>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <PackageReleaseNotes>Refactored domain aggregates and events.</PackageReleaseNotes>
+    <PackageReleaseNotes>Protected setters on aggregate metadata.</PackageReleaseNotes>
     <PackageTags>logitar net framework event sourcing</PackageTags>
     <PackageProjectUrl>https://github.com/Logitar/Logitar.NET/tree/dev/src/Logitar.EventSourcing</PackageProjectUrl>
   </PropertyGroup>

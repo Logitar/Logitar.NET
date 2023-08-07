@@ -39,10 +39,12 @@ public class UserAggregate : AggregateRoot
   {
   }
 
-  public UserAggregate(IUniqueNameSettings uniqueNameSettings, string uniqueName, string? tenantId = null) : base()
+  public UserAggregate(IUniqueNameSettings uniqueNameSettings, string uniqueName,
+    string? tenantId = null, ActorId actorId = default) : base()
   {
     UserCreatedEvent created = new()
     {
+      ActorId = actorId,
       UniqueName = uniqueName.Trim(),
       TenantId = tenantId?.CleanTrim()
     };
@@ -302,22 +304,22 @@ public class UserAggregate : AggregateRoot
     }
   }
 
-  public void Delete() => ApplyChange(new UserDeletedEvent());
+  public void Delete(ActorId actorId = default) => ApplyChange(new UserDeletedEvent(actorId));
 
-  public void Disable()
+  public void Disable(ActorId actorId = default)
   {
     if (!IsDisabled)
     {
-      ApplyChange(new UserDisabledEvent());
+      ApplyChange(new UserDisabledEvent(actorId));
     }
   }
   protected virtual void Apply(UserDisabledEvent _) => IsDisabled = true;
 
-  public void Enable()
+  public void Enable(ActorId actorId = default)
   {
     if (IsDisabled)
     {
-      ApplyChange(new UserEnabledEvent());
+      ApplyChange(new UserEnabledEvent(actorId));
     }
   }
   protected virtual void Apply(UserEnabledEvent _) => IsDisabled = false;
@@ -372,6 +374,22 @@ public class UserAggregate : AggregateRoot
     UserUpdatedEvent updated = GetLatestEvent<UserUpdatedEvent>();
     updated.UniqueName = uniqueName;
     Apply(updated);
+  }
+
+  public void Update(ActorId actorId = default)
+  {
+    foreach (DomainEvent change in Changes)
+    {
+      if (change is UserUpdatedEvent)
+      {
+        change.ActorId = actorId;
+
+        if (change.Version == Version)
+        {
+          UpdatedBy = actorId;
+        }
+      }
+    }
   }
 
   protected virtual void Apply(UserUpdatedEvent updated)

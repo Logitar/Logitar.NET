@@ -4,8 +4,9 @@ namespace Logitar.Identity.Domain.Roles.Events;
 
 public record RoleDeletedEvent : DomainEvent
 {
-  public RoleDeletedEvent()
+  public RoleDeletedEvent(ActorId actorId = default)
   {
+    ActorId = actorId;
     IsDeleted = true;
   }
 }
