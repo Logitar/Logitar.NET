@@ -45,4 +45,9 @@
     <ProjectReference Include="..\Logitar.UnitTests\Logitar.UnitTests.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Using Include="System.Data.Common" />
+    <Using Include="System.Text" />
+  </ItemGroup>
+
 </Project>

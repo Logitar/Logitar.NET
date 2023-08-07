@@ -117,6 +117,10 @@ public class RoleAggregate : AggregateRoot
 
   protected virtual void Apply(RoleUpdatedEvent updated)
   {
+    if (updated.UniqueName != null)
+    {
+      UniqueName = updated.UniqueName;
+    }
     if (updated.DisplayName != null)
     {
       _displayName = updated.DisplayName.Value;
@@ -124,6 +128,18 @@ public class RoleAggregate : AggregateRoot
     if (updated.Description != null)
     {
       _description = updated.Description.Value;
+    }
+
+    foreach (KeyValuePair<string, string?> customAttributes in updated.CustomAttributes)
+    {
+      if (customAttributes.Value == null)
+      {
+        _customAttributes.Remove(customAttributes.Key);
+      }
+      else
+      {
+        _customAttributes[customAttributes.Key] = customAttributes.Value;
+      }
     }
   }
   protected virtual T GetLatestEvent<T>() where T : DomainEvent, new()

@@ -1,7 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
-using System.Data.Common;
-using System.Text;
 
 namespace Logitar.Data.SqlServer;
 
