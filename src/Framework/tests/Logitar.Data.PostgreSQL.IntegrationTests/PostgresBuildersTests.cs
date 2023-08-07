@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Npgsql;
-using System.Data.Common;
-using System.Text;
 
 namespace Logitar.Data.PostgreSQL;
 

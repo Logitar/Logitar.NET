@@ -10,7 +10,7 @@
     <Authors>Francis Pion</Authors>
     <Product>Logitar.Identity</Product>
     <Description>Exposes domain aggregates &amp; events of an Identity system.</Description>
-    <Copyright>© 2023 Logitar All Rights Reserved.</Copyright>
+    <Copyright>� 2023 Logitar All Rights Reserved.</Copyright>
     <PackageIcon>logitar.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryType>git</RepositoryType>
@@ -29,6 +29,8 @@
 
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="11.6.0" />
+    <PackageReference Include="libphonenumber-csharp" Version="8.13.18" />
+    <PackageReference Include="NodaTime" Version="3.1.9" />
   </ItemGroup>
 
   <ItemGroup>
@@ -48,6 +50,11 @@
       <PackagePath>\</PackagePath>
       <Pack>True</Pack>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="System.Collections.Immutable" />
+    <Using Include="System.Globalization" />
   </ItemGroup>
 
 </Project>
