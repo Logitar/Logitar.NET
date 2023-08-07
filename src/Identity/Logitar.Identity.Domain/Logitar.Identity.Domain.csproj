@@ -9,6 +9,8 @@
 
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="11.6.0" />
+    <PackageReference Include="libphonenumber-csharp" Version="8.13.18" />
+    <PackageReference Include="NodaTime" Version="3.1.9" />
   </ItemGroup>
 
   <ItemGroup>
