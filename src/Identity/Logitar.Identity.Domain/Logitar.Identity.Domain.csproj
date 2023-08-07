@@ -17,4 +17,9 @@
     <ProjectReference Include="..\..\EventSourcing\Logitar.EventSourcing\Logitar.EventSourcing.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Using Include="System.Collections.Immutable" />
+    <Using Include="System.Globalization" />
+  </ItemGroup>
+
 </Project>

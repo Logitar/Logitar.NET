@@ -1,6 +1,4 @@
-﻿using System.Collections.Immutable;
-
-namespace Logitar.Identity.Domain.Users;
+﻿namespace Logitar.Identity.Domain.Users;
 
 public static class PostalAddressHelper
 {

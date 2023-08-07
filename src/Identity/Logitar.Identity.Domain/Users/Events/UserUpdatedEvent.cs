@@ -1,6 +1,5 @@
 ﻿using Logitar.EventSourcing;
 using Logitar.Identity.Domain.Passwords;
-using System.Globalization;
 
 namespace Logitar.Identity.Domain.Users.Events;
 

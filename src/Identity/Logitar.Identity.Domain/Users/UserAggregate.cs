@@ -6,8 +6,6 @@ using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.Domain.Users.Events;
 using Logitar.Identity.Domain.Users.Validators;
 using Logitar.Identity.Domain.Validators;
-using System.Collections.Immutable;
-using System.Globalization;
 
 namespace Logitar.Identity.Domain.Users;
 
