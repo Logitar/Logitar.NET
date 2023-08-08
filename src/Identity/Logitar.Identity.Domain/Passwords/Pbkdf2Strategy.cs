@@ -1,6 +1,5 @@
 ﻿using Logitar.Identity.Domain.Settings;
 using Microsoft.Extensions.Options;
-using System.Security.Cryptography;
 
 namespace Logitar.Identity.Domain.Passwords;
 
