@@ -15,14 +15,14 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/Logitar/Logitar.NET</RepositoryUrl>
-    <AssemblyVersion>0.3.0.0</AssemblyVersion>
+    <AssemblyVersion>0.4.0.0</AssemblyVersion>
     <FileVersion>$(AssemblyVersion)</FileVersion>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-    <Version>0.3.0</Version>
+    <Version>0.4.0</Version>
     <NeutralLanguage>en-CA</NeutralLanguage>
     <GenerateDocumentationFile>False</GenerateDocumentationFile>
-    <PackageReleaseNotes>Created a SessionAggregate.</PackageReleaseNotes>
+    <PackageReleaseNotes>Implemented passwords.</PackageReleaseNotes>
     <PackageTags>logitar net framework identity domain</PackageTags>
     <PackageProjectUrl>https://github.com/Logitar/Logitar.NET/tree/dev/src/Identity/Logitar.Identity.Domain</PackageProjectUrl>
   </PropertyGroup>
@@ -30,6 +30,8 @@
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="11.6.0" />
     <PackageReference Include="libphonenumber-csharp" Version="8.13.18" />
+    <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="7.0.9" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="7.0.0" />
     <PackageReference Include="NodaTime" Version="3.1.9" />
   </ItemGroup>
 
@@ -55,6 +57,7 @@
   <ItemGroup>
     <Using Include="System.Collections.Immutable" />
     <Using Include="System.Globalization" />
+    <Using Include="System.Security.Cryptography" />
     <Using Include="System.Text" />
   </ItemGroup>
 
