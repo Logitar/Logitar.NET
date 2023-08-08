@@ -8,4 +8,6 @@ public interface IPasswordSettings
   bool RequireLowercase { get; }
   bool RequireUppercase { get; }
   bool RequireDigit { get; }
+
+  string Strategy { get; }
 }
