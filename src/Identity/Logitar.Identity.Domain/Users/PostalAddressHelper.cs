@@ -16,4 +16,37 @@ public static class PostalAddressHelper
 
   public static CountrySettings? GetSettings(string country)
     => _countries.TryGetValue(country, out CountrySettings? settings) ? settings : null;
+
+  public static string Format(IPostalAddress address)
+  {
+    List<string> lines = new();
+
+    string[] streetLines = address.Street.Remove("\r").Split('\n');
+    foreach (string streetLine in streetLines)
+    {
+      if (!string.IsNullOrWhiteSpace(streetLine))
+      {
+        lines.Add(streetLine.Trim());
+      }
+    }
+
+    string?[] values = new[]
+    {
+      address.Locality.CleanTrim(),
+      address.Region?.CleanTrim(),
+      address.PostalCode?.CleanTrim()
+    };
+    string localityRegionPostalCode = string.Join(' ', values.Where(value => !string.IsNullOrEmpty(value)));
+    if (!string.IsNullOrEmpty(localityRegionPostalCode))
+    {
+      lines.Add(localityRegionPostalCode);
+    }
+
+    if (!string.IsNullOrWhiteSpace(address.Country))
+    {
+      lines.Add(address.Country.Trim());
+    }
+
+    return string.Join(Environment.NewLine, lines);
+  }
 }
