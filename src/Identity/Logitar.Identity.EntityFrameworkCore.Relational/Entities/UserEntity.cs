@@ -128,7 +128,7 @@ public record UserEntity : AggregateEntity
     IsDisabled = true;
   }
 
-  public void Enable(UserSignedInEvent signedIn)
+  public void SignIn(UserSignedInEvent signedIn)
   {
     Update(signedIn);
 

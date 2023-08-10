@@ -1,9 +1,10 @@
 ﻿using Logitar.EventSourcing;
 using Logitar.Identity.Domain.Passwords;
+using MediatR;
 
 namespace Logitar.Identity.Domain.Users.Events;
 
-public record UserUpdatedEvent : DomainEvent
+public record UserUpdatedEvent : DomainEvent, INotification
 {
   public string? UniqueName { get; set; }
   public Password? Password { get; set; }

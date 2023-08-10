@@ -1,8 +1,9 @@
 ﻿using Logitar.EventSourcing;
+using MediatR;
 
 namespace Logitar.Identity.Domain.Users.Events;
 
-public record UserCreatedEvent : DomainEvent
+public record UserCreatedEvent : DomainEvent, INotification
 {
   public string? TenantId { get; init; }
 
