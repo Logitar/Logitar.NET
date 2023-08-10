@@ -94,7 +94,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Data.PostgreSQL.Int
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Identity", "Identity", "{1EF18D07-619E-4818-B43F-A964BF563F7A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Identity.Domain", "src\Identity\Logitar.Identity.Domain\Logitar.Identity.Domain.csproj", "{80705F20-97FE-44FA-99EE-779B76509392}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Identity.Domain", "src\Identity\Logitar.Identity.Domain\Logitar.Identity.Domain.csproj", "{80705F20-97FE-44FA-99EE-779B76509392}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Identity.EntityFrameworkCore.SqlServer", "src\Identity\Logitar.Identity.EntityFrameworkCore.SqlServer\Logitar.Identity.EntityFrameworkCore.SqlServer.csproj", "{E8F80DDF-4DC9-4952-B499-06EB3537458E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Identity.EntityFrameworkCore.PostgreSQL", "src\Identity\Logitar.Identity.EntityFrameworkCore.PostgreSQL\Logitar.Identity.EntityFrameworkCore.PostgreSQL.csproj", "{D711EABE-4887-42D0-B755-412956811B4F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Identity.EntityFrameworkCore.Relational", "src\Identity\Logitar.Identity.EntityFrameworkCore.Relational\Logitar.Identity.EntityFrameworkCore.Relational.csproj", "{0610B645-E31D-4A21-8B66-197A4E722A67}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Identity.Infrastructure", "src\Identity\Logitar.Identity.Infrastructure\Logitar.Identity.Infrastructure.csproj", "{E73EC9FE-240C-4EAC-9E69-A2625B48BE1B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -242,6 +250,22 @@ Global
 		{80705F20-97FE-44FA-99EE-779B76509392}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{80705F20-97FE-44FA-99EE-779B76509392}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{80705F20-97FE-44FA-99EE-779B76509392}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E8F80DDF-4DC9-4952-B499-06EB3537458E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E8F80DDF-4DC9-4952-B499-06EB3537458E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E8F80DDF-4DC9-4952-B499-06EB3537458E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E8F80DDF-4DC9-4952-B499-06EB3537458E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D711EABE-4887-42D0-B755-412956811B4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D711EABE-4887-42D0-B755-412956811B4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D711EABE-4887-42D0-B755-412956811B4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D711EABE-4887-42D0-B755-412956811B4F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0610B645-E31D-4A21-8B66-197A4E722A67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0610B645-E31D-4A21-8B66-197A4E722A67}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0610B645-E31D-4A21-8B66-197A4E722A67}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0610B645-E31D-4A21-8B66-197A4E722A67}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E73EC9FE-240C-4EAC-9E69-A2625B48BE1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E73EC9FE-240C-4EAC-9E69-A2625B48BE1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E73EC9FE-240C-4EAC-9E69-A2625B48BE1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E73EC9FE-240C-4EAC-9E69-A2625B48BE1B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -284,6 +308,10 @@ Global
 		{2FD541D4-DB3E-492C-960A-30DC00F3DC7E} = {746BA5D1-0E1A-4191-9645-88D14B1C69BF}
 		{75296C91-0FF6-44A5-901A-A2A1DD3F1905} = {746BA5D1-0E1A-4191-9645-88D14B1C69BF}
 		{80705F20-97FE-44FA-99EE-779B76509392} = {1EF18D07-619E-4818-B43F-A964BF563F7A}
+		{E8F80DDF-4DC9-4952-B499-06EB3537458E} = {1EF18D07-619E-4818-B43F-A964BF563F7A}
+		{D711EABE-4887-42D0-B755-412956811B4F} = {1EF18D07-619E-4818-B43F-A964BF563F7A}
+		{0610B645-E31D-4A21-8B66-197A4E722A67} = {1EF18D07-619E-4818-B43F-A964BF563F7A}
+		{E73EC9FE-240C-4EAC-9E69-A2625B48BE1B} = {1EF18D07-619E-4818-B43F-A964BF563F7A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B0AA9E53-02AD-4000-8ED5-53AFF5D1B32D}

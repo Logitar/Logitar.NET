@@ -2,7 +2,7 @@
 
 public record Gender
 {
-  private const int MaximumLength = byte.MaxValue;
+  public const int MaximumLength = byte.MaxValue;
 
   public static readonly IImmutableSet<string> KnownValues = ImmutableHashSet.Create(new[] { "female", "male" });
   public static string? GetKnownValue(string value) => KnownValues.Contains(value.ToLower()) ? value.ToLower() : null;

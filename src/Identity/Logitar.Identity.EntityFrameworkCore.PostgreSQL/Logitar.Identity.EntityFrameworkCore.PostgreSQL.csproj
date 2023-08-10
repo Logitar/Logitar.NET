@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <WarningsAsErrors>Nullable</WarningsAsErrors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\EventSourcing\Logitar.EventSourcing.EntityFrameworkCore.PostgreSQL\Logitar.EventSourcing.EntityFrameworkCore.PostgreSQL.csproj" />
+    <ProjectReference Include="..\..\Framework\Logitar.Data.PostgreSQL\Logitar.Data.PostgreSQL.csproj" />
+    <ProjectReference Include="..\Logitar.Identity.EntityFrameworkCore.Relational\Logitar.Identity.EntityFrameworkCore.Relational.csproj" />
+  </ItemGroup>
+
+</Project>

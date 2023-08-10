@@ -38,6 +38,8 @@ public class SessionAggregate : AggregateRoot
 
   public AggregateId UserId { get; private set; }
 
+  public bool IsPersistent => _secret != null;
+
   public bool IsActive { get; private set; }
 
   public void Delete(ActorId actorId = default) => ApplyChange(new SessionDeletedEvent(actorId));
