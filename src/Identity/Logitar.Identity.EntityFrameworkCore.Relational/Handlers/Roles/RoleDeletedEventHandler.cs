@@ -16,7 +16,7 @@ public class RoleDeletedEventHandler : INotificationHandler<RoleDeletedEvent>
 
   public async Task Handle(RoleDeletedEvent notification, CancellationToken cancellationToken)
   {
-    RoleEntity? role = await _context.Roles.AsNoTracking()
+    RoleEntity? role = await _context.Roles
       .SingleOrDefaultAsync(x => x.AggregateId == notification.AggregateId.Value, cancellationToken);
     if (role != null)
     {
