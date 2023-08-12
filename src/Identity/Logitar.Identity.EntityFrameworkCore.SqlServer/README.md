@@ -1,6 +1,7 @@
 # Logitar.Identity.EntityFrameworkCore.SqlServer
 
-TODO
+Provides an implementation of a relational data store to be used with the Identity API, Entity
+Framework Core and Microsoft SQL Server.
 
 ## Migrations
 
