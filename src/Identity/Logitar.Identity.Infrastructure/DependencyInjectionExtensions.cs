@@ -1,6 +1,7 @@
 ﻿using Logitar.EventSourcing.Infrastructure;
 using Logitar.Identity.Domain;
 using Microsoft.Extensions.DependencyInjection;
+using System.Text.Json.Serialization;
 
 namespace Logitar.Identity.Infrastructure;
 
@@ -12,11 +13,12 @@ public static class DependencyInjectionExtensions
       .AddLogitarIdentityDomain()
       .AddScoped<IEventBus, EventBus>()
       .AddSingleton<PasswordConverter>()
-      .AddSingleton<IEventSerializer>(serviceProvider =>
+      .AddSingleton<IEventSerializer>(serviceProvider => new EventSerializer(new JsonConverter[]
       {
-        PasswordConverter passwordConverter = serviceProvider.GetRequiredService<PasswordConverter>();
-
-        return new EventSerializer(new[] { passwordConverter });
-      });
+        new CultureInfoConverter(),
+        new GenderConverter(),
+        new TimeZoneEntryConverter(),
+        serviceProvider.GetRequiredService<PasswordConverter>()
+      }));
   }
 }
