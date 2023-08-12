@@ -42,6 +42,8 @@ public class SessionAggregate : AggregateRoot
 
   public bool IsActive { get; private set; }
 
+  public IReadOnlyDictionary<string, string> CustomAttributes => _customAttributes;
+
   public void Delete(ActorId actorId = default) => ApplyChange(new SessionDeletedEvent(actorId));
 
   public void RemoveCustomAttribute(string key)
