@@ -8,6 +8,8 @@ public class RoleConfiguration : AggregateConfiguration<RoleEntity>, IEntityType
 {
   public override void Configure(EntityTypeBuilder<RoleEntity> builder)
   {
+    base.Configure(builder);
+
     builder.ToTable(Db.Roles.Table.Table!, Db.Roles.Table.Schema);
     builder.HasKey(x => x.RoleId);
 

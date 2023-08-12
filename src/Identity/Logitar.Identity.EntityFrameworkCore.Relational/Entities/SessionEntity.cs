@@ -53,11 +53,15 @@ public record SessionEntity : AggregateEntity
 
   public void Renew(SessionRenewedEvent renewed)
   {
+    Update(renewed);
+
     Secret = renewed.Secret.Encode();
   }
 
   public void SignOut(SessionSignedOutEvent signedOut)
   {
+    Update(signedOut);
+
     IsActive = false;
     SignedOutBy = signedOut.ActorId.Value;
     SignedOutOn = signedOut.OccurredOn;

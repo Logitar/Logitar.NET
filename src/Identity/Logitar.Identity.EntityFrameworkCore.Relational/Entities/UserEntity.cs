@@ -109,6 +109,7 @@ public record UserEntity : AggregateEntity
   }
 
   public List<RoleEntity> Roles { get; private set; } = new();
+  public List<SessionEntity> Sessions { get; private set; } = new();
 
   public void Disable(UserDisabledEvent disabled)
   {
