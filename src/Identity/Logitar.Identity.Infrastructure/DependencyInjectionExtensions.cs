@@ -10,6 +10,13 @@ public static class DependencyInjectionExtensions
   {
     return services
       .AddLogitarIdentityDomain()
-      .AddScoped<IEventBus, EventBus>();
+      .AddScoped<IEventBus, EventBus>()
+      .AddSingleton<PasswordConverter>()
+      .AddSingleton<IEventSerializer>(serviceProvider =>
+      {
+        PasswordConverter passwordConverter = serviceProvider.GetRequiredService<PasswordConverter>();
+
+        return new EventSerializer(new[] { passwordConverter });
+      });
   }
 }
