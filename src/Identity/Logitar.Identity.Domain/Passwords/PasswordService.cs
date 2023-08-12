@@ -29,4 +29,31 @@ public class PasswordService : IPasswordService
 
     return strategy.Create(password);
   }
+
+  public Password Decode(string encoded)
+  {
+    PasswordSettings passwordSettings = _passwordSettings.Value;
+
+    string strategyKey = encoded.Split(Password.Separator).First();
+    if (!_strategies.TryGetValue(strategyKey, out IPasswordStrategy? strategy))
+    {
+      throw new PasswordStrategyNotSupportedException(passwordSettings.Strategy);
+    }
+
+    return strategy.Decode(encoded);
+  }
+
+  public Password Generate(int length, out byte[] password)
+  {
+    PasswordSettings passwordSettings = _passwordSettings.Value;
+
+    if (!_strategies.TryGetValue(passwordSettings.Strategy, out IPasswordStrategy? strategy))
+    {
+      throw new PasswordStrategyNotSupportedException(passwordSettings.Strategy);
+    }
+
+    password = RandomNumberGenerator.GetBytes(length);
+
+    return strategy.Create(Convert.ToBase64String(password));
+  }
 }

@@ -22,4 +22,6 @@ public class Pbkdf2Strategy : IPasswordStrategy
 
     return new Pbkdf2(password, pbkdf2Settings.Algorithm, pbkdf2Settings.Iterations, salt, pbkdf2Settings.HashLength);
   }
+
+  public Password Decode(string encoded) => Pbkdf2.Decode(encoded);
 }
