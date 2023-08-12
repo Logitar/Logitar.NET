@@ -16,4 +16,19 @@
     <ProjectReference Include="..\Logitar.Identity.Domain\Logitar.Identity.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="LICENSE">
+      <PackagePath>\</PackagePath>
+      <Pack>True</Pack>
+    </None>
+    <None Update="logitar.png">
+      <PackagePath>\</PackagePath>
+      <Pack>True</Pack>
+    </None>
+    <None Update="README.md">
+      <PackagePath>\</PackagePath>
+      <Pack>True</Pack>
+    </None>
+  </ItemGroup>
+
 </Project>
