@@ -16,7 +16,7 @@ public class UserSignedInEventHandler : INotificationHandler<UserSignedInEvent>
 
   public async Task Handle(UserSignedInEvent notification, CancellationToken cancellationToken)
   {
-    UserEntity? user = await _context.Users.AsNoTracking()
+    UserEntity? user = await _context.Users
       .SingleOrDefaultAsync(x => x.AggregateId == notification.AggregateId.Value, cancellationToken);
     if (user != null)
     {

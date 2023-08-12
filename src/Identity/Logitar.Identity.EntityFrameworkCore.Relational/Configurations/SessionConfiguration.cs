@@ -9,6 +9,8 @@ public class SessionConfiguration : AggregateConfiguration<SessionEntity>, IEnti
 {
   public override void Configure(EntityTypeBuilder<SessionEntity> builder)
   {
+    base.Configure(builder);
+
     builder.ToTable(Db.Sessions.Table.Table!, Db.Sessions.Table.Schema);
     builder.HasKey(x => x.SessionId);
 
@@ -22,5 +24,7 @@ public class SessionConfiguration : AggregateConfiguration<SessionEntity>, IEnti
     builder.Property(x => x.Secret).HasMaxLength(byte.MaxValue);
     builder.Property(x => x.SignedOutBy).HasMaxLength(ActorId.MaximumLength);
     builder.Property(x => x.CustomAttributesSerialized).HasColumnName(nameof(SessionEntity.CustomAttributes));
+
+    builder.HasOne(x => x.User).WithMany(x => x.Sessions).OnDelete(DeleteBehavior.Restrict);
   }
 }

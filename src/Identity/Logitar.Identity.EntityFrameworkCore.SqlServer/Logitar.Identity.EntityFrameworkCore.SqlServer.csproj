@@ -5,12 +5,51 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <WarningsAsErrors>Nullable</WarningsAsErrors>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>Logitar.Identity.EntityFrameworkCore.SqlServer</Title>
+    <Authors>Francis Pion</Authors>
+    <Product>Logitar.Identity</Product>
+    <Description>Provides an implementation of a relational data store to be used with the Identity API, Entity Framework Core and Microsoft SQL Server.</Description>
+    <Copyright>© 2023 Logitar All Rights Reserved.</Copyright>
+    <PackageIcon>logitar.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/Logitar/Logitar.NET</RepositoryUrl>
+    <AssemblyVersion>0.5.0.0</AssemblyVersion>
+    <FileVersion>$(AssemblyVersion)</FileVersion>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+    <Version>0.5.0</Version>
+    <NeutralLanguage>en-CA</NeutralLanguage>
+    <GenerateDocumentationFile>False</GenerateDocumentationFile>
+    <PackageReleaseNotes>Created the Microsoft SQL Server data store.</PackageReleaseNotes>
+    <PackageTags>logitar net framework identity entityframeworkcore sqlserver</PackageTags>
+    <PackageProjectUrl>https://github.com/Logitar/Logitar.NET/tree/dev/src/Identity/Logitar.Identity.EntityFrameworkCore.SqlServer</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\EventSourcing\Logitar.EventSourcing.EntityFrameworkCore.SqlServer\Logitar.EventSourcing.EntityFrameworkCore.SqlServer.csproj" />
     <ProjectReference Include="..\..\Framework\Logitar.Data.SqlServer\Logitar.Data.SqlServer.csproj" />
     <ProjectReference Include="..\Logitar.Identity.EntityFrameworkCore.Relational\Logitar.Identity.EntityFrameworkCore.Relational.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="LICENSE">
+      <PackagePath>\</PackagePath>
+      <Pack>True</Pack>
+    </None>
+    <None Update="logitar.png">
+      <PackagePath>\</PackagePath>
+      <Pack>True</Pack>
+    </None>
+    <None Update="README.md">
+      <PackagePath>\</PackagePath>
+      <Pack>True</Pack>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Scripts\" />
   </ItemGroup>
 
 </Project>

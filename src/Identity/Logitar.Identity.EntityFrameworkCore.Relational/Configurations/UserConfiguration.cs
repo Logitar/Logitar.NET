@@ -10,6 +10,8 @@ public class UserConfiguration : AggregateConfiguration<UserEntity>, IEntityType
 {
   public override void Configure(EntityTypeBuilder<UserEntity> builder)
   {
+    base.Configure(builder);
+
     builder.ToTable(Db.Users.Table.Table!, Db.Users.Table.Schema);
     builder.HasKey(x => x.UserId);
 
@@ -57,12 +59,12 @@ public class UserConfiguration : AggregateConfiguration<UserEntity>, IEntityType
     builder.Property(x => x.AddressVerifiedBy).HasMaxLength(ActorId.MaximumLength);
     builder.Property(x => x.EmailAddress).HasMaxLength(byte.MaxValue);
     builder.Property(x => x.EmailAddressNormalized).HasMaxLength(byte.MaxValue);
-    builder.Property(x => x.AddressVerifiedBy).HasMaxLength(ActorId.MaximumLength);
+    builder.Property(x => x.EmailVerifiedBy).HasMaxLength(ActorId.MaximumLength);
     builder.Property(x => x.PhoneCountryCode).HasMaxLength(16);
     builder.Property(x => x.PhoneNumber).HasMaxLength(32);
     builder.Property(x => x.PhoneExtension).HasMaxLength(16);
     builder.Property(x => x.PhoneE164Formatted).HasMaxLength(64);
-    builder.Property(x => x.AddressVerifiedBy).HasMaxLength(ActorId.MaximumLength);
+    builder.Property(x => x.PhoneVerifiedBy).HasMaxLength(ActorId.MaximumLength);
     builder.Property(x => x.FirstName).HasMaxLength(byte.MaxValue);
     builder.Property(x => x.MiddleName).HasMaxLength(byte.MaxValue);
     builder.Property(x => x.LastName).HasMaxLength(byte.MaxValue);

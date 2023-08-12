@@ -16,7 +16,7 @@ public class SessionUpdatedEventHandler : INotificationHandler<SessionUpdatedEve
 
   public async Task Handle(SessionUpdatedEvent notification, CancellationToken cancellationToken)
   {
-    SessionEntity? session = await _context.Sessions.AsNoTracking()
+    SessionEntity? session = await _context.Sessions
       .SingleOrDefaultAsync(x => x.AggregateId == notification.AggregateId.Value, cancellationToken);
     if (session != null)
     {

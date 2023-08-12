@@ -96,13 +96,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Identity", "Identity", "{1E
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Identity.Domain", "src\Identity\Logitar.Identity.Domain\Logitar.Identity.Domain.csproj", "{80705F20-97FE-44FA-99EE-779B76509392}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Identity.EntityFrameworkCore.SqlServer", "src\Identity\Logitar.Identity.EntityFrameworkCore.SqlServer\Logitar.Identity.EntityFrameworkCore.SqlServer.csproj", "{E8F80DDF-4DC9-4952-B499-06EB3537458E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Identity.EntityFrameworkCore.SqlServer", "src\Identity\Logitar.Identity.EntityFrameworkCore.SqlServer\Logitar.Identity.EntityFrameworkCore.SqlServer.csproj", "{E8F80DDF-4DC9-4952-B499-06EB3537458E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Identity.EntityFrameworkCore.PostgreSQL", "src\Identity\Logitar.Identity.EntityFrameworkCore.PostgreSQL\Logitar.Identity.EntityFrameworkCore.PostgreSQL.csproj", "{D711EABE-4887-42D0-B755-412956811B4F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Identity.EntityFrameworkCore.PostgreSQL", "src\Identity\Logitar.Identity.EntityFrameworkCore.PostgreSQL\Logitar.Identity.EntityFrameworkCore.PostgreSQL.csproj", "{D711EABE-4887-42D0-B755-412956811B4F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Identity.EntityFrameworkCore.Relational", "src\Identity\Logitar.Identity.EntityFrameworkCore.Relational\Logitar.Identity.EntityFrameworkCore.Relational.csproj", "{0610B645-E31D-4A21-8B66-197A4E722A67}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Identity.EntityFrameworkCore.Relational", "src\Identity\Logitar.Identity.EntityFrameworkCore.Relational\Logitar.Identity.EntityFrameworkCore.Relational.csproj", "{0610B645-E31D-4A21-8B66-197A4E722A67}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Identity.Infrastructure", "src\Identity\Logitar.Identity.Infrastructure\Logitar.Identity.Infrastructure.csproj", "{E73EC9FE-240C-4EAC-9E69-A2625B48BE1B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Identity.Infrastructure", "src\Identity\Logitar.Identity.Infrastructure\Logitar.Identity.Infrastructure.csproj", "{E73EC9FE-240C-4EAC-9E69-A2625B48BE1B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{E77CA1D4-BD89-4E95-B1D8-621063D438BF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Identity.IntegrationTests", "src\Identity\tests\Logitar.Identity.IntegrationTests\Logitar.Identity.IntegrationTests.csproj", "{92A1FF91-1BC8-48FE-8A66-26AE70520ABA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -266,6 +270,10 @@ Global
 		{E73EC9FE-240C-4EAC-9E69-A2625B48BE1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E73EC9FE-240C-4EAC-9E69-A2625B48BE1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E73EC9FE-240C-4EAC-9E69-A2625B48BE1B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92A1FF91-1BC8-48FE-8A66-26AE70520ABA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92A1FF91-1BC8-48FE-8A66-26AE70520ABA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92A1FF91-1BC8-48FE-8A66-26AE70520ABA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92A1FF91-1BC8-48FE-8A66-26AE70520ABA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -312,6 +320,8 @@ Global
 		{D711EABE-4887-42D0-B755-412956811B4F} = {1EF18D07-619E-4818-B43F-A964BF563F7A}
 		{0610B645-E31D-4A21-8B66-197A4E722A67} = {1EF18D07-619E-4818-B43F-A964BF563F7A}
 		{E73EC9FE-240C-4EAC-9E69-A2625B48BE1B} = {1EF18D07-619E-4818-B43F-A964BF563F7A}
+		{E77CA1D4-BD89-4E95-B1D8-621063D438BF} = {1EF18D07-619E-4818-B43F-A964BF563F7A}
+		{92A1FF91-1BC8-48FE-8A66-26AE70520ABA} = {E77CA1D4-BD89-4E95-B1D8-621063D438BF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B0AA9E53-02AD-4000-8ED5-53AFF5D1B32D}

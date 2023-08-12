@@ -16,7 +16,7 @@ public class SessionSignedOutEventHandler : INotificationHandler<SessionSignedOu
 
   public async Task Handle(SessionSignedOutEvent notification, CancellationToken cancellationToken)
   {
-    SessionEntity? session = await _context.Sessions.AsNoTracking()
+    SessionEntity? session = await _context.Sessions
       .SingleOrDefaultAsync(x => x.AggregateId == notification.AggregateId.Value, cancellationToken);
     if (session != null)
     {

@@ -109,13 +109,14 @@ public record UserEntity : AggregateEntity
   }
 
   public List<RoleEntity> Roles { get; private set; } = new();
+  public List<SessionEntity> Sessions { get; private set; } = new();
 
   public void Disable(UserDisabledEvent disabled)
   {
     Update(disabled);
 
     DisabledBy = disabled.ActorId.Value;
-    DisabledOn = disabled.OccurredOn;
+    DisabledOn = disabled.OccurredOn.ToUniversalTime();
     IsDisabled = true;
   }
 
@@ -125,14 +126,14 @@ public record UserEntity : AggregateEntity
 
     DisabledBy = null;
     DisabledOn = null;
-    IsDisabled = true;
+    IsDisabled = false;
   }
 
   public void SignIn(UserSignedInEvent signedIn)
   {
     Update(signedIn);
 
-    AuthenticatedOn = signedIn.OccurredOn;
+    AuthenticatedOn = signedIn.OccurredOn.ToUniversalTime();
   }
 
   public void Update(UserUpdatedEvent updated, IEnumerable<RoleEntity> roles)
@@ -147,7 +148,7 @@ public record UserEntity : AggregateEntity
     {
       Password = updated.Password.Encode();
       PasswordChangedBy = updated.ActorId.Value;
-      PasswordChangedOn = updated.OccurredOn;
+      PasswordChangedOn = updated.OccurredOn.ToUniversalTime();
     }
 
     if (updated.Address != null)
@@ -162,7 +163,7 @@ public record UserEntity : AggregateEntity
       if (!IsAddressVerified && updated.Address.Value?.IsVerified == true)
       {
         AddressVerifiedBy = updated.ActorId.Value;
-        AddressVerifiedOn = updated.OccurredOn;
+        AddressVerifiedOn = updated.OccurredOn.ToUniversalTime();
         IsAddressVerified = true;
       }
       else if (IsAddressVerified && updated.Address.Value?.IsVerified != true)
@@ -179,7 +180,7 @@ public record UserEntity : AggregateEntity
       if (!IsEmailVerified && updated.Email.Value?.IsVerified == true)
       {
         EmailVerifiedBy = updated.ActorId.Value;
-        EmailVerifiedOn = updated.OccurredOn;
+        EmailVerifiedOn = updated.OccurredOn.ToUniversalTime();
         IsEmailVerified = true;
       }
       else if (IsEmailVerified && updated.Email.Value?.IsVerified != true)
@@ -199,7 +200,7 @@ public record UserEntity : AggregateEntity
       if (!IsPhoneVerified && updated.Phone.Value?.IsVerified == true)
       {
         PhoneVerifiedBy = updated.ActorId.Value;
-        PhoneVerifiedOn = updated.OccurredOn;
+        PhoneVerifiedOn = updated.OccurredOn.ToUniversalTime();
         IsPhoneVerified = true;
       }
       else if (IsPhoneVerified && updated.Phone.Value?.IsVerified != true)
@@ -233,7 +234,7 @@ public record UserEntity : AggregateEntity
 
     if (updated.Birthdate != null)
     {
-      Birthdate = updated.Birthdate.Value;
+      Birthdate = updated.Birthdate.Value?.ToUniversalTime();
     }
     if (updated.Gender != null)
     {
