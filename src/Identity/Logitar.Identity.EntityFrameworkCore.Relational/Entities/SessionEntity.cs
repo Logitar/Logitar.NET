@@ -64,7 +64,7 @@ public record SessionEntity : AggregateEntity
 
     IsActive = false;
     SignedOutBy = signedOut.ActorId.Value;
-    SignedOutOn = signedOut.OccurredOn;
+    SignedOutOn = signedOut.OccurredOn.ToUniversalTime();
   }
 
   public void Update(SessionUpdatedEvent updated)

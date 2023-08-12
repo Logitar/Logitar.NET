@@ -13,7 +13,7 @@ public abstract record AggregateEntity
     AggregateId = change.AggregateId.Value;
 
     CreatedBy = change.ActorId.Value;
-    CreatedOn = change.OccurredOn;
+    CreatedOn = change.OccurredOn.ToUniversalTime();
 
     Update(change);
   }
@@ -31,7 +31,7 @@ public abstract record AggregateEntity
   public virtual void Update(DomainEvent change)
   {
     UpdatedBy = change.ActorId.Value;
-    UpdatedOn = change.OccurredOn;
+    UpdatedOn = change.OccurredOn.ToUniversalTime();
 
     Version = change.Version;
   }
