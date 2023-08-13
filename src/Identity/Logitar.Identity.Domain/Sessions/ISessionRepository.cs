@@ -19,7 +19,4 @@ public interface ISessionRepository
   Task<IEnumerable<SessionAggregate>> LoadAsync(string? tenantId, CancellationToken cancellationToken = default);
   Task<IEnumerable<SessionAggregate>> LoadAsync(UserAggregate user, CancellationToken cancellationToken = default);
   Task<IEnumerable<SessionAggregate>> LoadAsync(UserAggregate user, bool? isActive, CancellationToken cancellationToken = default);
-
-  Task SaveAsync(SessionAggregate user, CancellationToken cancellationToken = default);
-  Task SaveAsync(IEnumerable<SessionAggregate> users, CancellationToken cancellationToken = default);
 }

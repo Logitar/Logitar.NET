@@ -17,8 +17,8 @@ public class UserRepositoryTests : IntegrationTestBase, IAsyncLifetime
   private readonly string _password = "P@s$W0rD";
   private readonly string _tenantId = Guid.NewGuid().ToString();
 
+  private readonly IAggregateRepository _aggregateRepository;
   private readonly IPasswordService _passwordService;
-  private readonly IRoleRepository _roleRepository;
   private readonly IOptions<RoleSettings> _roleSettings;
   private readonly IUserRepository _userRepository;
   private readonly IOptions<UserSettings> _userSettings;
@@ -32,8 +32,8 @@ public class UserRepositoryTests : IntegrationTestBase, IAsyncLifetime
 
   public UserRepositoryTests() : base()
   {
+    _aggregateRepository = ServiceProvider.GetRequiredService<IAggregateRepository>();
     _passwordService = ServiceProvider.GetRequiredService<IPasswordService>();
-    _roleRepository = ServiceProvider.GetRequiredService<IRoleRepository>();
     _roleSettings = ServiceProvider.GetRequiredService<IOptions<RoleSettings>>();
     _userRepository = ServiceProvider.GetRequiredService<IUserRepository>();
     _userSettings = ServiceProvider.GetRequiredService<IOptions<UserSettings>>();
@@ -187,7 +187,6 @@ public class UserRepositoryTests : IntegrationTestBase, IAsyncLifetime
   {
     await base.InitializeAsync();
 
-    await _roleRepository.SaveAsync(_role);
-    await _userRepository.SaveAsync(new[] { _admin, _other, _disabled, _deleted, _noTenant });
+    await _aggregateRepository.SaveAsync(new AggregateRoot[] { _role, _admin, _other, _disabled, _deleted, _noTenant });
   }
 }

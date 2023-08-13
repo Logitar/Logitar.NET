@@ -22,7 +22,10 @@ public abstract class IntegrationTestBase
     IServiceCollection services = new ServiceCollection()
       .AddSingleton(configuration)
       .Configure<RoleSettings>(options => { })
-      .Configure<UserSettings>(options => { });
+      .Configure<UserSettings>(options =>
+      {
+        options.RequireUniqueEmail = RequireUniqueEmail ?? options.RequireUniqueEmail;
+      });
 
     string connectionString;
     DatabaseProvider databaseProvider = configuration.GetValue<DatabaseProvider>("DatabaseProvider");
@@ -51,6 +54,8 @@ public abstract class IntegrationTestBase
   protected IServiceProvider ServiceProvider { get; }
   protected EventContext EventContext { get; }
   protected IdentityContext IdentityContext { get; }
+
+  protected bool? RequireUniqueEmail { get; set; }
 
   public virtual async Task InitializeAsync()
   {

@@ -4,7 +4,8 @@ namespace Logitar.Identity.Domain.Validators;
 
 public static class FluentValidationExtensions
 {
-  private const int LOCALE_CUSTOM_UNSPECIFIED = 0x1000;
+  public const int LOCALE_CUSTOM_UNSPECIFIED = 0x1000;
+  public const string UriSafeCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~";
 
   public static IRuleBuilderOptions<T, string> AllowedCharacters<T>(this IRuleBuilder<T, string> ruleBuilder, string? allowedCharacters)
   {

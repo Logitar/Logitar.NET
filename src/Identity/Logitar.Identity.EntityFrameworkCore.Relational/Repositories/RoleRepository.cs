@@ -100,9 +100,4 @@ public class RoleRepository : EventSourcing.EntityFrameworkCore.Relational.Aggre
 
     return base.Load<RoleAggregate>(events.Select(EventSerializer.Deserialize));
   }
-
-  public async Task SaveAsync(RoleAggregate role, CancellationToken cancellationToken)
-    => await base.SaveAsync(role, cancellationToken);
-  public async Task SaveAsync(IEnumerable<RoleAggregate> roles, CancellationToken cancellationToken)
-    => await base.SaveAsync(roles, cancellationToken);
 }
