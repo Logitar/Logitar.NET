@@ -1,6 +1,4 @@
 ﻿using Logitar.Identity.Domain.Users;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace Logitar.Identity.Infrastructure;
 

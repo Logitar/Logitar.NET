@@ -5,7 +5,6 @@ using Logitar.Identity.Domain.Users;
 using Logitar.Identity.EntityFrameworkCore.Relational.Repositories;
 using Logitar.Identity.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
-using System.Reflection;
 
 namespace Logitar.Identity.EntityFrameworkCore.Relational;
 
