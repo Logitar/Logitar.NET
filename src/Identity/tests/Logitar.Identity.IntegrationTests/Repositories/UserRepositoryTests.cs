@@ -7,7 +7,6 @@ using Logitar.Identity.EntityFrameworkCore.Relational.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using System.Globalization;
 
 namespace Logitar.Identity.Repositories;
 

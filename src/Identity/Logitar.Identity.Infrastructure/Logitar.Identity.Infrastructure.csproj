@@ -51,4 +51,10 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Using Include="System.Globalization" />
+    <Using Include="System.Text.Json" />
+    <Using Include="System.Text.Json.Serialization" />
+  </ItemGroup>
+
 </Project>

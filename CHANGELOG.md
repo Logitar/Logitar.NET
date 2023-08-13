@@ -13,6 +13,12 @@ Nothing yet.
 
 ### Added
 
+- Implemented a RandomStringGenerator.
+
+## [1.3.0] - 2023-08-13
+
+### Added
+
 - Created a RoleAggregate.
 - Created an UserAggregate.
 - Created a SessionAggregate.

@@ -1,7 +1,6 @@
 ﻿using Logitar.EventSourcing.Infrastructure;
 using Logitar.Identity.Domain;
 using Microsoft.Extensions.DependencyInjection;
-using System.Text.Json.Serialization;
 
 namespace Logitar.Identity.Infrastructure;
 
