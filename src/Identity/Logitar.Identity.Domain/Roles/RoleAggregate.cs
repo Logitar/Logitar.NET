@@ -21,7 +21,7 @@ public class RoleAggregate : AggregateRoot
   }
 
   public RoleAggregate(IUniqueNameSettings uniqueNameSettings, string uniqueName,
-    string? tenantId = null, ActorId actorId = default) : base()
+    string? tenantId = null, ActorId actorId = default, AggregateId? id = null) : base(id)
   {
     RoleCreatedEvent created = new()
     {
