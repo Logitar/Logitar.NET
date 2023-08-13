@@ -7,13 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-Nothing yet.
-
-## [1.3.0] - 2023-08-13
-
 ### Added
 
 - Implemented a RandomStringGenerator.
+- Added an AggregateId argument in Identity aggregate constructors.
 
 ## [1.3.0] - 2023-08-13
 
