@@ -19,18 +19,26 @@ public class AggregateConstructionFailedException : Exception
       throw new ArgumentOutOfRangeException(nameof(type), $"The type must be a subclass of the '{nameof(AggregateRoot)}' type.");
     }
 
-    Data[nameof(AggregateType)] = type.GetName();
-    Data[nameof(AggregateId)] = id.ToString();
+    AggregateType = type.GetName();
+    AggregateId = id.ToString();
   }
 
   /// <summary>
-  /// Gets the type of the aggregate.
+  /// Gets or sets the type of the aggregate.
   /// </summary>
-  public string AggregateType => (string)Data[nameof(AggregateType)]!;
+  public string AggregateType
+  {
+    get => (string)Data[nameof(AggregateType)]!;
+    private set => Data[nameof(AggregateType)] = value;
+  }
   /// <summary>
-  /// Gets the identifier of the aggregate.
+  /// Gets or sets the identifier of the aggregate.
   /// </summary>
-  public string AggregateId => (string)Data[nameof(AggregateId)]!;
+  public string AggregateId
+  {
+    get => (string)Data[nameof(AggregateId)]!;
+    private set => Data[nameof(AggregateId)] = value;
+  }
 
   /// <summary>
   /// Builds the exception message.

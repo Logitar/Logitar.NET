@@ -11,23 +11,35 @@ public class EventDataDeserializationFailedException : Exception
   /// <param name="entity">The invalid event.</param>
   internal EventDataDeserializationFailedException(IEventEntity entity) : base(BuildMessage(entity))
   {
-    Data[nameof(EventId)] = entity.Id;
-    Data[nameof(EventType)] = entity.EventType;
-    Data[nameof(EventData)] = entity.EventData;
+    EventId = entity.Id;
+    EventType = entity.EventType;
+    EventData = entity.EventData;
   }
 
   /// <summary>
-  /// Gets the identifier of the invalid event.
+  /// Gets or sets the identifier of the invalid event.
   /// </summary>
-  public Guid EventId => (Guid)Data[nameof(EventId)]!;
+  public Guid EventId
+  {
+    get => (Guid)Data[nameof(EventId)]!;
+    private set => Data[nameof(EventId)] = value;
+  }
   /// <summary>
-  /// Gets the type of the invalid event.
+  /// Gets or sets the type of the invalid event.
   /// </summary>
-  public string EventType => (string)Data[nameof(EventType)]!;
+  public string EventType
+  {
+    get => (string)Data[nameof(EventType)]!;
+    private set => Data[nameof(EventType)] = value;
+  }
   /// <summary>
-  /// Gets the data of the invalid event.
+  /// Gets or sets the data of the invalid event.
   /// </summary>
-  public string EventData => (string)Data[nameof(EventData)]!;
+  public string EventData
+  {
+    get => (string)Data[nameof(EventData)]!;
+    private set => Data[nameof(EventData)] = value;
+  }
 
   /// <summary>
   /// Builds the exception message.

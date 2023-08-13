@@ -8,7 +8,7 @@ public readonly struct AggregateId
   /// <summary>
   /// The maximum length of the identifier value.
   /// </summary>
-  private const int MaximumLength = byte.MaxValue;
+  public const int MaximumLength = byte.MaxValue;
 
   /// <summary>
   /// The value of the identifier.

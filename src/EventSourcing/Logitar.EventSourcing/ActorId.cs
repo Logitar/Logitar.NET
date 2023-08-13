@@ -8,11 +8,11 @@ public readonly struct ActorId
   /// <summary>
   /// The default value of the identifier.
   /// </summary>
-  private const string DefaultValue = "SYSTEM";
+  public const string DefaultValue = "SYSTEM";
   /// <summary>
   /// The maximum length of the identifier value.
   /// </summary>
-  private const int MaximumLength = byte.MaxValue;
+  public const int MaximumLength = byte.MaxValue;
 
   /// <summary>
   /// The value of the identifier.

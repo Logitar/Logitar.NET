@@ -1,8 +1,8 @@
-﻿using Logitar.EventSourcing.EntityFrameworkCore.PostgreSQL;
-using Logitar.EventSourcing.EntityFrameworkCore.SqlServer;
-using Logitar.EventSourcing.Infrastructure;
+﻿using Logitar.EventSourcing.Infrastructure;
 using Logitar.EventSourcing.InMemory;
 using Logitar.EventSourcing.MongoDB;
+using Logitar.Identity.EntityFrameworkCore.PostgreSQL;
+using Logitar.Identity.EntityFrameworkCore.SqlServer;
 
 namespace Logitar.Demo.Ui;
 
@@ -39,11 +39,11 @@ internal class Startup : StartupBase
     {
       case DatabaseProvider.EntityFrameworkCorePostgreSQL:
         connectionString = _configuration.GetValue<string>("POSTGRESQLCONNSTR_Demo") ?? string.Empty;
-        services.AddLogitarEventSourcingWithEntityFrameworkCorePostgreSQL(connectionString);
+        services.AddLogitarIdentityWithEntityFrameworkCorePostgreSQL(connectionString);
         break;
       case DatabaseProvider.EntityFrameworkCoreSqlServer:
         connectionString = _configuration.GetValue<string>("SQLCONNSTR_Demo") ?? string.Empty;
-        services.AddLogitarEventSourcingWithEntityFrameworkCoreSqlServer(connectionString);
+        services.AddLogitarIdentityWithEntityFrameworkCoreSqlServer(connectionString);
         break;
       case DatabaseProvider.InMemory:
         services.AddLogitarEventSourcingInMemory();
