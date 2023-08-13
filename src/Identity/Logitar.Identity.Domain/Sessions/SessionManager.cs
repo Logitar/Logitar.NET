@@ -18,5 +18,7 @@ public class SessionManager : ISessionManager
   }
 
   public async Task SaveAsync(SessionAggregate session, CancellationToken cancellationToken)
-    => await _aggregateRepository.SaveAsync(session, cancellationToken);
+  {
+    await _aggregateRepository.SaveAsync(session, cancellationToken);
+  }
 }
