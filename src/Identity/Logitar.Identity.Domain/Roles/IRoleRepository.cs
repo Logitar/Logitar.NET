@@ -19,7 +19,4 @@ public interface IRoleRepository
   Task<IEnumerable<RoleAggregate>> LoadAsync(string? tenantId, CancellationToken cancellationToken = default);
   Task<RoleAggregate?> LoadAsync(string? tenantId, string uniqueName, CancellationToken cancellationToken = default);
   Task<IEnumerable<RoleAggregate>> LoadAsync(UserAggregate user, CancellationToken cancellationToken = default);
-
-  Task SaveAsync(RoleAggregate role, CancellationToken cancellationToken = default);
-  Task SaveAsync(IEnumerable<RoleAggregate> roles, CancellationToken cancellationToken = default);
 }

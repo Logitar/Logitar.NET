@@ -1,4 +1,5 @@
-﻿using Logitar.Identity.Domain.Passwords;
+﻿using Logitar.EventSourcing;
+using Logitar.Identity.Domain.Passwords;
 using Logitar.Identity.Domain.Sessions;
 using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.Domain.Users;
@@ -14,9 +15,9 @@ public class SessionRepositoryTests : IntegrationTestBase, IAsyncLifetime
 {
   private readonly string _tenantId = Guid.NewGuid().ToString();
 
+  private readonly IAggregateRepository _aggregateRepository;
   private readonly IPasswordService _passwordService;
   private readonly ISessionRepository _sessionRepository;
-  private readonly IUserRepository _userRepository;
   private readonly IOptions<UserSettings> _userSettings;
 
   private readonly byte[] _secretBytes;
@@ -30,9 +31,9 @@ public class SessionRepositoryTests : IntegrationTestBase, IAsyncLifetime
 
   public SessionRepositoryTests() : base()
   {
+    _aggregateRepository = ServiceProvider.GetRequiredService<IAggregateRepository>();
     _passwordService = ServiceProvider.GetRequiredService<IPasswordService>();
     _sessionRepository = ServiceProvider.GetRequiredService<ISessionRepository>();
-    _userRepository = ServiceProvider.GetRequiredService<IUserRepository>();
     _userSettings = ServiceProvider.GetRequiredService<IOptions<UserSettings>>();
 
     UserSettings userSettings = _userSettings.Value;
@@ -96,7 +97,7 @@ public class SessionRepositoryTests : IntegrationTestBase, IAsyncLifetime
   {
     Password newSecret = _passwordService.Generate(256 / 8, out byte[] secretBytes);
     _persistent.Renew(Convert.ToBase64String(_secretBytes), newSecret);
-    await _sessionRepository.SaveAsync(_persistent);
+    await _aggregateRepository.SaveAsync(_persistent);
 
     Dictionary<string, SessionEntity> sessions = await IdentityContext.Sessions.AsNoTracking()
       .Include(x => x.User)
@@ -136,7 +137,6 @@ public class SessionRepositoryTests : IntegrationTestBase, IAsyncLifetime
   {
     await base.InitializeAsync();
 
-    await _userRepository.SaveAsync(new[] { _user, _noTenantUser });
-    await _sessionRepository.SaveAsync(new[] { _session, _persistent, _signedOut, _deleted, _noTenantSession });
+    await _aggregateRepository.SaveAsync(new AggregateRoot[] { _user, _noTenantUser, _session, _persistent, _signedOut, _deleted, _noTenantSession });
   }
 }

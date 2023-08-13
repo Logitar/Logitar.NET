@@ -121,9 +121,4 @@ public class UserRepository : EventSourcing.EntityFrameworkCore.Relational.Aggre
 
     return base.Load<UserAggregate>(events.Select(EventSerializer.Deserialize));
   }
-
-  public async Task SaveAsync(UserAggregate role, CancellationToken cancellationToken)
-    => await base.SaveAsync(role, cancellationToken);
-  public async Task SaveAsync(IEnumerable<UserAggregate> roles, CancellationToken cancellationToken)
-    => await base.SaveAsync(roles, cancellationToken);
 }

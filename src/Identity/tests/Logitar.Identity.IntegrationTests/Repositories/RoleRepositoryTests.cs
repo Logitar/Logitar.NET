@@ -1,4 +1,5 @@
-﻿using Logitar.Identity.Domain.Roles;
+﻿using Logitar.EventSourcing;
+using Logitar.Identity.Domain.Roles;
 using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.Domain.Users;
 using Logitar.Identity.EntityFrameworkCore.Relational;
@@ -14,9 +15,9 @@ public class RoleRepositoryTests : IntegrationTestBase, IAsyncLifetime
 {
   private readonly string _tenantId = Guid.NewGuid().ToString();
 
+  private readonly IAggregateRepository _aggregateRepository;
   private readonly IRoleRepository _roleRepository;
   private readonly IOptions<RoleSettings> _roleSettings;
-  private readonly IUserRepository _userRepository;
   private readonly IOptions<UserSettings> _userSettings;
 
   private readonly RoleAggregate _admin;
@@ -27,9 +28,9 @@ public class RoleRepositoryTests : IntegrationTestBase, IAsyncLifetime
 
   public RoleRepositoryTests() : base()
   {
+    _aggregateRepository = ServiceProvider.GetRequiredService<IAggregateRepository>();
     _roleRepository = ServiceProvider.GetRequiredService<IRoleRepository>();
     _roleSettings = ServiceProvider.GetRequiredService<IOptions<RoleSettings>>();
-    _userRepository = ServiceProvider.GetRequiredService<IUserRepository>();
     _userSettings = ServiceProvider.GetRequiredService<IOptions<UserSettings>>();
 
     RoleSettings roleSettings = _roleSettings.Value;
@@ -116,7 +117,6 @@ public class RoleRepositoryTests : IntegrationTestBase, IAsyncLifetime
   {
     await base.InitializeAsync();
 
-    await _roleRepository.SaveAsync(new[] { _admin, _guest, _deleted, _noTenant });
-    await _userRepository.SaveAsync(_user);
+    await _aggregateRepository.SaveAsync(new AggregateRoot[] { _admin, _guest, _deleted, _noTenant, _user });
   }
 }

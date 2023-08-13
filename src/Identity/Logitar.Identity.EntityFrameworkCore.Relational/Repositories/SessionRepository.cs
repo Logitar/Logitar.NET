@@ -86,9 +86,4 @@ public class SessionRepository : EventSourcing.EntityFrameworkCore.Relational.Ag
 
     return base.Load<SessionAggregate>(events.Select(EventSerializer.Deserialize));
   }
-
-  public async Task SaveAsync(SessionAggregate role, CancellationToken cancellationToken)
-    => await base.SaveAsync(role, cancellationToken);
-  public async Task SaveAsync(IEnumerable<SessionAggregate> roles, CancellationToken cancellationToken)
-    => await base.SaveAsync(roles, cancellationToken);
 }
