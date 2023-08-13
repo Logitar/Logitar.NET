@@ -106,7 +106,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Identity.Infrastruc
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{E77CA1D4-BD89-4E95-B1D8-621063D438BF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Identity.IntegrationTests", "src\Identity\tests\Logitar.Identity.IntegrationTests\Logitar.Identity.IntegrationTests.csproj", "{92A1FF91-1BC8-48FE-8A66-26AE70520ABA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Identity.IntegrationTests", "src\Identity\tests\Logitar.Identity.IntegrationTests\Logitar.Identity.IntegrationTests.csproj", "{92A1FF91-1BC8-48FE-8A66-26AE70520ABA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Security", "src\Framework\Logitar.Security\Logitar.Security.csproj", "{77144D05-E97C-46E1-B2E4-169633239BD0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Security.UnitTests", "src\Framework\tests\Logitar.Security.UnitTests\Logitar.Security.UnitTests.csproj", "{111D6861-12F3-46C2-AFE1-94719834E6C9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -274,6 +278,14 @@ Global
 		{92A1FF91-1BC8-48FE-8A66-26AE70520ABA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{92A1FF91-1BC8-48FE-8A66-26AE70520ABA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{92A1FF91-1BC8-48FE-8A66-26AE70520ABA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77144D05-E97C-46E1-B2E4-169633239BD0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77144D05-E97C-46E1-B2E4-169633239BD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77144D05-E97C-46E1-B2E4-169633239BD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77144D05-E97C-46E1-B2E4-169633239BD0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{111D6861-12F3-46C2-AFE1-94719834E6C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{111D6861-12F3-46C2-AFE1-94719834E6C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{111D6861-12F3-46C2-AFE1-94719834E6C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{111D6861-12F3-46C2-AFE1-94719834E6C9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -322,6 +334,8 @@ Global
 		{E73EC9FE-240C-4EAC-9E69-A2625B48BE1B} = {1EF18D07-619E-4818-B43F-A964BF563F7A}
 		{E77CA1D4-BD89-4E95-B1D8-621063D438BF} = {1EF18D07-619E-4818-B43F-A964BF563F7A}
 		{92A1FF91-1BC8-48FE-8A66-26AE70520ABA} = {E77CA1D4-BD89-4E95-B1D8-621063D438BF}
+		{77144D05-E97C-46E1-B2E4-169633239BD0} = {9293074A-4695-4838-8408-7E40ABF90B32}
+		{111D6861-12F3-46C2-AFE1-94719834E6C9} = {746BA5D1-0E1A-4191-9645-88D14B1C69BF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B0AA9E53-02AD-4000-8ED5-53AFF5D1B32D}

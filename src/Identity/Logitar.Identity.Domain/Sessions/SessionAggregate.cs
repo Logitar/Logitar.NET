@@ -17,8 +17,8 @@ public class SessionAggregate : AggregateRoot
   {
   }
 
-  public SessionAggregate(UserAggregate user, Password? secret = null, ActorId actorId = default)
-    : base()
+  public SessionAggregate(UserAggregate user, Password? secret = null, ActorId actorId = default,
+    AggregateId? id = null) : base(id)
   {
     ApplyChange(new SessionCreatedEvent
     {

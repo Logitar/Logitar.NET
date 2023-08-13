@@ -1,8 +1,4 @@
-﻿using System.Globalization;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-
-namespace Logitar.Identity.Infrastructure;
+﻿namespace Logitar.Identity.Infrastructure;
 
 public class CultureInfoConverter : JsonConverter<CultureInfo?>
 {

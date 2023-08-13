@@ -41,7 +41,7 @@ public class UserAggregate : AggregateRoot
   }
 
   public UserAggregate(IUniqueNameSettings uniqueNameSettings, string uniqueName,
-    string? tenantId = null, ActorId actorId = default) : base()
+    string? tenantId = null, ActorId actorId = default, AggregateId? id = null) : base(id)
   {
     UserCreatedEvent created = new()
     {
