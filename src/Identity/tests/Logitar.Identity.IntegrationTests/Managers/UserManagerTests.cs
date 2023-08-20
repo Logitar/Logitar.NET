@@ -1,9 +1,12 @@
 ﻿using Bogus;
 using Logitar.EventSourcing;
 using Logitar.Identity.Domain;
+using Logitar.Identity.Domain.Passwords;
 using Logitar.Identity.Domain.Sessions;
 using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.Domain.Users;
+using Logitar.Identity.EntityFrameworkCore.Relational.Entities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -16,6 +19,7 @@ public class UserManagerTests : IntegrationTestBase, IAsyncLifetime
   private readonly string _tenantId = Guid.NewGuid().ToString();
 
   private readonly IAggregateRepository _aggregateRepository;
+  private readonly IPasswordService _passwordService;
   private readonly IUserManager _userManager;
   private readonly IUserRepository _userRepository;
   private readonly IOptions<UserSettings> _userSettings;
@@ -26,13 +30,14 @@ public class UserManagerTests : IntegrationTestBase, IAsyncLifetime
   public UserManagerTests()
   {
     _aggregateRepository = ServiceProvider.GetRequiredService<IAggregateRepository>();
+    _passwordService = ServiceProvider.GetRequiredService<IPasswordService>();
     _userManager = ServiceProvider.GetRequiredService<IUserManager>();
     _userRepository = ServiceProvider.GetRequiredService<IUserRepository>();
     _userSettings = ServiceProvider.GetRequiredService<IOptions<UserSettings>>();
 
     _user = new(_userSettings.Value.UniqueNameSettings, "admin", _tenantId)
     {
-      Email = new EmailAddress(_faker.Person.Email)
+      Email = new EmailAddress(_faker.Person.Email, isVerified: true)
     };
 
     _session = new(_user);
@@ -50,6 +55,35 @@ public class UserManagerTests : IntegrationTestBase, IAsyncLifetime
     SessionAggregate? session = await _aggregateRepository.LoadAsync<SessionAggregate>(_session.Id, includeDeleted: true);
     Assert.NotNull(session);
     Assert.True(session.IsDeleted);
+  }
+
+  [Fact(DisplayName = "SaveAsync: it should change the user password.")]
+  public async Task SaveAsync_it_should_change_the_user_password()
+  {
+    string currentPassword = "Test123!";
+    string newPassword = "P@s$W0rD";
+    UserSettings userSettings = _userSettings.Value;
+
+    _user.SetPassword(_passwordService.Create(currentPassword));
+    await _userManager.SaveAsync(_user);
+    _ = _user.SignIn(userSettings, currentPassword);
+
+    _user.ChangePassword(currentPassword, _passwordService.Create(newPassword));
+    await _userManager.SaveAsync(_user);
+    _ = _user.SignIn(userSettings, newPassword);
+
+    var exception = Assert.Throws<IncorrectUserPasswordException>(() => _user.ChangePassword(currentPassword, _passwordService.Create(newPassword)));
+    Assert.Equal(_user.ToString(), exception.User);
+    Assert.Equal(currentPassword, exception.Password);
+
+    exception = Assert.Throws<IncorrectUserPasswordException>(() => _user.SignIn(userSettings, currentPassword));
+    Assert.Equal(_user.ToString(), exception.User);
+    Assert.Equal(currentPassword, exception.Password);
+
+    UserEntity user = await IdentityContext.Users.AsNoTracking()
+      .SingleAsync(x => x.AggregateId == _user.Id.Value);
+    Assert.NotNull(user.Password);
+    Assert.True(_passwordService.Decode(user.Password).IsMatch(newPassword));
   }
 
   [Fact(DisplayName = "SaveAsync: it should save the user when email unicity is not required.")]

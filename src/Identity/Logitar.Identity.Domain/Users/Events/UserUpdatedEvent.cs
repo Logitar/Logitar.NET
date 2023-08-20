@@ -21,7 +21,7 @@ public record UserUpdatedEvent : DomainEvent, INotification
 
   public MayBe<DateTime?>? Birthdate { get; set; }
   public MayBe<Gender>? Gender { get; set; }
-  public MayBe<CultureInfo>? Locale { get; set; }
+  public MayBe<Locale>? Locale { get; set; }
   public MayBe<TimeZoneEntry>? TimeZone { get; set; }
 
   public MayBe<Uri>? Picture { get; set; }

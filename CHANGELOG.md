@@ -7,7 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-Nothing yet.
+### Added
+
+- Implemented user password change.
+
+### Changed
+
+- Created a Locale value object.
 
 ## [1.4.0] - 2023-08-13
 
