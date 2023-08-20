@@ -33,15 +33,6 @@ public static class FluentValidationExtensions
   private static bool BeAValidIdentifier(string value) => !string.IsNullOrEmpty(value)
     && !char.IsDigit(value.First()) && value.All(c => char.IsLetterOrDigit(c) || c == '_');
 
-  public static IRuleBuilderOptions<T, CultureInfo> Locale<T>(this IRuleBuilder<T, CultureInfo> ruleBuilder)
-  {
-    return ruleBuilder.Must(BeAValidLocale)
-      .WithErrorCode(BuildErrorCode(nameof(Locale)))
-      .WithMessage("'{PropertyName}' may not be the invariant culture, and it cannot be an user-defined culture.");
-  }
-  private static bool BeAValidLocale(CultureInfo culture)
-    => !string.IsNullOrWhiteSpace(culture.Name) && culture.LCID != LOCALE_CUSTOM_UNSPECIFIED;
-
   public static IRuleBuilderOptions<T, DateTime> Past<T>(this IRuleBuilder<T, DateTime> ruleBuilder, DateTime? moment = null)
   {
     return ruleBuilder.Must(value => BeInThePast(value, moment))

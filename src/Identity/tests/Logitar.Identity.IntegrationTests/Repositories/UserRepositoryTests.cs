@@ -1,4 +1,5 @@
 ﻿using Logitar.EventSourcing;
+using Logitar.Identity.Domain;
 using Logitar.Identity.Domain.Passwords;
 using Logitar.Identity.Domain.Roles;
 using Logitar.Identity.Domain.Settings;
@@ -52,7 +53,7 @@ public class UserRepositoryTests : IntegrationTestBase, IAsyncLifetime
       Nickname = "Ti-poil",
       Birthdate = new DateTime(1922, 8, 24),
       Gender = new Gender("Male"),
-      Locale = CultureInfo.GetCultureInfo("fr-CA"),
+      Locale = new Locale("fr-CA"),
       TimeZone = new TimeZoneEntry("America/Toronto"),
       Picture = new Uri("https://upload.wikimedia.org/wikipedia/commons/a/a9/Ren%C3%A9_L%C3%A9vesque%2C_18_octobre_1960.jpg"),
       Profile = new Uri("https://fr.wikipedia.org/wiki/Ren%C3%A9_L%C3%A9vesque"),
@@ -159,7 +160,7 @@ public class UserRepositoryTests : IntegrationTestBase, IAsyncLifetime
         Assert.Equal(aggregate.Nickname, user.Nickname);
         AssertEqual(aggregate.Birthdate, user.Birthdate);
         Assert.Equal(aggregate.Gender?.Value, user.Gender);
-        Assert.Equal(aggregate.Locale?.Name, user.Locale);
+        Assert.Equal(aggregate.Locale?.Code, user.Locale);
         Assert.Equal(aggregate.TimeZone?.Id, user.TimeZone);
         Assert.Equal(aggregate.Picture?.ToString(), user.Picture);
         Assert.Equal(aggregate.Profile?.ToString(), user.Profile);
