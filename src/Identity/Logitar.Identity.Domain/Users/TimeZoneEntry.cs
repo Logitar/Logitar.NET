@@ -13,7 +13,7 @@ public record TimeZoneEntry
       throw new ArgumentException("The time zone identifier is required.", nameof(id));
     }
 
-    _dateTimeZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull(id)
+    _dateTimeZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull(id.Trim())
       ?? throw new ArgumentOutOfRangeException(nameof(id), $"The time zone identifier '{id}' is not valid.");
   }
 
