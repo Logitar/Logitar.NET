@@ -1,20 +1,17 @@
 ﻿using Logitar.EventSourcing;
 using Logitar.Identity.Domain.Sessions;
-using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.Domain.Users;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
 namespace Logitar.Identity.Managers;
 
 [Trait(Traits.Category, Categories.Integration)]
-public class SessionManagerTests : IntegrationTestBase, IAsyncLifetime
+public class SessionManagerTests : IntegrationTests, IAsyncLifetime
 {
   private readonly string _tenantId = Guid.NewGuid().ToString();
 
   private readonly IAggregateRepository _aggregateRepository;
   private readonly ISessionManager _sessionManager;
-  private readonly IOptions<UserSettings> _userSettings;
 
   private readonly SessionAggregate _session;
   private readonly UserAggregate _user;
@@ -23,9 +20,8 @@ public class SessionManagerTests : IntegrationTestBase, IAsyncLifetime
   {
     _aggregateRepository = ServiceProvider.GetRequiredService<IAggregateRepository>();
     _sessionManager = ServiceProvider.GetRequiredService<ISessionManager>();
-    _userSettings = ServiceProvider.GetRequiredService<IOptions<UserSettings>>();
 
-    _user = new(_userSettings.Value.UniqueNameSettings, "admin", _tenantId);
+    _user = new(UserSettings.UniqueNameSettings, "admin", _tenantId);
 
     _session = new(_user);
   }

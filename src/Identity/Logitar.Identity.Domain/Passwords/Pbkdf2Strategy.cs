@@ -1,5 +1,4 @@
 ﻿using Logitar.Identity.Domain.Settings;
-using Microsoft.Extensions.Options;
 
 namespace Logitar.Identity.Domain.Passwords;
 
@@ -7,16 +6,16 @@ public class Pbkdf2Strategy : IPasswordStrategy
 {
   public string Id => Pbkdf2.Prefix;
 
-  private readonly IOptions<Pbkdf2Settings> _pbkdf2Settings;
+  private readonly ISettingsResolver _settingsResolver;
 
-  public Pbkdf2Strategy(IOptions<Pbkdf2Settings> pbkdf2Settings)
+  public Pbkdf2Strategy(ISettingsResolver settingsResolver)
   {
-    _pbkdf2Settings = pbkdf2Settings;
+    _settingsResolver = settingsResolver;
   }
 
   public Password Create(string password)
   {
-    Pbkdf2Settings pbkdf2Settings = _pbkdf2Settings.Value;
+    IPbkdf2Settings pbkdf2Settings = _settingsResolver.Pbkdf2Settings;
 
     byte[] salt = RandomNumberGenerator.GetBytes(pbkdf2Settings.SaltLength);
 

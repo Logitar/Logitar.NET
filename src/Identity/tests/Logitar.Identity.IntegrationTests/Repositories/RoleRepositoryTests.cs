@@ -1,24 +1,20 @@
 ﻿using Logitar.EventSourcing;
 using Logitar.Identity.Domain.Roles;
-using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.Domain.Users;
 using Logitar.Identity.EntityFrameworkCore.Relational;
 using Logitar.Identity.EntityFrameworkCore.Relational.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
 namespace Logitar.Identity.Repositories;
 
 [Trait(Traits.Category, Categories.Integration)]
-public class RoleRepositoryTests : IntegrationTestBase, IAsyncLifetime
+public class RoleRepositoryTests : IntegrationTests, IAsyncLifetime
 {
   private readonly string _tenantId = Guid.NewGuid().ToString();
 
   private readonly IAggregateRepository _aggregateRepository;
   private readonly IRoleRepository _roleRepository;
-  private readonly IOptions<RoleSettings> _roleSettings;
-  private readonly IOptions<UserSettings> _userSettings;
 
   private readonly RoleAggregate _admin;
   private readonly RoleAggregate _guest;
@@ -30,26 +26,22 @@ public class RoleRepositoryTests : IntegrationTestBase, IAsyncLifetime
   {
     _aggregateRepository = ServiceProvider.GetRequiredService<IAggregateRepository>();
     _roleRepository = ServiceProvider.GetRequiredService<IRoleRepository>();
-    _roleSettings = ServiceProvider.GetRequiredService<IOptions<RoleSettings>>();
-    _userSettings = ServiceProvider.GetRequiredService<IOptions<UserSettings>>();
 
-    RoleSettings roleSettings = _roleSettings.Value;
-
-    _admin = new(roleSettings.UniqueNameSettings, "admin", _tenantId)
+    _admin = new(RoleSettings.UniqueNameSettings, "admin", _tenantId)
     {
       DisplayName = "Administrator",
       Description = "This is the administrator role of the current tenant."
     };
     _admin.SetCustomAttribute("write_users", bool.TrueString);
 
-    _guest = new(roleSettings.UniqueNameSettings, "guest", _tenantId);
+    _guest = new(RoleSettings.UniqueNameSettings, "guest", _tenantId);
 
-    _deleted = new(roleSettings.UniqueNameSettings, "deleted", _tenantId);
+    _deleted = new(RoleSettings.UniqueNameSettings, "deleted", _tenantId);
     _deleted.Delete();
 
-    _noTenant = new(roleSettings.UniqueNameSettings, _admin.UniqueName);
+    _noTenant = new(RoleSettings.UniqueNameSettings, _admin.UniqueName);
 
-    _user = new(_userSettings.Value.UniqueNameSettings, _admin.UniqueName, _admin.TenantId);
+    _user = new(UserSettings.UniqueNameSettings, _admin.UniqueName, _admin.TenantId);
     _user.AddRole(_admin);
     _user.AddRole(_guest);
     _user.AddRole(_deleted);
