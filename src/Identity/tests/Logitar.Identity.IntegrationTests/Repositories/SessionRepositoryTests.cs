@@ -1,24 +1,21 @@
 ﻿using Logitar.EventSourcing;
 using Logitar.Identity.Domain.Passwords;
 using Logitar.Identity.Domain.Sessions;
-using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.Domain.Users;
 using Logitar.Identity.EntityFrameworkCore.Relational.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
 namespace Logitar.Identity.Repositories;
 
 [Trait(Traits.Category, Categories.Integration)]
-public class SessionRepositoryTests : IntegrationTestBase, IAsyncLifetime
+public class SessionRepositoryTests : IntegrationTests, IAsyncLifetime
 {
   private readonly string _tenantId = Guid.NewGuid().ToString();
 
   private readonly IAggregateRepository _aggregateRepository;
   private readonly IPasswordService _passwordService;
   private readonly ISessionRepository _sessionRepository;
-  private readonly IOptions<UserSettings> _userSettings;
 
   private readonly byte[] _secretBytes;
   private readonly UserAggregate _user;
@@ -34,11 +31,9 @@ public class SessionRepositoryTests : IntegrationTestBase, IAsyncLifetime
     _aggregateRepository = ServiceProvider.GetRequiredService<IAggregateRepository>();
     _passwordService = ServiceProvider.GetRequiredService<IPasswordService>();
     _sessionRepository = ServiceProvider.GetRequiredService<ISessionRepository>();
-    _userSettings = ServiceProvider.GetRequiredService<IOptions<UserSettings>>();
 
-    UserSettings userSettings = _userSettings.Value;
-    _user = new(userSettings.UniqueNameSettings, "admin", _tenantId);
-    _noTenantUser = new(userSettings.UniqueNameSettings, _user.UniqueName, tenantId: null);
+    _user = new(UserSettings.UniqueNameSettings, "admin", _tenantId);
+    _noTenantUser = new(UserSettings.UniqueNameSettings, _user.UniqueName, tenantId: null);
 
     _session = new(_user, secret: null);
 

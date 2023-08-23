@@ -2,7 +2,6 @@
 using Logitar.Identity.Domain.Sessions;
 using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.Domain.Users.Events;
-using Microsoft.Extensions.Options;
 
 namespace Logitar.Identity.Domain.Users;
 
@@ -11,15 +10,15 @@ public class UserManager : IUserManager
   private readonly IAggregateRepository _aggregateRepository;
   private readonly ISessionRepository _sessionRepository;
   private readonly IUserRepository _userRepository;
-  private readonly IOptions<UserSettings> _userSettings;
+  private readonly ISettingsResolver _settingsResolver;
 
   public UserManager(IAggregateRepository aggregateRepository, ISessionRepository sessionRepository,
-    IUserRepository userRepository, IOptions<UserSettings> userSettings)
+    IUserRepository userRepository, ISettingsResolver settingsResolver)
   {
     _aggregateRepository = aggregateRepository;
     _sessionRepository = sessionRepository;
     _userRepository = userRepository;
-    _userSettings = userSettings;
+    _settingsResolver = settingsResolver;
   }
 
   public async Task DeleteAsync(UserAggregate user, CancellationToken cancellationToken)
@@ -37,7 +36,7 @@ public class UserManager : IUserManager
 
   public async Task SaveAsync(UserAggregate user, CancellationToken cancellationToken)
   {
-    UserSettings userSettings = _userSettings.Value;
+    IUserSettings userSettings = _settingsResolver.UserSettings;
 
     bool hasUniqueNameChanged = false;
     bool hasEmailAddressChanged = false;

@@ -1,22 +1,18 @@
 ﻿using Logitar.EventSourcing;
 using Logitar.Identity.Domain;
 using Logitar.Identity.Domain.Roles;
-using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.Domain.Users;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
 namespace Logitar.Identity.Managers;
 
 [Trait(Traits.Category, Categories.Integration)]
-public class RoleManagerTests : IntegrationTestBase, IAsyncLifetime
+public class RoleManagerTests : IntegrationTests, IAsyncLifetime
 {
   private readonly string _tenantId = Guid.NewGuid().ToString();
 
   private readonly IAggregateRepository _aggregateRepository;
   private readonly IRoleManager _roleManager;
-  private readonly IOptions<RoleSettings> _roleSettings;
-  private readonly IOptions<UserSettings> _userSettings;
 
   private readonly RoleAggregate _role;
   private readonly UserAggregate _user;
@@ -25,12 +21,10 @@ public class RoleManagerTests : IntegrationTestBase, IAsyncLifetime
   {
     _aggregateRepository = ServiceProvider.GetRequiredService<IAggregateRepository>();
     _roleManager = ServiceProvider.GetRequiredService<IRoleManager>();
-    _roleSettings = ServiceProvider.GetRequiredService<IOptions<RoleSettings>>();
-    _userSettings = ServiceProvider.GetRequiredService<IOptions<UserSettings>>();
 
-    _role = new(_roleSettings.Value.UniqueNameSettings, "admin", _tenantId);
+    _role = new(RoleSettings.UniqueNameSettings, "admin", _tenantId);
 
-    _user = new(_userSettings.Value.UniqueNameSettings, "admin", _tenantId);
+    _user = new(UserSettings.UniqueNameSettings, "admin", _tenantId);
     _user.AddRole(_role);
   }
 
@@ -62,7 +56,7 @@ public class RoleManagerTests : IntegrationTestBase, IAsyncLifetime
   [Fact(DisplayName = "SaveAsync: it should throw UniqueNameAlreadyUsedException when unique name is already used.")]
   public async Task SaveAsync_it_should_throw_UniqueNameAlreadyUsedException_when_unique_name_is_already_used()
   {
-    RoleAggregate role = new(_roleSettings.Value.UniqueNameSettings, _role.UniqueName, _role.TenantId);
+    RoleAggregate role = new(RoleSettings.UniqueNameSettings, _role.UniqueName, _role.TenantId);
     var exception = await Assert.ThrowsAsync<UniqueNameAlreadyUsedException<RoleAggregate>>(
       async () => await _roleManager.SaveAsync(role)
     );
