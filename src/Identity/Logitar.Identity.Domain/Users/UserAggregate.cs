@@ -388,7 +388,7 @@ public class UserAggregate : AggregateRoot
 
   public SessionAggregate SignIn(IUserSettings userSettings, Password? secret = null,
     ActorId? actorId = null) => SignIn(userSettings, password: null, secret, actorId);
-  public SessionAggregate SignIn(IUserSettings userSettings, string? password = null,
+  public SessionAggregate SignIn(IUserSettings userSettings, string? password,
     Password? secret = null, ActorId? actorId = null)
   {
     if (password != null && _password?.IsMatch(password) != true)
