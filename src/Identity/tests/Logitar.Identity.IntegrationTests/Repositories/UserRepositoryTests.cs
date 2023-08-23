@@ -64,7 +64,7 @@ public class UserRepositoryTests : IntegrationTestBase, IAsyncLifetime
     _admin.Enable();
     _admin.SetCustomAttribute("Initials", "CRL");
     _admin.SetPassword(_passwordService.Create(_password));
-    _admin.SignIn(userSettings, password: null);
+    _admin.SignIn(userSettings);
 
     _other = new(userSettings.UniqueNameSettings, "other", _tenantId);
 
