@@ -10,19 +10,17 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Logitar.Identity;
 
-public abstract class IntegrationTestBase
+public abstract class IntegrationTests
 {
-  protected IntegrationTestBase()
+  protected IntegrationTests()
   {
     IConfiguration configuration = new ConfigurationBuilder()
       .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
       .Build();
 
-
     IServiceCollection services = new ServiceCollection()
       .AddSingleton(configuration)
-      .Configure<RoleSettings>(options => { })
-      .Configure<UserSettings>(options => { });
+      .AddSingleton<ISettingsResolver, SettingsResolver>();
 
     string connectionString;
     DatabaseProvider databaseProvider = configuration.GetValue<DatabaseProvider>("DatabaseProvider");
@@ -44,11 +42,18 @@ public abstract class IntegrationTestBase
 
     ServiceProvider = services.BuildServiceProvider();
 
+    SettingsResolver = ServiceProvider.GetRequiredService<ISettingsResolver>();
+
     EventContext = ServiceProvider.GetRequiredService<EventContext>();
     IdentityContext = ServiceProvider.GetRequiredService<IdentityContext>();
   }
 
   protected IServiceProvider ServiceProvider { get; }
+
+  protected ISettingsResolver SettingsResolver { get; }
+  protected IRoleSettings RoleSettings => SettingsResolver.RoleSettings;
+  protected IUserSettings UserSettings => SettingsResolver.UserSettings;
+
   protected EventContext EventContext { get; }
   protected IdentityContext IdentityContext { get; }
 

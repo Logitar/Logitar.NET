@@ -111,6 +111,15 @@ public record UserEntity : AggregateEntity
   public List<RoleEntity> Roles { get; private set; } = new();
   public List<SessionEntity> Sessions { get; private set; } = new();
 
+  public void ChangePassword(UserPasswordChangedEvent changed)
+  {
+    Update(changed);
+
+    Password = changed.Password.Encode();
+    PasswordChangedBy = changed.ActorId.Value;
+    PasswordChangedOn = changed.OccurredOn.ToUniversalTime();
+  }
+
   public void Disable(UserDisabledEvent disabled)
   {
     Update(disabled);
@@ -242,7 +251,7 @@ public record UserEntity : AggregateEntity
     }
     if (updated.Locale != null)
     {
-      Locale = updated.Locale.Value?.Name;
+      Locale = updated.Locale.Value?.Code;
     }
     if (updated.TimeZone != null)
     {

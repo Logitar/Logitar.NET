@@ -14,8 +14,8 @@ public static class DependencyInjectionExtensions
       .AddSingleton<PasswordConverter>()
       .AddSingleton<IEventSerializer>(serviceProvider => new EventSerializer(new JsonConverter[]
       {
-        new CultureInfoConverter(),
         new GenderConverter(),
+        new LocaleConverter(),
         new TimeZoneEntryConverter(),
         serviceProvider.GetRequiredService<PasswordConverter>()
       }));

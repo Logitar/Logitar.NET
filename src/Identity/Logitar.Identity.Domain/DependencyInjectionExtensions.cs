@@ -1,6 +1,7 @@
 ﻿using Logitar.Identity.Domain.Passwords;
 using Logitar.Identity.Domain.Roles;
 using Logitar.Identity.Domain.Sessions;
+using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.Domain.Users;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -13,7 +14,8 @@ public static class DependencyInjectionExtensions
     return services
       .AddManagers()
       .AddPasswordStrategies()
-      .AddSingleton<IPasswordService, PasswordService>();
+      .AddSingleton<IPasswordService, PasswordService>()
+      .AddSingleton<ISettingsResolver, SettingsResolver>();
   }
 
   private static IServiceCollection AddManagers(this IServiceCollection services)

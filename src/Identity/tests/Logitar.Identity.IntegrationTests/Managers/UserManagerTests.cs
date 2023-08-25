@@ -1,24 +1,26 @@
 ﻿using Bogus;
 using Logitar.EventSourcing;
 using Logitar.Identity.Domain;
+using Logitar.Identity.Domain.Passwords;
 using Logitar.Identity.Domain.Sessions;
 using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.Domain.Users;
+using Logitar.Identity.EntityFrameworkCore.Relational.Entities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
 namespace Logitar.Identity.Managers;
 
 [Trait(Traits.Category, Categories.Integration)]
-public class UserManagerTests : IntegrationTestBase, IAsyncLifetime
+public class UserManagerTests : IntegrationTests, IAsyncLifetime
 {
   private readonly Faker _faker = new();
   private readonly string _tenantId = Guid.NewGuid().ToString();
 
   private readonly IAggregateRepository _aggregateRepository;
+  private readonly IPasswordService _passwordService;
   private readonly IUserManager _userManager;
   private readonly IUserRepository _userRepository;
-  private readonly IOptions<UserSettings> _userSettings;
 
   private readonly SessionAggregate _session;
   private readonly UserAggregate _user;
@@ -26,13 +28,13 @@ public class UserManagerTests : IntegrationTestBase, IAsyncLifetime
   public UserManagerTests()
   {
     _aggregateRepository = ServiceProvider.GetRequiredService<IAggregateRepository>();
+    _passwordService = ServiceProvider.GetRequiredService<IPasswordService>();
     _userManager = ServiceProvider.GetRequiredService<IUserManager>();
     _userRepository = ServiceProvider.GetRequiredService<IUserRepository>();
-    _userSettings = ServiceProvider.GetRequiredService<IOptions<UserSettings>>();
 
-    _user = new(_userSettings.Value.UniqueNameSettings, "admin", _tenantId)
+    _user = new(UserSettings.UniqueNameSettings, "admin", _tenantId)
     {
-      Email = new EmailAddress(_faker.Person.Email)
+      Email = new EmailAddress(_faker.Person.Email, isVerified: true)
     };
 
     _session = new(_user);
@@ -52,14 +54,43 @@ public class UserManagerTests : IntegrationTestBase, IAsyncLifetime
     Assert.True(session.IsDeleted);
   }
 
+  [Fact(DisplayName = "SaveAsync: it should change the user password.")]
+  public async Task SaveAsync_it_should_change_the_user_password()
+  {
+    string currentPassword = "Test123!";
+    string newPassword = "P@s$W0rD";
+
+    _user.SetPassword(_passwordService.Create(currentPassword));
+    await _userManager.SaveAsync(_user);
+    _ = _user.SignIn(UserSettings, currentPassword);
+
+    _user.ChangePassword(currentPassword, _passwordService.Create(newPassword));
+    await _userManager.SaveAsync(_user);
+    _ = _user.SignIn(UserSettings, newPassword);
+
+    var exception = Assert.Throws<IncorrectUserPasswordException>(() => _user.ChangePassword(currentPassword, _passwordService.Create(newPassword)));
+    Assert.Equal(_user.ToString(), exception.User);
+    Assert.Equal(currentPassword, exception.Password);
+
+    exception = Assert.Throws<IncorrectUserPasswordException>(() => _user.SignIn(UserSettings, currentPassword));
+    Assert.Equal(_user.ToString(), exception.User);
+    Assert.Equal(currentPassword, exception.Password);
+
+    UserEntity user = await IdentityContext.Users.AsNoTracking()
+      .SingleAsync(x => x.AggregateId == _user.Id.Value);
+    Assert.NotNull(user.Password);
+    Assert.True(_passwordService.Decode(user.Password).IsMatch(newPassword));
+  }
+
   [Fact(DisplayName = "SaveAsync: it should save the user when email unicity is not required.")]
   public async Task SaveAsync_it_should_save_the_user_when_email_unicity_is_not_required()
   {
-    UserSettings userSettings = _userSettings.Value;
+    UserSettings? userSettings = UserSettings as UserSettings;
+    Assert.NotNull(userSettings);
     userSettings.RequireUniqueEmail = false;
 
     Assert.NotNull(_user.Email);
-    UserAggregate user = new(userSettings.UniqueNameSettings, $"{_user.UniqueName}2", _user.TenantId)
+    UserAggregate user = new(UserSettings.UniqueNameSettings, $"{_user.UniqueName}2", _user.TenantId)
     {
       Email = new EmailAddress(_user.Email.Address)
     };
@@ -92,7 +123,7 @@ public class UserManagerTests : IntegrationTestBase, IAsyncLifetime
   public async Task SaveAsync_it_should_throw_EmailAddressAlreadyUsedException_when_email_address_is_already_used()
   {
     Assert.NotNull(_user.Email);
-    UserAggregate user = new(_userSettings.Value.UniqueNameSettings, $"{_user.UniqueName}2", _user.TenantId)
+    UserAggregate user = new(UserSettings.UniqueNameSettings, $"{_user.UniqueName}2", _user.TenantId)
     {
       Email = new EmailAddress(_user.Email.Address)
     };
@@ -107,7 +138,7 @@ public class UserManagerTests : IntegrationTestBase, IAsyncLifetime
   [Fact(DisplayName = "SaveAsync: it should throw UniqueNameAlreadyUsedException when unique name is already used.")]
   public async Task SaveAsync_it_should_throw_UniqueNameAlreadyUsedException_when_unique_name_is_already_used()
   {
-    UserAggregate user = new(_userSettings.Value.UniqueNameSettings, _user.UniqueName, _user.TenantId);
+    UserAggregate user = new(UserSettings.UniqueNameSettings, _user.UniqueName, _user.TenantId);
     var exception = await Assert.ThrowsAsync<UniqueNameAlreadyUsedException<UserAggregate>>(
       async () => await _userManager.SaveAsync(user)
     );

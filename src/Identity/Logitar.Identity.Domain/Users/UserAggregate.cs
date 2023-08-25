@@ -29,7 +29,7 @@ public class UserAggregate : AggregateRoot
 
   private DateTime? _birthdate = null;
   private Gender? _gender = null;
-  private CultureInfo? _locale = null;
+  private Locale? _locale = null;
   private TimeZoneEntry? _timeZone = null;
 
   private Uri? _picture = null;
@@ -219,20 +219,15 @@ public class UserAggregate : AggregateRoot
       }
     }
   }
-  public CultureInfo? Locale
+  public Locale? Locale
   {
     get => _locale;
     set
     {
-      if (value != null)
-      {
-        new LocaleValidator(nameof(Locale)).ValidateAndThrow(value);
-      }
-
       if (value != _locale)
       {
         UserUpdatedEvent updated = GetLatestEvent<UserUpdatedEvent>();
-        updated.Locale = new MayBe<CultureInfo>(value);
+        updated.Locale = new MayBe<Locale>(value);
         Apply(updated);
       }
     }
@@ -304,6 +299,20 @@ public class UserAggregate : AggregateRoot
       Apply(updated);
     }
   }
+
+  public void ChangePassword(string currentPassword, Password newPassword, ActorId actorId = default)
+  {
+    if (_password?.IsMatch(currentPassword) != true)
+    {
+      throw new IncorrectUserPasswordException(this, currentPassword);
+    }
+
+    ApplyChange(new UserPasswordChangedEvent(newPassword)
+    {
+      ActorId = actorId
+    });
+  }
+  protected virtual void Apply(UserPasswordChangedEvent changed) => _password = changed.Password;
 
   public void Delete(ActorId actorId = default) => ApplyChange(new UserDeletedEvent(actorId));
 
@@ -379,7 +388,7 @@ public class UserAggregate : AggregateRoot
 
   public SessionAggregate SignIn(IUserSettings userSettings, Password? secret = null,
     ActorId? actorId = null) => SignIn(userSettings, password: null, secret, actorId);
-  public SessionAggregate SignIn(IUserSettings userSettings, string? password = null,
+  public SessionAggregate SignIn(IUserSettings userSettings, string? password,
     Password? secret = null, ActorId? actorId = null)
   {
     if (password != null && _password?.IsMatch(password) != true)

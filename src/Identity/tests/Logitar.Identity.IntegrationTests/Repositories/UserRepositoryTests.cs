@@ -1,26 +1,23 @@
 ﻿using Logitar.EventSourcing;
+using Logitar.Identity.Domain;
 using Logitar.Identity.Domain.Passwords;
 using Logitar.Identity.Domain.Roles;
-using Logitar.Identity.Domain.Settings;
 using Logitar.Identity.Domain.Users;
 using Logitar.Identity.EntityFrameworkCore.Relational.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
 namespace Logitar.Identity.Repositories;
 
 [Trait(Traits.Category, Categories.Integration)]
-public class UserRepositoryTests : IntegrationTestBase, IAsyncLifetime
+public class UserRepositoryTests : IntegrationTests, IAsyncLifetime
 {
   private readonly string _password = "P@s$W0rD";
   private readonly string _tenantId = Guid.NewGuid().ToString();
 
   private readonly IAggregateRepository _aggregateRepository;
   private readonly IPasswordService _passwordService;
-  private readonly IOptions<RoleSettings> _roleSettings;
   private readonly IUserRepository _userRepository;
-  private readonly IOptions<UserSettings> _userSettings;
 
   private readonly UserAggregate _admin;
   private readonly UserAggregate _other;
@@ -33,15 +30,11 @@ public class UserRepositoryTests : IntegrationTestBase, IAsyncLifetime
   {
     _aggregateRepository = ServiceProvider.GetRequiredService<IAggregateRepository>();
     _passwordService = ServiceProvider.GetRequiredService<IPasswordService>();
-    _roleSettings = ServiceProvider.GetRequiredService<IOptions<RoleSettings>>();
     _userRepository = ServiceProvider.GetRequiredService<IUserRepository>();
-    _userSettings = ServiceProvider.GetRequiredService<IOptions<UserSettings>>();
 
-    _role = new(_roleSettings.Value.UniqueNameSettings, "admin", _tenantId);
+    _role = new(RoleSettings.UniqueNameSettings, "admin", _tenantId);
 
-    UserSettings userSettings = _userSettings.Value;
-
-    _admin = new(userSettings.UniqueNameSettings, "admin", _tenantId)
+    _admin = new(UserSettings.UniqueNameSettings, "admin", _tenantId)
     {
       Address = new PostalAddress("Fondation René-Lévesque\r\nCP 47524, succ. Plateau Mont-Royal", "Montréal", "CA", "QC", "H2H 2S8", isVerified: true),
       Email = new EmailAddress("info@fondationrene-levesque.org", isVerified: true),
@@ -52,7 +45,7 @@ public class UserRepositoryTests : IntegrationTestBase, IAsyncLifetime
       Nickname = "Ti-poil",
       Birthdate = new DateTime(1922, 8, 24),
       Gender = new Gender("Male"),
-      Locale = CultureInfo.GetCultureInfo("fr-CA"),
+      Locale = new Locale("fr-CA"),
       TimeZone = new TimeZoneEntry("America/Toronto"),
       Picture = new Uri("https://upload.wikimedia.org/wikipedia/commons/a/a9/Ren%C3%A9_L%C3%A9vesque%2C_18_octobre_1960.jpg"),
       Profile = new Uri("https://fr.wikipedia.org/wiki/Ren%C3%A9_L%C3%A9vesque"),
@@ -63,17 +56,17 @@ public class UserRepositoryTests : IntegrationTestBase, IAsyncLifetime
     _admin.Enable();
     _admin.SetCustomAttribute("Initials", "CRL");
     _admin.SetPassword(_passwordService.Create(_password));
-    _admin.SignIn(userSettings, password: null);
+    _admin.SignIn(UserSettings);
 
-    _other = new(userSettings.UniqueNameSettings, "other", _tenantId);
+    _other = new(UserSettings.UniqueNameSettings, "other", _tenantId);
 
-    _disabled = new(userSettings.UniqueNameSettings, "disabled", _tenantId);
+    _disabled = new(UserSettings.UniqueNameSettings, "disabled", _tenantId);
     _disabled.Disable();
 
-    _deleted = new(userSettings.UniqueNameSettings, "deleted", _tenantId);
+    _deleted = new(UserSettings.UniqueNameSettings, "deleted", _tenantId);
     _deleted.Delete();
 
-    _noTenant = new(userSettings.UniqueNameSettings, _admin.UniqueName, tenantId: null);
+    _noTenant = new(UserSettings.UniqueNameSettings, _admin.UniqueName, tenantId: null);
   }
 
   [Fact(DisplayName = "LoadAsync: it loads the correct user by unique name.")]
@@ -159,7 +152,7 @@ public class UserRepositoryTests : IntegrationTestBase, IAsyncLifetime
         Assert.Equal(aggregate.Nickname, user.Nickname);
         AssertEqual(aggregate.Birthdate, user.Birthdate);
         Assert.Equal(aggregate.Gender?.Value, user.Gender);
-        Assert.Equal(aggregate.Locale?.Name, user.Locale);
+        Assert.Equal(aggregate.Locale?.Code, user.Locale);
         Assert.Equal(aggregate.TimeZone?.Id, user.TimeZone);
         Assert.Equal(aggregate.Picture?.ToString(), user.Picture);
         Assert.Equal(aggregate.Profile?.ToString(), user.Profile);
