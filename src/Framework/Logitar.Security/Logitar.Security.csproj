@@ -19,7 +19,7 @@
     <FileVersion>$(AssemblyVersion)</FileVersion>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-    <Version>5.1.0</Version>
+    <Version>5.2.0</Version>
     <NeutralLanguage>en-CA</NeutralLanguage>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <PackageReleaseNotes>Implemented a ClaimHelper.</PackageReleaseNotes>
