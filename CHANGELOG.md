@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Nothing yet.
 
+## [1.6.0] - 2023-09-01
+
+### Added
+
+- Implemented a ClaimHelper.
+
 ## [1.5.0] - 2023-08-25
 
 ### Added
@@ -73,7 +79,8 @@ Nothing yet.
 
 - Implemented StringExtensions.
 
-[unreleased]: https://github.com/Logitar/Logitar.NET/compare/v1.5.0...HEAD
+[unreleased]: https://github.com/Logitar/Logitar.NET/compare/v1.6.0...HEAD
+[1.6.0]: https://github.com/Logitar/Logitar.NET/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/Logitar/Logitar.NET/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/Logitar/Logitar.NET/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/Logitar/Logitar.NET/compare/v1.2.0...v1.3.0
