@@ -12,5 +12,6 @@ public static class OtherClaimNames
   /// <summary>
   /// The name of the claim that specifies a token purpose.
   /// </summary>
+  [Obsolete("This claim name will be removed in the next major release, since it can be replaced by the token type parameter.")]
   public const string Purpose = "purpose";
 }
