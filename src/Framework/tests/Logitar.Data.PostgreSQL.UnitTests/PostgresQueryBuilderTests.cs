@@ -47,7 +47,7 @@ public class PostgresQueryBuilderTests
       @"INNER JOIN ""public"".""MesTâches"" ""t"" ON ""t"".""MaTableId"" = ""x"".""MaTableId"" AND ""t"".""IsClosed"" = @p0",
       @"FULL JOIN ""public"".""MesProjets"" ON ""public"".""MesProjets"".""ProjectId"" = ""x"".""ProjectId""",
       @"LEFT JOIN ""public"".""MesCommentaires"" ON ""public"".""MesCommentaires"".""ProjectId"" = ""x"".""ProjectId""",
-      @"LEFT JOIN ""public"".""MesUtilisateurs"" ON ""public"".""MesUtilisateurs"".""UserId"" = ""x"".""UserId""",
+      @"RIGHT JOIN ""public"".""MesUtilisateurs"" ON ""public"".""MesUtilisateurs"".""UserId"" = ""x"".""UserId""",
       @"WHERE (""x"".""Priority"" BETWEEN @p1 AND @p2 OR ""x"".""Priority"" IS NULL) AND ""Status"" <> @p3 AND ""x"".""MaTableId"" NOT IN (@p4, @p5, @p6) AND ""Trace"" LIKE @p7 AND ""Trace"" NOT ILIKE @p8",
       @"ORDER BY ""x"".""DisplayName"" ASC, ""UpdatedOn"" DESC");
     Assert.Equal(text, query.Text);

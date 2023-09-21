@@ -49,9 +49,9 @@ public abstract class SqlBuilder
       equalOperator = "=";
     }
 
-    formatted.Append(joinClause).Append(' ').Append(Format(join.Left.Table!, fullName: true))
-      .Append(' ').Append(Dialect.OnClause).Append(' ').Append(Format(join.Left)).Append(' ')
-      .Append(equalOperator).Append(' ').Append(Format(join.Right));
+    formatted.Append(joinClause).Append(' ').Append(Format(join.Right.Table!, fullName: true))
+      .Append(' ').Append(Dialect.OnClause).Append(' ').Append(Format(join.Right)).Append(' ')
+      .Append(equalOperator).Append(' ').Append(Format(join.Left));
 
     if (join.Condition != null)
     {
