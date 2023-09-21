@@ -49,6 +49,30 @@ public static class QueryBuilderExtensions
   {
     return builder.Join(new Join(JoinKind.Full, left, right, condition));
   }
+  /// <summary>
+  /// Applies the specified LEFT JOIN to the query.
+  /// </summary>
+  /// <param name="builder">The query builder.</param>
+  /// <param name="left">The left column of the join.</param>
+  /// <param name="right">The right column of the join.</param>
+  /// <param name="condition">The condition of the join.</param>
+  /// <returns>The query builder.</returns>
+  public static IQueryBuilder LeftJoin(this IQueryBuilder builder, ColumnId left, ColumnId right, Condition? condition = null)
+  {
+    return builder.Join(new Join(JoinKind.Left, left, right, condition));
+  }
+  /// <summary>
+  /// Applies the specified RIGHT JOIN to the query.
+  /// </summary>
+  /// <param name="builder">The query builder.</param>
+  /// <param name="left">The left column of the join.</param>
+  /// <param name="right">The right column of the join.</param>
+  /// <param name="condition">The condition of the join.</param>
+  /// <returns>The query builder.</returns>
+  public static IQueryBuilder RightJoin(this IQueryBuilder builder, ColumnId left, ColumnId right, Condition? condition = null)
+  {
+    return builder.Join(new Join(JoinKind.Right, left, right, condition));
+  }
 
   /// <summary>
   /// Applies a condition on a column in the query.

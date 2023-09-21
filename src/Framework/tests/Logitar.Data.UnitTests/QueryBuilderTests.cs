@@ -27,6 +27,8 @@ public class QueryBuilderTests
       .Select(ColumnId.All(), id)
       .Join(new ColumnId(id.Name, tasks), id, new OperatorCondition(new ColumnId("IsClosed", tasks), Operators.IsEqualTo(false)))
       .FullJoin(new ColumnId("ProjectId", new TableId("MesProjets")), new ColumnId("ProjectId", _table))
+      .LeftJoin(new ColumnId("ProjectId", new TableId("MesCommentaires")), new ColumnId("ProjectId", _table))
+      .RightJoin(new ColumnId("UserId", new TableId("MesUtilisateurs")), new ColumnId("UserId", _table))
       .Where(new OrCondition(
         new OperatorCondition(priority, Operators.IsBetween(2, 4)),
         new OperatorCondition(priority, Operators.IsNull())
@@ -44,6 +46,8 @@ public class QueryBuilderTests
       "DEPUIS «défaut»·«MaTable» «x»",
       "JOINDRE À L'INTÉRIEUR «défaut»·«MesTâches» «t» SUR «t»·«MaTableId» == «x»·«MaTableId» ET «t»·«IsClosed» == Πp0Θ",
       "JOINDRE COMPLÈTEMENT «défaut»·«MesProjets» SUR «défaut»·«MesProjets»·«ProjectId» == «x»·«ProjectId»",
+      "JOINDRE À GAUCHE «défaut»·«MesCommentaires» SUR «défaut»·«MesCommentaires»·«ProjectId» == «x»·«ProjectId»",
+      "JOINDRE À DROITE «défaut»·«MesUtilisateurs» SUR «défaut»·«MesUtilisateurs»·«UserId» == «x»·«UserId»",
       "OÙ («x»·«Priority» DANS L'INTERVALLE Πp1Θ ET Πp2Θ OU «x»·«Priority» EST NUL) ET «Status» != Πp3Θ ET «x»·«MaTableId» NON DANS (Πp4Θ, Πp5Θ, Πp6Θ) ET «Trace» COMME Πp7Θ",
       "ORDONNER PAR «x»·«DisplayName» ↑, «UpdatedOn» ↓");
     Assert.Equal(text, query.Text);
