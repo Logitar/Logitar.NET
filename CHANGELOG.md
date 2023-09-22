@@ -7,7 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-Nothing yet.
+### Added
+
+- Implemented JOIN extensions.
+
+### Changed
+
+- Marked Purpose claim as obsolete.
+
+### Fixed
+
+- Renamed JOIN parameters.
 
 ## [1.6.0] - 2023-09-01
 
