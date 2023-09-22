@@ -26,6 +26,8 @@ public class SqlServerQueryBuilderTests
       .Select(ColumnId.All(), id)
       .Join(new ColumnId(id.Name, tasks), id, new OperatorCondition(new ColumnId("IsClosed", tasks), Operators.IsEqualTo(false)))
       .FullJoin(new ColumnId("ProjectId", new TableId("MesProjets")), new ColumnId("ProjectId", _table))
+      .LeftJoin(new ColumnId("ProjectId", new TableId("MesCommentaires")), new ColumnId("ProjectId", _table))
+      .RightJoin(new ColumnId("UserId", new TableId("MesUtilisateurs")), new ColumnId("UserId", _table))
       .Where(new OrCondition(
         new OperatorCondition(priority, Operators.IsBetween(2, 4)),
         new OperatorCondition(priority, Operators.IsNull())
@@ -43,6 +45,8 @@ public class SqlServerQueryBuilderTests
       "FROM [dbo].[MaTable] [x]",
       "INNER JOIN [dbo].[MesTâches] [t] ON [t].[MaTableId] = [x].[MaTableId] AND [t].[IsClosed] = @p0",
       "FULL JOIN [dbo].[MesProjets] ON [dbo].[MesProjets].[ProjectId] = [x].[ProjectId]",
+      "LEFT JOIN [dbo].[MesCommentaires] ON [dbo].[MesCommentaires].[ProjectId] = [x].[ProjectId]",
+      "RIGHT JOIN [dbo].[MesUtilisateurs] ON [dbo].[MesUtilisateurs].[UserId] = [x].[UserId]",
       "WHERE ([x].[Priority] BETWEEN @p1 AND @p2 OR [x].[Priority] IS NULL) AND [Status] <> @p3 AND [x].[MaTableId] NOT IN (@p4, @p5, @p6) AND [Trace] LIKE @p7",
       "ORDER BY [x].[DisplayName] ASC, [UpdatedOn] DESC");
     Assert.Equal(text, query.Text);
