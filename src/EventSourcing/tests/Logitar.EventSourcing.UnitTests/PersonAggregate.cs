@@ -18,24 +18,24 @@ public class PersonAggregate : AggregateRoot
       created.OccurredOn = occurredOn.Value;
     }
 
-    ApplyChange(created);
+    Raise(created);
   }
   protected virtual void Apply(PersonCreatedEvent e) => FullName = e.FullName;
 
   public string FullName { get; private set; } = string.Empty;
 
-  public void Delete() => ApplyChange(new PersonDeletedChangedEvent(isDeleted: true));
-  public void Undelete() => ApplyChange(new PersonDeletedChangedEvent(isDeleted: false));
+  public void Delete() => Raise(new PersonDeletedChangedEvent(isDeleted: true));
+  public void Undelete() => Raise(new PersonDeletedChangedEvent(isDeleted: false));
 
-  public void Dispatch(DomainEvent e)
+  public void Handle(DomainEvent e)
   {
-    MethodInfo dispatch = typeof(AggregateRoot)
-      .GetMethod("Dispatch", BindingFlags.Instance | BindingFlags.NonPublic, new[] { typeof(DomainEvent) })
-      ?? throw new InvalidOperationException("The Dispatch method could not be found.");
+    MethodInfo handle = typeof(AggregateRoot)
+      .GetMethod("Handle", BindingFlags.Instance | BindingFlags.NonPublic, new[] { typeof(DomainEvent) })
+      ?? throw new InvalidOperationException("The Handle method could not be found.");
 
     try
     {
-      dispatch.Invoke(this, new[] { e });
+      handle.Invoke(this, new[] { e });
     }
     catch (Exception exception)
     {

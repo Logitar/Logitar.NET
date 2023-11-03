@@ -10,10 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Implemented ErrorMessageBuilder, ExceptionDetail, ExceptionExtensions and TypeExtensions.
+- Added Raise and Handle methods on AggregateRoot.
 
 ### Changed
 
 - Marked old TypeExtensions as obsolete.
+- Refactored AggregateRoot.
 
 ### Removed
 
