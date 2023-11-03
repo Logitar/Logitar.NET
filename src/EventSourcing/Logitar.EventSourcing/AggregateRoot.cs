@@ -6,22 +6,6 @@
 public abstract class AggregateRoot
 {
   /// <summary>
-  /// Initializes a new instance of the <see cref="AggregateRoot"/> class.
-  /// </summary>
-  /// <param name="id">The identifier of the aggregate.</param>
-  /// <exception cref="ArgumentException">The identifier value is missing.</exception>
-  protected AggregateRoot(AggregateId? id = null)
-  {
-    id ??= AggregateId.NewId();
-    if (string.IsNullOrWhiteSpace(id.Value.Value))
-    {
-      throw new ArgumentException("The identifier value is required.", nameof(id));
-    }
-
-    Id = id.Value;
-  }
-
-  /// <summary>
   /// Gets or sets the identifier of the aggregate.
   /// </summary>
   public AggregateId Id { get; private set; }
@@ -69,6 +53,22 @@ public abstract class AggregateRoot
   public void ClearChanges() => _changes.Clear();
 
   /// <summary>
+  /// Initializes a new instance of the <see cref="AggregateRoot"/> class.
+  /// </summary>
+  /// <param name="id">The identifier of the aggregate.</param>
+  /// <exception cref="ArgumentException">The identifier value is missing.</exception>
+  protected AggregateRoot(AggregateId? id = null)
+  {
+    id ??= AggregateId.NewId();
+    if (string.IsNullOrWhiteSpace(id.Value.Value))
+    {
+      throw new ArgumentException("The identifier value is required.", nameof(id));
+    }
+
+    Id = id.Value;
+  }
+
+  /// <summary>
   /// Loads an aggregate from its changes and assign its identifier.
   /// </summary>
   /// <typeparam name="T">The type of the aggregate to load.</typeparam>
@@ -88,7 +88,7 @@ public abstract class AggregateRoot
     IOrderedEnumerable<DomainEvent> ordered = changes.OrderBy(e => e.Version);
     foreach (DomainEvent change in ordered)
     {
-      aggregate.Dispatch(change);
+      aggregate.Handle(change);
     }
 
     return aggregate;
@@ -98,22 +98,29 @@ public abstract class AggregateRoot
   /// Applies the specified change to the current aggregate.
   /// </summary>
   /// <param name="change">The change to apply.</param>
-  protected void ApplyChange(DomainEvent change)
+  [Obsolete("This method will be removed in the next major release, since it will be replaced by the Raise method.")]
+  protected void ApplyChange(DomainEvent change) => Raise(change);
+  /// <summary>
+  /// Raises the specified uncommited change to the current aggregate. The change will be associated to this aggregate, then applied to this aggregate before
+  /// being added to the list of uncommited changes.
+  /// </summary>
+  /// <param name="change">The uncommited change.</param>
+  protected void Raise(DomainEvent change)
   {
     change.AggregateId = Id;
     change.Version = Version + 1;
 
-    Dispatch(change);
+    Handle(change);
 
     _changes.Add(change);
   }
   /// <summary>
-  /// Dispatchs the specified event in the current aggregate, effectively applying the change.
+  /// Handles the specified change in the current aggregate, effectively applying the change and its metadata.
   /// </summary>
-  /// <param name="change">The event to dispatch.</param>
-  /// <exception cref="CannotApplyPastEventException">The event is past the current aggregate's state.</exception>
-  /// <exception cref="EventAggregateMismatchException">The event does not belong to the current aggregate.</exception>
-  private void Dispatch(DomainEvent change)
+  /// <param name="change">The change to dispatch.</param>
+  /// <exception cref="CannotApplyPastEventException">The change is past the current aggregate's state.</exception>
+  /// <exception cref="EventAggregateMismatchException">The change does not belong to the current aggregate.</exception>
+  private void Handle(DomainEvent change)
   {
     if (change.AggregateId != Id)
     {
@@ -125,8 +132,7 @@ public abstract class AggregateRoot
       throw new CannotApplyPastEventException(this, change);
     }
 
-    MethodInfo? apply = GetType().GetMethod("Apply", BindingFlags.Instance | BindingFlags.NonPublic, new[] { change.GetType() });
-    apply?.Invoke(this, new[] { change });
+    Dispatch(change);
 
     if (change.IsDeleted.HasValue)
     {
@@ -141,6 +147,17 @@ public abstract class AggregateRoot
     }
     UpdatedBy = change.ActorId;
     UpdatedOn = change.OccurredOn;
+  }
+  /// <summary>
+  /// Dispatches the specified change to be applied through the current aggregate. This method can be overriden to provide a more efficient way of applying
+  /// changes, such as using <see href="https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/operators/patterns">type pattern matching</see>
+  /// instead of reflection.
+  /// </summary>
+  /// <param name="change">The change to apply.</param>
+  protected virtual void Dispatch(DomainEvent change)
+  {
+    MethodInfo? apply = GetType().GetMethod("Apply", BindingFlags.Instance | BindingFlags.NonPublic, new[] { change.GetType() });
+    apply?.Invoke(this, new[] { change });
   }
 
   /// <summary>
