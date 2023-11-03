@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Implemented ErrorMessageBuilder, ExceptionData, ExceptionExtensions and TypeExtensions.
+- Implemented ErrorMessageBuilder, ExceptionDetail, ExceptionExtensions and TypeExtensions.
 
 ### Changed
 
