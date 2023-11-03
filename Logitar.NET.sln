@@ -80,13 +80,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.EventSourcing.UnitT
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.EventSourcing.SqlServer.UnitTests", "src\EventSourcing\tests\Logitar.EventSourcing.SqlServer.UnitTests\Logitar.EventSourcing.SqlServer.UnitTests.csproj", "{FD1A7AF8-FEDF-4EA1-9966-C46677584BB2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Demo.Ui", "src\Demo\Logitar.Demo.Ui\Logitar.Demo.Ui.csproj", "{74FC91C6-EE18-43E6-9FEF-AA611F242DF1}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.EventSourcing.MongoDB", "src\EventSourcing\Logitar.EventSourcing.MongoDB\Logitar.EventSourcing.MongoDB.csproj", "{A2700671-1C42-432D-95A9-A1A4D0171832}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.EventSourcing.MongoDB.IntegrationTests", "src\EventSourcing\tests\Logitar.EventSourcing.MongoDB.IntegrationTests\Logitar.EventSourcing.MongoDB.IntegrationTests.csproj", "{CEEFD05A-DC09-4756-8473-527539E478F1}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demo", "Demo", "{3A2114E4-433C-401E-896F-3D6A8D3FC3DF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Data.SqlServer.IntegrationTests", "src\Framework\tests\Logitar.Data.SqlServer.IntegrationTests\Logitar.Data.SqlServer.IntegrationTests.csproj", "{2FD541D4-DB3E-492C-960A-30DC00F3DC7E}"
 EndProject
@@ -218,10 +214,6 @@ Global
 		{FD1A7AF8-FEDF-4EA1-9966-C46677584BB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FD1A7AF8-FEDF-4EA1-9966-C46677584BB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FD1A7AF8-FEDF-4EA1-9966-C46677584BB2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{74FC91C6-EE18-43E6-9FEF-AA611F242DF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{74FC91C6-EE18-43E6-9FEF-AA611F242DF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{74FC91C6-EE18-43E6-9FEF-AA611F242DF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{74FC91C6-EE18-43E6-9FEF-AA611F242DF1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A2700671-1C42-432D-95A9-A1A4D0171832}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A2700671-1C42-432D-95A9-A1A4D0171832}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A2700671-1C42-432D-95A9-A1A4D0171832}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -282,7 +274,6 @@ Global
 		{A5D21724-ABAF-4EB1-8C62-F08532A2CEC7} = {D092FA68-D3D5-460E-9A38-61033D6F9692}
 		{5FBFB540-E143-4C73-837E-5672E71D18B6} = {D092FA68-D3D5-460E-9A38-61033D6F9692}
 		{FD1A7AF8-FEDF-4EA1-9966-C46677584BB2} = {D092FA68-D3D5-460E-9A38-61033D6F9692}
-		{74FC91C6-EE18-43E6-9FEF-AA611F242DF1} = {3A2114E4-433C-401E-896F-3D6A8D3FC3DF}
 		{A2700671-1C42-432D-95A9-A1A4D0171832} = {256A2893-962F-4A7E-B58B-DE766D12F9CC}
 		{CEEFD05A-DC09-4756-8473-527539E478F1} = {D092FA68-D3D5-460E-9A38-61033D6F9692}
 		{2FD541D4-DB3E-492C-960A-30DC00F3DC7E} = {746BA5D1-0E1A-4191-9645-88D14B1C69BF}
