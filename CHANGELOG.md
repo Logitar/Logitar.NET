@@ -10,17 +10,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Implemented ErrorMessageBuilder, ExceptionDetail, ExceptionExtensions and TypeExtensions.
-- Added Raise and Handle methods on AggregateRoot.
 
 ### Changed
 
-- Marked old TypeExtensions as obsolete.
-- Refactored AggregateRoot.
+- Moved Framework projects.
 
 ### Removed
 
 - Removed Identity projects.
 - Removed Demo project.
+- Removed EventSourcing projects.
 
 ## [1.7.0] - 2023-09-21
 
