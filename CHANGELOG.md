@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Implemented ErrorMessageBuilder, ExceptionDetail, ExceptionExtensions and TypeExtensions.
+
+### Changed
+
+- Marked old TypeExtensions as obsolete.
+
 ### Removed
 
 - Removed Identity projects.

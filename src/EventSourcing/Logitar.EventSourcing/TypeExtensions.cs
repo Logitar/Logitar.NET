@@ -3,6 +3,7 @@
 /// <summary>
 /// Provides extension methods for <see cref="Type"/> instances.
 /// </summary>
+[Obsolete("This class will be removed in the next major release, since it will be replaced by the TypeExtensions class in the Logitar namespace.")]
 public static class TypeExtensions
 {
   /// <summary>
@@ -11,6 +12,7 @@ public static class TypeExtensions
   /// <param name="type">The type to build its name.</param>
   /// <returns>The unversioned, assembly qualified type name.</returns>
   /// <exception cref="ArgumentException">The full name or assembly nameof of the type are null.</exception>
+  [Obsolete("This method will be removed in the next major release, since it will be replaced by the GetNamespaceQualifiedName method from the Logitar namespace.")]
   public static string GetName(this Type type)
   {
     string typeName = type.FullName

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
@@ -28,6 +28,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Logitar\Logitar.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="System.Collections" />
+    <Using Include="System.Diagnostics.CodeAnalysis" />
+    <Using Include="System.Globalization" />
+    <Using Include="System.Reflection" />
   </ItemGroup>
 
 </Project>
