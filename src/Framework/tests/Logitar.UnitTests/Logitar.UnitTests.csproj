@@ -31,6 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Using Include="System.Collections" />
     <Using Include="System.Diagnostics.CodeAnalysis" />
     <Using Include="System.Globalization" />
     <Using Include="System.Reflection" />
