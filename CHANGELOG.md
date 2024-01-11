@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Nothing yet.
 
+## [1.9.0] - 2024-01-10
+
+### Added
+
+- Implemented Truncate string method.
+
 ## [1.8.0] - 2023-11-03
 
 ### Added

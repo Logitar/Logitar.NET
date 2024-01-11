@@ -40,4 +40,21 @@ public static class StringExtensions
   /// <param name="pattern">The pattern to remove.</param>
   /// <returns>The string without any occurrence of the pattern.</returns>
   public static string Remove(this string s, string pattern) => s.Replace(pattern, string.Empty);
+
+  /// <summary>
+  /// Truncates the specified string to the specified length, using the specified end character.
+  /// </summary>
+  /// <param name="s">The string to truncate.</param>
+  /// <param name="length">The maximum length of the truncated string.</param>
+  /// <param name="end">The end character of the truncated string.</param>
+  /// <returns>The truncated string.</returns>
+  public static string Truncate(this string s, int length, char end = '…')
+  {
+    if (s.Length > length)
+    {
+      return string.Concat(s[..(length - 1)], end);
+    }
+
+    return s;
+  }
 }

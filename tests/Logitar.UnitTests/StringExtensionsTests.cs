@@ -57,4 +57,23 @@ public class StringExtensionsTests
 
     Assert.Equal(expected, actual);
   }
+
+  [Theory(DisplayName = "Truncate: it returns the same string when it is not too long.")]
+  [InlineData("Hello World!", 12, '.')]
+  public void Truncate_it_returns_the_same_string_when_it_is_not_too_long(string s, int length, char end)
+  {
+    Assert.True(length >= s.Length);
+    Assert.Equal(s, s.Truncate(length, end));
+  }
+
+  [Theory(DisplayName = "Truncate: it returns the truncated string when it is too long.")]
+  [InlineData("Hello World!", 6, ';')]
+  public void Truncate_it_returns_the_truncated_string_when_it_is_too_long(string s, int length, char end)
+  {
+    Assert.True(length < s.Length);
+
+    string truncated = s.Truncate(length, end);
+    Assert.EndsWith(end.ToString(), truncated);
+    Assert.StartsWith(truncated[..^1], s);
+  }
 }
