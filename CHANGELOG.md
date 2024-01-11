@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Nothing yet.
 
+## [1.10.0] - 2024-01-10
+
+### Added
+
+- Docker Compose file.
+
+### Changed
+
+- Upgraded to .NET8.
+- Upgraded NuGet packages.
+- Integration test configurations.
+
 ## [1.9.0] - 2024-01-10
 
 ### Added
@@ -120,7 +132,8 @@ Nothing yet.
 
 - Implemented StringExtensions.
 
-[unreleased]: https://github.com/Logitar/Logitar.NET/compare/v1.9.0...HEAD
+[unreleased]: https://github.com/Logitar/Logitar.NET/compare/v1.10.0...HEAD
+[1.10.0]: https://github.com/Logitar/Logitar.NET/compare/v1.9.0...v1.10.0
 [1.9.0]: https://github.com/Logitar/Logitar.NET/compare/v1.8.0...v1.9.0
 [1.8.0]: https://github.com/Logitar/Logitar.NET/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/Logitar/Logitar.NET/compare/v1.6.0...v1.7.0
