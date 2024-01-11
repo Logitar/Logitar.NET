@@ -15,6 +15,10 @@ Nothing yet.
 
 - Implemented Truncate string method.
 
+### Changed
+
+- Updated LICENSE files to 2024.
+
 ## [1.8.0] - 2023-11-03
 
 ### Added
