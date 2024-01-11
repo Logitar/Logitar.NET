@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <WarningsAsErrors>Nullable</WarningsAsErrors>
@@ -15,20 +15,20 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/Logitar/Logitar.NET</RepositoryUrl>
-    <AssemblyVersion>2.1.0.0</AssemblyVersion>
+    <AssemblyVersion>3.0.0.0</AssemblyVersion>
     <FileVersion>$(AssemblyVersion)</FileVersion>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-    <Version>2.1.0</Version>
+    <Version>3.0.0</Version>
     <NeutralLanguage>en-CA</NeutralLanguage>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <PackageReleaseNotes>Completed and refactored SQL query builders.</PackageReleaseNotes>
+    <PackageReleaseNotes>Upgraded to .NET 8.</PackageReleaseNotes>
     <PackageTags>logitar net framework data postgresql</PackageTags>
     <PackageProjectUrl>https://github.com/Logitar/Logitar.NET/tree/dev/src/Logitar.Data.PostgreSQL</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Npgsql" Version="7.0.4" />
+    <PackageReference Include="Npgsql" Version="8.0.1" />
   </ItemGroup>
 
   <ItemGroup>
