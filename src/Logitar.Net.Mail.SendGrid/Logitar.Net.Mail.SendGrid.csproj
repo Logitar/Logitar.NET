@@ -1,0 +1,65 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <WarningsAsErrors>Nullable</WarningsAsErrors>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>Logitar.Net.Mail.SendGrid</Title>
+    <Authors>Francis Pion</Authors>
+    <Product>Logitar.NET</Product>
+    <Description>TODO</Description>
+    <Copyright>© 2024 Logitar All Rights Reserved.</Copyright>
+    <PackageIcon>logitar.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/Logitar/Logitar.NET</RepositoryUrl>
+    <AssemblyVersion>6.0.0.0</AssemblyVersion>
+    <FileVersion>$(AssemblyVersion)</FileVersion>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+    <Version>6.0.0</Version>
+    <NeutralLanguage>en-CA</NeutralLanguage>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <PackageReleaseNotes>TODO</PackageReleaseNotes>
+    <PackageTags>logitar net framework mail sendgrid</PackageTags>
+    <PackageProjectUrl>https://github.com/Logitar/Logitar.NET/tree/dev/src/Logitar.Net.Mail.SendGrid</PackageProjectUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Logitar.Net\Logitar.Net.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="LICENSE">
+      <PackagePath>\</PackagePath>
+      <Pack>True</Pack>
+    </None>
+    <None Update="logitar.png">
+      <PackagePath>\</PackagePath>
+      <Pack>True</Pack>
+    </None>
+    <None Update="README.md">
+      <PackagePath>\</PackagePath>
+      <Pack>True</Pack>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="System.Net.Http.Headers" />
+    <Using Include="System.Net.Http.Json" />
+    <Using Include="System.Net.Mail" />
+    <Using Include="System.Net.Mime" />
+    <Using Include="System.Text.Json.Serialization" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Results\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.1" />
+  </ItemGroup>
+
+</Project>
