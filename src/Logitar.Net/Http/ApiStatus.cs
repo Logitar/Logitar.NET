@@ -19,7 +19,15 @@ public record ApiStatus
   /// Gets or sets the status value.
   /// </summary>
   [JsonIgnore]
-  public HttpStatusCode Value { get; set; }
+  public HttpStatusCode Value
+  {
+    get => (HttpStatusCode)Code;
+    set
+    {
+      Code = (int)value;
+      Text = value.ToString();
+    }
+  }
 
   /// <summary>
   /// Gets or sets a value indicating whether the status is a success or a failure.
@@ -29,6 +37,7 @@ public record ApiStatus
   /// <summary>
   /// Initializes a new instance of the <see cref="ApiStatus"/> class.
   /// </summary>
+  [JsonConstructor]
   public ApiStatus()
   {
   }
@@ -49,8 +58,6 @@ public record ApiStatus
   /// <param name="isSuccess">A value indicating whether the status is a success or a failure.</param>
   public ApiStatus(HttpStatusCode statusCode, bool isSuccess)
   {
-    Code = (int)statusCode;
-    Text = statusCode.ToString();
     Value = statusCode;
     IsSuccess = isSuccess;
   }

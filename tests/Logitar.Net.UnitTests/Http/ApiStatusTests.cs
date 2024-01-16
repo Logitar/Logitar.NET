@@ -3,6 +3,18 @@
 [Trait(Traits.Category, Categories.Unit)]
 public class ApiStatusTests
 {
+  [Theory(DisplayName = "It should be serializable and deserializable.")]
+  [InlineData(HttpStatusCode.Accepted)]
+  public void It_should_be_serializable_and_deserializable(HttpStatusCode statusCode)
+  {
+    ApiStatus status = new(statusCode);
+
+    string json = JsonSerializer.Serialize(status);
+    ApiStatus? deserialized = JsonSerializer.Deserialize<ApiStatus>(json);
+    Assert.NotNull(deserialized);
+    Assert.Equal(status, deserialized);
+  }
+
   [Theory(DisplayName = "ctor: it should construct the correct API status from a status code.")]
   [InlineData(HttpStatusCode.OK)]
   [InlineData(HttpStatusCode.BadRequest)]

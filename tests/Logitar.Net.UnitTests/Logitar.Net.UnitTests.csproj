@@ -31,6 +31,9 @@
 
   <ItemGroup>
     <Using Include="System.Net" />
+    <Using Include="System.Net.Mime" />
+    <Using Include="System.Text" />
+    <Using Include="System.Text.Json" />
     <Using Include="Xunit" />
   </ItemGroup>
 

@@ -32,4 +32,17 @@ public class HttpHeaderTests
     Assert.Equal(name, header.Name);
     Assert.Equal(value, header.Values.Single());
   }
+
+  [Theory(DisplayName = "It should be serializable and deserializable.")]
+  [InlineData("Content-Type", "audio/mp3", "audio/mp4")]
+  public void It_should_be_serializable_and_deserializable(string name, params string[] values)
+  {
+    HttpHeader header = new(name, values);
+
+    string json = JsonSerializer.Serialize(header);
+    HttpHeader? deserialized = JsonSerializer.Deserialize<HttpHeader>(json);
+    Assert.NotNull(deserialized);
+    Assert.Equal(header.Name, deserialized.Name);
+    Assert.Equal(header.Values, deserialized.Values);
+  }
 }
