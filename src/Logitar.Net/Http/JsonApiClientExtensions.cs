@@ -81,7 +81,7 @@ public static class JsonApiClientExtensions
   /// <param name="requestContent">The HTTP request content.</param>
   /// <param name="cancellationToken">The cancellation token.</param>
   /// <returns>The API response.</returns>
-  public static async Task<JsonApiResponse<T>> PatchAsync<T>(this JsonApiClient client, Uri requestUri, HttpContent? requestContent, CancellationToken cancellationToken = default)
+  public static async Task<JsonApiResponse<T>> PatchAsync<T>(this JsonApiClient client, Uri requestUri, object? requestContent, CancellationToken cancellationToken = default)
   {
     return await client.SendAsync<T>(HttpMethod.Patch, requestUri, requestContent, cancellationToken);
   }
@@ -93,7 +93,7 @@ public static class JsonApiClientExtensions
   /// <param name="requestContent">The HTTP request content.</param>
   /// <param name="context">The request context.</param>
   /// <returns>The API response.</returns>
-  public static async Task<JsonApiResponse<T>> PatchAsync<T>(this JsonApiClient client, Uri requestUri, HttpContent? requestContent, HttpRequestContext context)
+  public static async Task<JsonApiResponse<T>> PatchAsync<T>(this JsonApiClient client, Uri requestUri, object? requestContent, HttpRequestContext context)
   {
     return await client.SendAsync<T>(HttpMethod.Patch, requestUri, requestContent, context);
   }
@@ -128,7 +128,7 @@ public static class JsonApiClientExtensions
   /// <param name="requestContent">The HTTP request content.</param>
   /// <param name="cancellationToken">The cancellation token.</param>
   /// <returns>The API response.</returns>
-  public static async Task<JsonApiResponse<T>> PostAsync<T>(this JsonApiClient client, Uri requestUri, HttpContent? requestContent, CancellationToken cancellationToken = default)
+  public static async Task<JsonApiResponse<T>> PostAsync<T>(this JsonApiClient client, Uri requestUri, object? requestContent, CancellationToken cancellationToken = default)
   {
     return await client.SendAsync<T>(HttpMethod.Post, requestUri, requestContent, cancellationToken);
   }
@@ -140,7 +140,7 @@ public static class JsonApiClientExtensions
   /// <param name="requestContent">The HTTP request content.</param>
   /// <param name="context">The request context.</param>
   /// <returns>The API response.</returns>
-  public static async Task<JsonApiResponse<T>> PostAsync<T>(this JsonApiClient client, Uri requestUri, HttpContent? requestContent, HttpRequestContext context)
+  public static async Task<JsonApiResponse<T>> PostAsync<T>(this JsonApiClient client, Uri requestUri, object? requestContent, HttpRequestContext context)
   {
     return await client.SendAsync<T>(HttpMethod.Post, requestUri, requestContent, context);
   }
@@ -175,7 +175,7 @@ public static class JsonApiClientExtensions
   /// <param name="requestContent">The HTTP request content.</param>
   /// <param name="cancellationToken">The cancellation token.</param>
   /// <returns>The API response.</returns>
-  public static async Task<JsonApiResponse<T>> PutAsync<T>(this JsonApiClient client, Uri requestUri, HttpContent? requestContent, CancellationToken cancellationToken = default)
+  public static async Task<JsonApiResponse<T>> PutAsync<T>(this JsonApiClient client, Uri requestUri, object? requestContent, CancellationToken cancellationToken = default)
   {
     return await client.SendAsync<T>(HttpMethod.Put, requestUri, requestContent, cancellationToken);
   }
@@ -187,7 +187,7 @@ public static class JsonApiClientExtensions
   /// <param name="requestContent">The HTTP request content.</param>
   /// <param name="context">The request context.</param>
   /// <returns>The API response.</returns>
-  public static async Task<JsonApiResponse<T>> PutAsync<T>(this JsonApiClient client, Uri requestUri, HttpContent? requestContent, HttpRequestContext context)
+  public static async Task<JsonApiResponse<T>> PutAsync<T>(this JsonApiClient client, Uri requestUri, object? requestContent, HttpRequestContext context)
   {
     return await client.SendAsync<T>(HttpMethod.Put, requestUri, requestContent, context);
   }
