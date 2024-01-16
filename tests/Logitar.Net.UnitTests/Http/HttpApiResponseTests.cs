@@ -18,7 +18,7 @@ public class HttpApiResponseTests
   [Fact(DisplayName = "It should be serializable and deserializable.")]
   public void It_should_be_serializable_and_deserializable()
   {
-    HttpResponseMessage response = new()
+    HttpApiResponse response = new()
     {
       Content = new StringContent("Hello World!")
     };
