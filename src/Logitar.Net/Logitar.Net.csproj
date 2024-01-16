@@ -28,6 +28,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Logitar\Logitar.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="LICENSE">
       <PackagePath>\</PackagePath>
       <Pack>True</Pack>

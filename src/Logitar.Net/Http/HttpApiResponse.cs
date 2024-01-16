@@ -6,10 +6,9 @@
 public record HttpApiResponse : ApiResponse
 {
   /// <summary>
-  /// Gets or sets the contents of the response.
+  /// Gets or sets the text contents of the response.
   /// </summary>
-  [JsonIgnore]
-  public HttpContent? Content { get; set; }
+  public virtual string? ContentText { get; set; }
 
   /// <summary>
   /// Initializes a new instance of the <see cref="HttpApiResponse"/> class.
@@ -24,6 +23,5 @@ public record HttpApiResponse : ApiResponse
   /// <param name="response">The HTTP response message.</param>
   public HttpApiResponse(HttpResponseMessage response) : base(response)
   {
-    Content = response.Content;
   }
 }

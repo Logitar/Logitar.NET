@@ -12,7 +12,7 @@ public static class EmptyJsonApiClientExtensions
   /// <param name="requestUri">The request Uniform Resource Identifier (URI).</param>
   /// <param name="cancellationToken">The cancellation token.</param>
   /// <returns>The API response.</returns>
-  public static async Task<ApiResponse> DeleteAsync(this JsonApiClient client, Uri requestUri, CancellationToken cancellationToken = default)
+  public static async Task<JsonApiResponse<Empty>> DeleteAsync(this JsonApiClient client, Uri requestUri, CancellationToken cancellationToken = default)
   {
     return await client.SendAsync<Empty>(HttpMethod.Delete, requestUri, cancellationToken);
   }
@@ -23,7 +23,7 @@ public static class EmptyJsonApiClientExtensions
   /// <param name="requestUri">The request Uniform Resource Identifier (URI).</param>
   /// <param name="context">The request context.</param>
   /// <returns>The API response.</returns>
-  public static async Task<ApiResponse> DeleteAsync(this JsonApiClient client, Uri requestUri, HttpRequestContext context)
+  public static async Task<JsonApiResponse<Empty>> DeleteAsync(this JsonApiClient client, Uri requestUri, HttpRequestContext context)
   {
     return await client.SendAsync<Empty>(HttpMethod.Delete, requestUri, context);
   }
@@ -35,7 +35,7 @@ public static class EmptyJsonApiClientExtensions
   /// <param name="requestUri">The request Uniform Resource Identifier (URI).</param>
   /// <param name="cancellationToken">The cancellation token.</param>
   /// <returns>The API response.</returns>
-  public static async Task<ApiResponse> GetAsync(this JsonApiClient client, Uri requestUri, CancellationToken cancellationToken = default)
+  public static async Task<JsonApiResponse<Empty>> GetAsync(this JsonApiClient client, Uri requestUri, CancellationToken cancellationToken = default)
   {
     return await client.SendAsync<Empty>(HttpMethod.Get, requestUri, cancellationToken);
   }
@@ -46,7 +46,7 @@ public static class EmptyJsonApiClientExtensions
   /// <param name="requestUri">The request Uniform Resource Identifier (URI).</param>
   /// <param name="context">The request context.</param>
   /// <returns>The API response.</returns>
-  public static async Task<ApiResponse> GetAsync(this JsonApiClient client, Uri requestUri, HttpRequestContext context)
+  public static async Task<JsonApiResponse<Empty>> GetAsync(this JsonApiClient client, Uri requestUri, HttpRequestContext context)
   {
     return await client.SendAsync<Empty>(HttpMethod.Get, requestUri, context);
   }
@@ -58,7 +58,7 @@ public static class EmptyJsonApiClientExtensions
   /// <param name="requestUri">The request Uniform Resource Identifier (URI).</param>
   /// <param name="cancellationToken">The cancellation token.</param>
   /// <returns>The API response.</returns>
-  public static async Task<ApiResponse> PatchAsync(this JsonApiClient client, Uri requestUri, CancellationToken cancellationToken = default)
+  public static async Task<JsonApiResponse<Empty>> PatchAsync(this JsonApiClient client, Uri requestUri, CancellationToken cancellationToken = default)
   {
     return await client.SendAsync<Empty>(HttpMethod.Patch, requestUri, cancellationToken);
   }
@@ -69,7 +69,7 @@ public static class EmptyJsonApiClientExtensions
   /// <param name="requestUri">The request Uniform Resource Identifier (URI).</param>
   /// <param name="context">The request context.</param>
   /// <returns>The API response.</returns>
-  public static async Task<ApiResponse> PatchAsync(this JsonApiClient client, Uri requestUri, HttpRequestContext context)
+  public static async Task<JsonApiResponse<Empty>> PatchAsync(this JsonApiClient client, Uri requestUri, HttpRequestContext context)
   {
     return await client.SendAsync<Empty>(HttpMethod.Patch, requestUri, context);
   }
@@ -81,7 +81,7 @@ public static class EmptyJsonApiClientExtensions
   /// <param name="requestContent">The HTTP request content.</param>
   /// <param name="cancellationToken">The cancellation token.</param>
   /// <returns>The API response.</returns>
-  public static async Task<ApiResponse> PatchAsync(this JsonApiClient client, Uri requestUri, object? requestContent, CancellationToken cancellationToken = default)
+  public static async Task<JsonApiResponse<Empty>> PatchAsync(this JsonApiClient client, Uri requestUri, object? requestContent, CancellationToken cancellationToken = default)
   {
     return await client.SendAsync<Empty>(HttpMethod.Patch, requestUri, requestContent, cancellationToken);
   }
@@ -93,7 +93,7 @@ public static class EmptyJsonApiClientExtensions
   /// <param name="requestContent">The HTTP request content.</param>
   /// <param name="context">The request context.</param>
   /// <returns>The API response.</returns>
-  public static async Task<ApiResponse> PatchAsync(this JsonApiClient client, Uri requestUri, object? requestContent, HttpRequestContext context)
+  public static async Task<JsonApiResponse<Empty>> PatchAsync(this JsonApiClient client, Uri requestUri, object? requestContent, HttpRequestContext context)
   {
     return await client.SendAsync<Empty>(HttpMethod.Patch, requestUri, requestContent, context);
   }
@@ -105,7 +105,7 @@ public static class EmptyJsonApiClientExtensions
   /// <param name="requestUri">The request Uniform Resource Identifier (URI).</param>
   /// <param name="cancellationToken">The cancellation token.</param>
   /// <returns>The API response.</returns>
-  public static async Task<ApiResponse> PostAsync(this JsonApiClient client, Uri requestUri, CancellationToken cancellationToken = default)
+  public static async Task<JsonApiResponse<Empty>> PostAsync(this JsonApiClient client, Uri requestUri, CancellationToken cancellationToken = default)
   {
     return await client.SendAsync<Empty>(HttpMethod.Post, requestUri, cancellationToken);
   }
@@ -116,7 +116,7 @@ public static class EmptyJsonApiClientExtensions
   /// <param name="requestUri">The request Uniform Resource Identifier (URI).</param>
   /// <param name="context">The request context.</param>
   /// <returns>The API response.</returns>
-  public static async Task<ApiResponse> PostAsync(this JsonApiClient client, Uri requestUri, HttpRequestContext context)
+  public static async Task<JsonApiResponse<Empty>> PostAsync(this JsonApiClient client, Uri requestUri, HttpRequestContext context)
   {
     return await client.SendAsync<Empty>(HttpMethod.Post, requestUri, context);
   }
@@ -128,7 +128,7 @@ public static class EmptyJsonApiClientExtensions
   /// <param name="requestContent">The HTTP request content.</param>
   /// <param name="cancellationToken">The cancellation token.</param>
   /// <returns>The API response.</returns>
-  public static async Task<ApiResponse> PostAsync(this JsonApiClient client, Uri requestUri, object? requestContent, CancellationToken cancellationToken = default)
+  public static async Task<JsonApiResponse<Empty>> PostAsync(this JsonApiClient client, Uri requestUri, object? requestContent, CancellationToken cancellationToken = default)
   {
     return await client.SendAsync<Empty>(HttpMethod.Post, requestUri, requestContent, cancellationToken);
   }
@@ -140,7 +140,7 @@ public static class EmptyJsonApiClientExtensions
   /// <param name="requestContent">The HTTP request content.</param>
   /// <param name="context">The request context.</param>
   /// <returns>The API response.</returns>
-  public static async Task<ApiResponse> PostAsync(this JsonApiClient client, Uri requestUri, object? requestContent, HttpRequestContext context)
+  public static async Task<JsonApiResponse<Empty>> PostAsync(this JsonApiClient client, Uri requestUri, object? requestContent, HttpRequestContext context)
   {
     return await client.SendAsync<Empty>(HttpMethod.Post, requestUri, requestContent, context);
   }
@@ -152,7 +152,7 @@ public static class EmptyJsonApiClientExtensions
   /// <param name="requestUri">The request Uniform Resource Identifier (URI).</param>
   /// <param name="cancellationToken">The cancellation token.</param>
   /// <returns>The API response.</returns>
-  public static async Task<ApiResponse> PutAsync(this JsonApiClient client, Uri requestUri, CancellationToken cancellationToken = default)
+  public static async Task<JsonApiResponse<Empty>> PutAsync(this JsonApiClient client, Uri requestUri, CancellationToken cancellationToken = default)
   {
     return await client.SendAsync<Empty>(HttpMethod.Put, requestUri, cancellationToken);
   }
@@ -163,7 +163,7 @@ public static class EmptyJsonApiClientExtensions
   /// <param name="requestUri">The request Uniform Resource Identifier (URI).</param>
   /// <param name="context">The request context.</param>
   /// <returns>The API response.</returns>
-  public static async Task<ApiResponse> PutAsync(this JsonApiClient client, Uri requestUri, HttpRequestContext context)
+  public static async Task<JsonApiResponse<Empty>> PutAsync(this JsonApiClient client, Uri requestUri, HttpRequestContext context)
   {
     return await client.SendAsync<Empty>(HttpMethod.Put, requestUri, context);
   }
@@ -175,7 +175,7 @@ public static class EmptyJsonApiClientExtensions
   /// <param name="requestContent">The HTTP request content.</param>
   /// <param name="cancellationToken">The cancellation token.</param>
   /// <returns>The API response.</returns>
-  public static async Task<ApiResponse> PutAsync(this JsonApiClient client, Uri requestUri, object? requestContent, CancellationToken cancellationToken = default)
+  public static async Task<JsonApiResponse<Empty>> PutAsync(this JsonApiClient client, Uri requestUri, object? requestContent, CancellationToken cancellationToken = default)
   {
     return await client.SendAsync<Empty>(HttpMethod.Put, requestUri, requestContent, cancellationToken);
   }
@@ -187,7 +187,7 @@ public static class EmptyJsonApiClientExtensions
   /// <param name="requestContent">The HTTP request content.</param>
   /// <param name="context">The request context.</param>
   /// <returns>The API response.</returns>
-  public static async Task<ApiResponse> PutAsync(this JsonApiClient client, Uri requestUri, object? requestContent, HttpRequestContext context)
+  public static async Task<JsonApiResponse<Empty>> PutAsync(this JsonApiClient client, Uri requestUri, object? requestContent, HttpRequestContext context)
   {
     return await client.SendAsync<Empty>(HttpMethod.Put, requestUri, requestContent, context);
   }

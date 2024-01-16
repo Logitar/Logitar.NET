@@ -132,6 +132,13 @@ public class HttpApiClient : IDisposable, IHttpApiClient
 
     using HttpResponseMessage response = await Client.SendAsync(request, context.CancellationToken);
     HttpApiResponse result = new(response);
+    try
+    {
+      result.ContentText = (await response.Content.ReadAsStringAsync(context.CancellationToken)).CleanTrim();
+    }
+    catch (Exception)
+    {
+    }
 
     if (ThrowOnFailure ?? context.ThrowOnFailure)
     {
@@ -145,7 +152,7 @@ public class HttpApiClient : IDisposable, IHttpApiClient
       }
     }
 
-    return new HttpApiResponse(response);
+    return result;
   }
 
   /// <summary>

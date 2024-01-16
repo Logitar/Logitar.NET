@@ -4,15 +4,27 @@
 /// Represents the response of a JSON API.
 /// </summary>
 /// <typeparam name="T">The type of the response contents.</typeparam>
-public record JsonApiResponse<T> : ApiResponse
+public record JsonApiResponse<T> : HttpApiResponse
 {
   /// <summary>
-  /// Gets or sets the text contents of the response, usually JSON.
+  /// Gets or sets the text contents of the response.
   /// </summary>
-  public string? ContentText
+  public override string? ContentText
   {
-    get => JsonSerializer.Serialize(Value, SerializerOptions);
-    set => Value = value == null ? default : JsonSerializer.Deserialize<T>(value, SerializerOptions);
+    get => base.ContentText;
+    set
+    {
+      base.ContentText = value;
+
+      if (typeof(T) == typeof(Empty) || value == null)
+      {
+        Value = default;
+      }
+      else
+      {
+        Value = JsonSerializer.Deserialize<T>(value, SerializerOptions);
+      }
+    }
   }
 
   /// <summary>
@@ -40,40 +52,5 @@ public record JsonApiResponse<T> : ApiResponse
   /// <param name="response">The HTTP response message.</param>
   public JsonApiResponse(HttpResponseMessage response) : base(response)
   {
-  }
-
-  /// <summary>
-  /// Initializes a new instance of the <see cref="HttpApiResponse"/> class from the specified HTTP response message.
-  /// </summary>
-  /// <param name="response">The HTTP response message</param>
-  /// <param name="cancellationToken">The cancellation token.</param>
-  /// <returns>The JSON API response.</returns>
-  public static async Task<JsonApiResponse<T>> FromResponseAsync(HttpResponseMessage response, CancellationToken cancellationToken = default)
-  {
-    return await FromResponseAsync(response, serializerOptions: null, cancellationToken);
-  }
-  /// <summary>
-  /// Initializes a new instance of the <see cref="HttpApiResponse"/> class from the specified HTTP response message.
-  /// </summary>
-  /// <param name="response">The HTTP response message</param>
-  /// <param name="serializerOptions">The serializer options.</param>
-  /// <param name="cancellationToken">The cancellation token.</param>
-  /// <returns>The JSON API response.</returns>
-  public static async Task<JsonApiResponse<T>> FromResponseAsync(HttpResponseMessage response, JsonSerializerOptions? serializerOptions, CancellationToken cancellationToken = default)
-  {
-    JsonApiResponse<T> result = new(response)
-    {
-      SerializerOptions = serializerOptions
-    };
-
-    try
-    {
-      result.ContentText = await response.Content.ReadAsStringAsync(cancellationToken);
-    }
-    catch (Exception)
-    {
-    }
-
-    return result;
   }
 }

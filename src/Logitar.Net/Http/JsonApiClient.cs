@@ -53,7 +53,7 @@ public class JsonApiClient : HttpApiClient, IJsonApiClient
   /// <param name="requestUri">The request Uniform Resource Identifier (URI).</param>
   /// <param name="cancellationToken">The cancellation token.</param>
   /// <returns>The HTTP API response.</returns>
-  public virtual async Task<JsonApiResponse<T>> SendAsync<T>(HttpMethod method, Uri requestUri, CancellationToken cancellationToken = default)
+  public virtual async Task<JsonApiResponse<T>> SendAsync<T>(HttpMethod method, Uri requestUri, CancellationToken cancellationToken)
   {
     return await SendAsync<T>(method, requestUri, requestContent: null, cancellationToken);
   }
@@ -76,7 +76,7 @@ public class JsonApiClient : HttpApiClient, IJsonApiClient
   /// <param name="requestContent">The HTTP request content.</param>
   /// <param name="cancellationToken">The cancellation token.</param>
   /// <returns>The HTTP API response.</returns>
-  public virtual async Task<JsonApiResponse<T>> SendAsync<T>(HttpMethod method, Uri requestUri, object? requestContent, CancellationToken cancellationToken = default)
+  public virtual async Task<JsonApiResponse<T>> SendAsync<T>(HttpMethod method, Uri requestUri, object? requestContent, CancellationToken cancellationToken)
   {
     HttpRequestContext context = new(cancellationToken);
     return await SendAsync<T>(method, requestUri, requestContent, context);
@@ -99,28 +99,16 @@ public class JsonApiClient : HttpApiClient, IJsonApiClient
 
     HttpApiResponse httpResponse = await base.SendAsync(method, requestUri, requestContent, context);
 
-    JsonApiResponse<T> jsonResponse = new JsonApiResponse<T>
+    return new JsonApiResponse<T>
     {
       Version = httpResponse.Version,
       Status = httpResponse.Status,
       ReasonPhrase = httpResponse.ReasonPhrase,
       Headers = httpResponse.Headers,
       TrailingHeaders = httpResponse.TrailingHeaders,
-      SerializerOptions = SerializerOptions
+      SerializerOptions = SerializerOptions,
+      ContentText = httpResponse.ContentText
     };
-
-    if (typeof(T) != typeof(Empty) && httpResponse.Content != null)
-    {
-      try
-      {
-        jsonResponse.ContentText = await httpResponse.Content.ReadAsStringAsync(context.CancellationToken);
-      }
-      catch (Exception)
-      {
-      }
-    }
-
-    return jsonResponse;
   }
 
   /// <summary>
