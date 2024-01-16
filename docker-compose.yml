@@ -22,7 +22,7 @@ services:
       context: .
       dockerfile: /src/Logitar.Demo/Dockerfile
     image: logitar_demo
-    container_name: Logitar.Demo
+    container_name: Logitar.NET_demo
     restart: unless-stopped
     environment:
       ASPNETCORE_Environment: Development
