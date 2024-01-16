@@ -109,7 +109,7 @@ public class JsonApiClient : HttpApiClient, IJsonApiClient
       SerializerOptions = SerializerOptions
     };
 
-    if (httpResponse.Content != null)
+    if (typeof(T) != typeof(Empty) && httpResponse.Content != null)
     {
       try
       {
