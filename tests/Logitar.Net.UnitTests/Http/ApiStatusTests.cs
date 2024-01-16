@@ -1,6 +1,4 @@
-﻿using System.Net;
-
-namespace Logitar.Net.Http;
+﻿namespace Logitar.Net.Http;
 
 [Trait(Traits.Category, Categories.Unit)]
 public class ApiStatusTests
