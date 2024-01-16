@@ -41,11 +41,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Security", "src\Log
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Security.UnitTests", "tests\Logitar.Security.UnitTests\Logitar.Security.UnitTests.csproj", "{111D6861-12F3-46C2-AFE1-94719834E6C9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Net", "src\Logitar.Net\Logitar.Net.csproj", "{FDB24D12-266C-480C-BE3D-38A697FBBA69}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Net", "src\Logitar.Net\Logitar.Net.csproj", "{FDB24D12-266C-480C-BE3D-38A697FBBA69}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Net.Mail.SendGrid", "src\Logitar.Net.Mail.SendGrid\Logitar.Net.Mail.SendGrid.csproj", "{10A25B71-6AB5-4A3B-9826-908BAD679761}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Net.Mail.SendGrid", "src\Logitar.Net.Mail.SendGrid\Logitar.Net.Mail.SendGrid.csproj", "{10A25B71-6AB5-4A3B-9826-908BAD679761}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Net.UnitTests", "tests\Logitar.Net.UnitTests\Logitar.Net.UnitTests.csproj", "{D4FEF8DE-2F84-49EC-BFD7-23252A9E9978}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Net.UnitTests", "tests\Logitar.Net.UnitTests\Logitar.Net.UnitTests.csproj", "{D4FEF8DE-2F84-49EC-BFD7-23252A9E9978}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Demo", "src\Logitar.Demo\Logitar.Demo.csproj", "{B87F5D34-C9BC-4E21-9F23-FDC994A1A969}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Net.IntegrationTests", "tests\Logitar.Net.IntegrationTests\Logitar.Net.IntegrationTests.csproj", "{9FCA5161-F935-4A9F-99E4-F84DDC4E6BE5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -113,6 +117,14 @@ Global
 		{D4FEF8DE-2F84-49EC-BFD7-23252A9E9978}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D4FEF8DE-2F84-49EC-BFD7-23252A9E9978}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D4FEF8DE-2F84-49EC-BFD7-23252A9E9978}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B87F5D34-C9BC-4E21-9F23-FDC994A1A969}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B87F5D34-C9BC-4E21-9F23-FDC994A1A969}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B87F5D34-C9BC-4E21-9F23-FDC994A1A969}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B87F5D34-C9BC-4E21-9F23-FDC994A1A969}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9FCA5161-F935-4A9F-99E4-F84DDC4E6BE5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9FCA5161-F935-4A9F-99E4-F84DDC4E6BE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9FCA5161-F935-4A9F-99E4-F84DDC4E6BE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9FCA5161-F935-4A9F-99E4-F84DDC4E6BE5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -126,6 +138,7 @@ Global
 		{75296C91-0FF6-44A5-901A-A2A1DD3F1905} = {746BA5D1-0E1A-4191-9645-88D14B1C69BF}
 		{111D6861-12F3-46C2-AFE1-94719834E6C9} = {746BA5D1-0E1A-4191-9645-88D14B1C69BF}
 		{D4FEF8DE-2F84-49EC-BFD7-23252A9E9978} = {746BA5D1-0E1A-4191-9645-88D14B1C69BF}
+		{9FCA5161-F935-4A9F-99E4-F84DDC4E6BE5} = {746BA5D1-0E1A-4191-9645-88D14B1C69BF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B0AA9E53-02AD-4000-8ED5-53AFF5D1B32D}

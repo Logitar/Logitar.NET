@@ -16,3 +16,15 @@ services:
       POSTGRES_PASSWORD: F2n5WCB4e7tgfqEJ
     ports:
       - 5434:5432
+
+  logitar_demo:
+    build:
+      context: .
+      dockerfile: /src/Logitar.Demo/Dockerfile
+    image: logitar_demo
+    container_name: Logitar.Demo
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_Environment: Development
+    ports:
+      - 22277:8080
