@@ -53,7 +53,7 @@ public class JsonApiClient : HttpApiClient, IJsonApiClient
   /// <param name="requestUri">The request Uniform Resource Identifier (URI).</param>
   /// <param name="cancellationToken">The cancellation token.</param>
   /// <returns>The HTTP API response.</returns>
-  public async Task<JsonApiResponse<T>> SendAsync<T>(HttpMethod method, Uri requestUri, CancellationToken cancellationToken = default)
+  public virtual async Task<JsonApiResponse<T>> SendAsync<T>(HttpMethod method, Uri requestUri, CancellationToken cancellationToken = default)
   {
     return await SendAsync<T>(method, requestUri, requestContent: null, cancellationToken);
   }
@@ -64,7 +64,7 @@ public class JsonApiClient : HttpApiClient, IJsonApiClient
   /// <param name="requestUri">The request Uniform Resource Identifier (URI).</param>
   /// <param name="context">The HTTP request context.</param>
   /// <returns>The HTTP API response.</returns>
-  public async Task<JsonApiResponse<T>> SendAsync<T>(HttpMethod method, Uri requestUri, HttpRequestContext context)
+  public virtual async Task<JsonApiResponse<T>> SendAsync<T>(HttpMethod method, Uri requestUri, HttpRequestContext context)
   {
     return await SendAsync<T>(method, requestUri, inputContent: null, context);
   }
@@ -76,7 +76,7 @@ public class JsonApiClient : HttpApiClient, IJsonApiClient
   /// <param name="requestContent">The HTTP request content.</param>
   /// <param name="cancellationToken">The cancellation token.</param>
   /// <returns>The HTTP API response.</returns>
-  public async Task<JsonApiResponse<T>> SendAsync<T>(HttpMethod method, Uri requestUri, object? requestContent, CancellationToken cancellationToken = default)
+  public virtual async Task<JsonApiResponse<T>> SendAsync<T>(HttpMethod method, Uri requestUri, object? requestContent, CancellationToken cancellationToken = default)
   {
     HttpRequestContext context = new(cancellationToken);
     return await SendAsync<T>(method, requestUri, requestContent, context);
@@ -89,7 +89,7 @@ public class JsonApiClient : HttpApiClient, IJsonApiClient
   /// <param name="inputContent">The HTTP request content.</param>
   /// <param name="context">The HTTP request context.</param>
   /// <returns>The HTTP API response.</returns>
-  public async Task<JsonApiResponse<T>> SendAsync<T>(HttpMethod method, Uri requestUri, object? inputContent, HttpRequestContext context)
+  public virtual async Task<JsonApiResponse<T>> SendAsync<T>(HttpMethod method, Uri requestUri, object? inputContent, HttpRequestContext context)
   {
     JsonContent? requestContent = null;
     if (inputContent != null)
