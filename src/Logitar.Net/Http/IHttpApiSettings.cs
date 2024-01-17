@@ -21,7 +21,7 @@ public interface IHttpApiSettings
   List<HttpHeader> Headers { get; }
 
   /// <summary>
-  /// Gets a value indicating whether or not to throw an <see cref="HttpFailureException"/> when a HTTP response does not indicate success.
+  /// Gets a value indicating whether or not to throw an <see cref="HttpFailureException"/> when an HTTP response does not indicate success.
   /// </summary>
   bool ThrowOnFailure { get; }
 }
