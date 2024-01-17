@@ -37,7 +37,7 @@ public class HttpFailureException<T> : HttpFailureException
   /// <param name="result">The HTTP API result.</param>
   /// <param name="innerException">The inner exception.</param>
   public HttpFailureException(T result, Exception? innerException = null)
-  : base(innerException: innerException)
+    : base(innerException: innerException)
   {
     Result = result;
   }
