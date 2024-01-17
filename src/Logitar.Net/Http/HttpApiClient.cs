@@ -121,3 +121,54 @@ public abstract class HttpApiClient<T> : IDisposable
     Client.Apply(settings);
   }
 }
+
+/// <summary>
+/// Implements a simple HTTP API client.
+/// </summary>
+public class HttpApiClient : HttpApiClient<HttpApiResult>
+{
+  /// <summary>
+  /// Initializes a new instance of the <see cref="HttpApiClient"/> class.
+  /// An instance of the <see cref="HttpClient"/> class will be created; this instance shall be disposed explicitly.
+  /// </summary>
+  public HttpApiClient() : base()
+  {
+  }
+
+  /// <summary>
+  /// Initializes a new instance of the <see cref="HttpApiClient"/> class.
+  /// An instance of the <see cref="HttpClient"/> class will be created; this instance shall be disposed explicitly.
+  /// </summary>
+  /// <param name="settings">The HTTP API settings.</param>
+  public HttpApiClient(IHttpApiSettings settings) : base(settings)
+  {
+  }
+
+  /// <summary>
+  /// Initializes a new instance of the <see cref="HttpApiClient"/> class.
+  /// </summary>
+  /// <param name="client">The HTTP client.</param>
+  public HttpApiClient(HttpClient client) : base(client)
+  {
+  }
+
+  /// <summary>
+  /// Initializes a new instance of the <see cref="HttpApiClient"/> class.
+  /// </summary>
+  /// <param name="client">The HTTP client.</param>
+  /// <param name="settings">The HTTP API settings.</param>
+  public HttpApiClient(HttpClient client, IHttpApiSettings settings) : base(client, settings)
+  {
+  }
+
+  /// <summary>
+  /// Builds an API result from the specified response.
+  /// </summary>
+  /// <param name="response">The HTTP response.</param>
+  /// <param name="cancellationToken">The cancellation token.</param>
+  /// <returns>The built result.</returns>
+  protected override Task<HttpApiResult> BuildResultAsync(HttpResponseMessage response, CancellationToken cancellationToken)
+  {
+    return Task.FromResult(new HttpApiResult(response));
+  }
+}
