@@ -34,6 +34,12 @@ public class HttpRequestBuilder : IHttpRequestBuilder
   /// <summary>
   /// Initializes a new instance of the <see cref="HttpRequestBuilder"/> class.
   /// </summary>
+  public HttpRequestBuilder() : this(HttpMethod.Get, new Uri(string.Empty, UriKind.RelativeOrAbsolute))
+  {
+  }
+  /// <summary>
+  /// Initializes a new instance of the <see cref="HttpRequestBuilder"/> class.
+  /// </summary>
   /// <param name="method">The HTTP method.</param>
   /// <param name="uri">The Uniform Resource Identifier (URI).</param>
   public HttpRequestBuilder(HttpMethod method, Uri uri) : this(method.Method, uri.ToString())

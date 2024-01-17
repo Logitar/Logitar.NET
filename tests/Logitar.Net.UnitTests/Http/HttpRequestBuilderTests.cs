@@ -5,7 +5,7 @@ namespace Logitar.Net.Http;
 [Trait(Traits.Category, Categories.Unit)]
 public class HttpRequestBuilderTests
 {
-  private readonly HttpRequestBuilder _builder = HttpRequestBuilder.Get("/people");
+  private readonly HttpRequestBuilder _builder = new();
   private readonly Faker _faker = new();
 
   [Fact(DisplayName = "BuildMessage: it should build the correct HttpRequestMessage.")]
@@ -38,6 +38,9 @@ public class HttpRequestBuilderTests
   [InlineData("GET", "/people")]
   public void ctor_it_should_construct_the_correct_builder(string methodString, string urlString)
   {
+    Assert.Equal(HttpMethod.Get.Method, _builder.Method);
+    Assert.Equal(string.Empty, _builder.Url);
+
     HttpRequestBuilder builder = new(methodString, urlString);
     Assert.Equal(methodString, builder.Method);
     Assert.Equal(urlString, builder.Url);
