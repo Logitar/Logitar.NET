@@ -8,7 +8,7 @@ public record ApiResponse
   /// <summary>
   /// Gets or sets the version of the response.
   /// </summary>
-  public string Version { get; set; } = string.Empty;
+  public Version Version { get; set; } = new();
 
   /// <summary>
   /// Gets or sets the status of the response.
@@ -43,7 +43,7 @@ public record ApiResponse
   /// <param name="response">The HTTP response message.</param>
   public ApiResponse(HttpResponseMessage response)
   {
-    Version = response.Version.ToString();
+    Version = response.Version;
     Status = new(response);
     ReasonPhrase = response.ReasonPhrase;
 

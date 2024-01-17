@@ -23,7 +23,7 @@ public class ApiResponseTests
     response.TrailingHeaders.Add("CorrelationId", id);
 
     ApiResponse result = new(response);
-    Assert.Equal(response.Version.ToString(), result.Version);
+    Assert.Equal(response.Version, result.Version);
     Assert.Equal(response.StatusCode, result.Status.Value);
     Assert.Equal(response.ReasonPhrase, result.ReasonPhrase);
 
@@ -42,7 +42,7 @@ public class ApiResponseTests
   {
     ApiResponse response = new()
     {
-      Version = "1.1",
+      Version = new(1, 1),
       Status = new(HttpStatusCode.BadRequest),
       ReasonPhrase = "Validation failed.",
     };
