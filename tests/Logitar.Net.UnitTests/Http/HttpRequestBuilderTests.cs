@@ -1,7 +1,4 @@
 ﻿using Bogus;
-using System.Net.Http.Headers;
-using System.Net.Http.Json;
-using System.Net.Mime;
 
 namespace Logitar.Net.Http;
 
@@ -10,18 +7,24 @@ public class HttpRequestBuilderTests
 {
   private readonly HttpRequestBuilder _builder = new();
   private readonly Faker _faker = new();
+  private readonly Person _person;
+
+  public HttpRequestBuilderTests()
+  {
+    _person = new(_faker.Person.FirstName, _faker.Person.LastName, _faker.Person.DateOfBirth);
+  }
 
   [Fact(DisplayName = "BuildMessage: it should build the correct HttpRequestMessage.")]
   public void BuildMessage_it_should_build_the_correct_HttpRequestMessage()
   {
-    Person person = new(_faker.Person.FirstName, _faker.Person.LastName, _faker.Person.DateOfBirth);
-    JsonContent content = JsonContent.Create(person);
+    JsonContent content = JsonContent.Create(_person);
 
     string url = "/people/123?version=2";
+    HttpHeader clientId = new("ClientId", Guid.NewGuid().ToString());
     HttpRequestMessage message = HttpRequestBuilder.Put(url)
       .SetContent(content)
       .WithBasicAuthorization("admin", "P@s$W0rD")
-      .SetHeader("X-Realm", "tests")
+      .SetHeader(clientId)
       .BuildMessage();
 
     Assert.Equal(HttpMethod.Put, message.Method);
@@ -34,7 +37,34 @@ public class HttpRequestBuilderTests
     Assert.Equal(AuthenticationSchemes.Basic, authorization.Scheme);
     Assert.Equal(credentials, authorization.Parameter);
 
-    Assert.Contains(message.Headers, h => h.Key == "X-Realm" && h.Value.SequenceEqual(["tests"]));
+    Assert.Contains(message.Headers, h => h.Key == clientId.Name && h.Value.SequenceEqual(clientId.Values));
+  }
+
+  [Fact(DisplayName = "BuildMessage: it should build the correct HttpRequestMessage from the specified parameters.")]
+  public void BuildMessage_it_should_build_the_correct_HttpRequestMessage_from_the_specified_parameters()
+  {
+    HttpRequestParameters parameters = new()
+    {
+      Method = HttpMethod.Put,
+      Uri = new("/people/123", UriKind.Relative),
+      Content = JsonContent.Create(_person),
+      Authorization = HttpAuthorization.Bearer(Guid.NewGuid().ToString())
+    };
+    parameters.Headers.Add(new HttpHeader("ClientId", Guid.NewGuid().ToString()));
+
+    HttpRequestMessage request = HttpRequestBuilder.BuildMessage(parameters);
+    Assert.Equal(parameters.Method, request.Method);
+    Assert.Equal(parameters.Uri, request.RequestUri);
+    Assert.Same(parameters.Content, request.Content);
+
+    foreach (HttpHeader header in parameters.Headers)
+    {
+      Assert.Contains(request.Headers, h => h.Key == header.Name && h.Value.SequenceEqual(header.Values));
+    }
+
+    Assert.NotNull(request.Headers.Authorization);
+    Assert.Equal(parameters.Authorization.Scheme, request.Headers.Authorization.Scheme);
+    Assert.Equal(parameters.Authorization.Credentials, request.Headers.Authorization.Parameter);
   }
 
   [Theory(DisplayName = "ctor: it should construct the correct builder.")]
@@ -250,5 +280,32 @@ public class HttpRequestBuilderTests
     Assert.NotNull(_builder.Authorization);
     Assert.Equal(AuthenticationSchemes.Bearer, _builder.Authorization.Scheme);
     Assert.Equal(credentials, _builder.Authorization.Credentials);
+  }
+
+  [Fact(DisplayName = "WithParameters: it should apply the correct parameters.")]
+  public void WithParameters_it_should_apply_the_correct_parameters()
+  {
+    HttpRequestParameters parameters = new()
+    {
+      Method = HttpMethod.Put,
+      Uri = new("/people/123", UriKind.Relative),
+      Content = JsonContent.Create(_person),
+      Authorization = HttpAuthorization.Bearer(Guid.NewGuid().ToString())
+    };
+    parameters.Headers.Add(new HttpHeader("Content-Type", "application/json"));
+
+    _builder.WithParameters(parameters);
+    Assert.Equal(parameters.Method.Method, _builder.Method);
+    Assert.Equal(parameters.Uri.ToString(), _builder.Url);
+    Assert.Same(parameters.Content, _builder.Content);
+
+    Assert.NotNull(_builder.Authorization);
+    Assert.Equal(parameters.Authorization.Scheme, _builder.Authorization.Scheme);
+    Assert.Equal(parameters.Authorization.Credentials, _builder.Authorization.Credentials);
+
+    foreach (HttpHeader header in parameters.Headers)
+    {
+      Assert.Contains(_builder.Headers, h => h.Key == header.Name && h.Value.SequenceEqual(header.Values));
+    }
   }
 }

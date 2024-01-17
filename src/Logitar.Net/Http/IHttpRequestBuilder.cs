@@ -126,6 +126,13 @@ public interface IHttpRequestBuilder
   IHttpRequestBuilder WithAuthorization(IHttpAuthorization? authorization);
 
   /// <summary>
+  /// Applies the specified parameters to the request.
+  /// </summary>
+  /// <param name="parameters">The request parameters.</param>
+  /// <returns>The builder instance.</returns>
+  IHttpRequestBuilder WithParameters(HttpRequestParameters parameters);
+
+  /// <summary>
   /// Builds an instance of the <see cref="HttpRequestMessage"/> class.
   /// </summary>
   /// <returns>The built instance.</returns>

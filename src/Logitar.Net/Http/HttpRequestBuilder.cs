@@ -246,6 +246,21 @@ public class HttpRequestBuilder : IHttpRequestBuilder
   }
 
   /// <summary>
+  /// Applies the specified parameters to the request.
+  /// </summary>
+  /// <param name="parameters">The request parameters.</param>
+  /// <returns>The builder instance.</returns>
+  public virtual IHttpRequestBuilder WithParameters(HttpRequestParameters parameters)
+  {
+    SetMethod(parameters.Method);
+    SetUrl(parameters.Uri);
+    SetContent(parameters.Content);
+    SetHeaders(parameters.Headers);
+    WithAuthorization(parameters.Authorization);
+    return this;
+  }
+
+  /// <summary>
   /// Builds an instance of the <see cref="HttpRequestMessage"/> class.
   /// </summary>
   /// <returns>The built instance.</returns>
@@ -269,5 +284,15 @@ public class HttpRequestBuilder : IHttpRequestBuilder
     }
 
     return request;
+  }
+
+  /// <summary>
+  /// Builds an instance of the <see cref="HttpRequestMessage"/> class from the specified parameters.
+  /// </summary>
+  /// <param name="parameters">The request parameters.</param>
+  /// <returns>The built instance.</returns>
+  public static HttpRequestMessage BuildMessage(HttpRequestParameters parameters)
+  {
+    return new HttpRequestBuilder().WithParameters(parameters).BuildMessage();
   }
 }

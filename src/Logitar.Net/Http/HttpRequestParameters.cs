@@ -16,7 +16,7 @@ public record HttpRequestParameters : HttpRequestOptions
   public Uri Uri { get; set; } = new(string.Empty, UriKind.RelativeOrAbsolute);
 
   /// <summary>
-  /// Gets or sets a value indicating whether or not to throw an <see cref="HttpFailureException"/> when an HTTP response does not indicate success.
+  /// Gets or sets a value indicating whether or not to throw an <see cref="HttpFailureException{T}"/> when an HTTP response does not indicate success.
   /// </summary>
   public bool? ThrowOnFailure { get; set; }
 }
