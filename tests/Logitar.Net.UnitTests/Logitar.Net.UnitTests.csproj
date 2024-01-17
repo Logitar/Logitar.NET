@@ -31,6 +31,7 @@
 
   <ItemGroup>
     <Using Include="System.Net" />
+    <Using Include="System.Net.Http.Headers" />
     <Using Include="System.Net.Http.Json" />
     <Using Include="System.Net.Mime" />
     <Using Include="System.Text" />
