@@ -60,6 +60,33 @@ public interface IHttpRequestBuilder
   IHttpRequestBuilder SetContent(HttpContent? content);
 
   /// <summary>
+  /// Sets a HTTP header.
+  /// </summary>
+  /// <param name="name">The name of the header.</param>
+  /// <param name="value">The value of the header.</param>
+  /// <returns>The builder instance.</returns>
+  IHttpRequestBuilder SetHeader(string name, string value);
+  /// <summary>
+  /// Sets a HTTP header.
+  /// </summary>
+  /// <param name="name">The name of the header.</param>
+  /// <param name="values">The values of the header.</param>
+  /// <returns>The builder instance.</returns>
+  IHttpRequestBuilder SetHeader(string name, IEnumerable<string> values);
+  /// <summary>
+  /// Sets a HTTP header.
+  /// </summary>
+  /// <param name="header">The HTTP header.</param>
+  /// <returns>The builder instance.</returns>
+  IHttpRequestBuilder SetHeader(HttpHeader header);
+  /// <summary>
+  /// Sets a list of HTTP headers.
+  /// </summary>
+  /// <param name="headers">The HTTP headers.</param>
+  /// <returns>The builder instance.</returns>
+  IHttpRequestBuilder SetHeaders(IEnumerable<HttpHeader> headers);
+
+  /// <summary>
   /// Sets the BASIC authorization.
   /// </summary>
   /// <param name="identifier">The client identifier, such as an user name.</param>
@@ -96,28 +123,7 @@ public interface IHttpRequestBuilder
   /// </summary>
   /// <param name="authorization">The authorization parameters.</param>
   /// <returns>The builder instance.</returns>
-  IHttpRequestBuilder WithAuthorization(IHttpAuthorization authorization);
-
-  /// <summary>
-  /// Sets a HTTP header.
-  /// </summary>
-  /// <param name="name">The name of the header.</param>
-  /// <param name="value">The value of the header.</param>
-  /// <returns>The builder instance.</returns>
-  IHttpRequestBuilder SetHeader(string name, string value);
-  /// <summary>
-  /// Sets a HTTP header.
-  /// </summary>
-  /// <param name="name">The name of the header.</param>
-  /// <param name="values">The values of the header.</param>
-  /// <returns>The builder instance.</returns>
-  IHttpRequestBuilder SetHeader(string name, IEnumerable<string> values);
-  /// <summary>
-  /// Sets a HTTP header.
-  /// </summary>
-  /// <param name="header">The HTTP header.</param>
-  /// <returns>The builder instance.</returns>
-  IHttpRequestBuilder SetHeader(HttpHeader header);
+  IHttpRequestBuilder WithAuthorization(IHttpAuthorization? authorization);
 
   /// <summary>
   /// Builds an instance of the <see cref="HttpRequestMessage"/> class.

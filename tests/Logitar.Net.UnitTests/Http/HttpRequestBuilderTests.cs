@@ -153,6 +153,22 @@ public class HttpRequestBuilderTests
     Assert.Equal(values, _builder.Headers[name]);
   }
 
+  [Fact(DisplayName = "SetHeaders: it should set the correct headers.")]
+  public void SetHeaders_it_should_set_the_correct_headers()
+  {
+    HttpHeader[] headers =
+    [
+      new("Accept", "text/html"),
+      new("Content-Type", "application/json")
+    ];
+
+    _builder.SetHeaders(headers);
+    foreach (HttpHeader header in headers)
+    {
+      Assert.Equal(header.Values, _builder.Headers[header.Name]);
+    }
+  }
+
   [Theory(DisplayName = "SetQuery: it should set the correct method.")]
   [InlineData("POST")]
   public void SetMethod_it_should_set_the_correct_method(string methodString)
@@ -195,6 +211,9 @@ public class HttpRequestBuilderTests
     Assert.NotNull(_builder.Authorization);
     Assert.Equal(scheme, _builder.Authorization.Scheme);
     Assert.Equal(credentials, _builder.Authorization.Credentials);
+
+    _builder.WithAuthorization(authorization: null);
+    Assert.Null(_builder.Authorization);
   }
 
   [Theory(DisplayName = "WithBasicAuthorization: it should set the correct authorization.")]

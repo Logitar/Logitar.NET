@@ -164,6 +164,45 @@ public class HttpRequestBuilder : IHttpRequestBuilder
   }
 
   /// <summary>
+  /// Sets a HTTP header.
+  /// </summary>
+  /// <param name="name">The name of the header.</param>
+  /// <param name="value">The value of the header.</param>
+  /// <returns>The builder instance.</returns>
+  public virtual IHttpRequestBuilder SetHeader(string name, string value) => SetHeader(name, [value]);
+  /// <summary>
+  /// Sets a HTTP header.
+  /// </summary>
+  /// <param name="name">The name of the header.</param>
+  /// <param name="values">The values of the header.</param>
+  /// <returns>The builder instance.</returns>
+  public virtual IHttpRequestBuilder SetHeader(string name, IEnumerable<string> values)
+  {
+    RequestHeaders[name] = values;
+    return this;
+  }
+  /// <summary>
+  /// Sets a HTTP header.
+  /// </summary>
+  /// <param name="header">The HTTP header.</param>
+  /// <returns>The builder instance.</returns>
+  public virtual IHttpRequestBuilder SetHeader(HttpHeader header) => SetHeader(header.Name, header.Values);
+
+  /// <summary>
+  /// Sets a list of HTTP headers.
+  /// </summary>
+  /// <param name="headers">The HTTP headers.</param>
+  /// <returns>The builder instance.</returns>
+  public virtual IHttpRequestBuilder SetHeaders(IEnumerable<HttpHeader> headers)
+  {
+    foreach (HttpHeader header in headers)
+    {
+      SetHeader(header);
+    }
+    return this;
+  }
+
+  /// <summary>
   /// Sets the BASIC authorization.
   /// </summary>
   /// <param name="identifier">The client identifier, such as an user name.</param>
@@ -200,36 +239,11 @@ public class HttpRequestBuilder : IHttpRequestBuilder
   /// </summary>
   /// <param name="authorization">The authorization parameters.</param>
   /// <returns>The builder instance.</returns>
-  public virtual IHttpRequestBuilder WithAuthorization(IHttpAuthorization authorization)
+  public virtual IHttpRequestBuilder WithAuthorization(IHttpAuthorization? authorization)
   {
     Authorization = authorization;
     return this;
   }
-
-  /// <summary>
-  /// Sets a HTTP header.
-  /// </summary>
-  /// <param name="name">The name of the header.</param>
-  /// <param name="value">The value of the header.</param>
-  /// <returns>The builder instance.</returns>
-  public virtual IHttpRequestBuilder SetHeader(string name, string value) => SetHeader(name, [value]);
-  /// <summary>
-  /// Sets a HTTP header.
-  /// </summary>
-  /// <param name="name">The name of the header.</param>
-  /// <param name="values">The values of the header.</param>
-  /// <returns>The builder instance.</returns>
-  public virtual IHttpRequestBuilder SetHeader(string name, IEnumerable<string> values)
-  {
-    RequestHeaders[name] = values;
-    return this;
-  }
-  /// <summary>
-  /// Sets a HTTP header.
-  /// </summary>
-  /// <param name="header">The HTTP header.</param>
-  /// <returns>The builder instance.</returns>
-  public virtual IHttpRequestBuilder SetHeader(HttpHeader header) => SetHeader(header.Name, header.Values);
 
   /// <summary>
   /// Builds an instance of the <see cref="HttpRequestMessage"/> class.
