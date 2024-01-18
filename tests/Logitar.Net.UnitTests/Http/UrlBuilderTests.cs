@@ -3,21 +3,167 @@
 [Trait(Traits.Category, Categories.Unit)]
 public class UrlBuilderTests
 {
-  /* TODO(fpion):
-   * - Authority
-   * - QueryString
-   * - SetAuthority
-   * - AddQuery (value)
-   * - AddQuery (values)
-   * - SetQueryString
-   * - Build (Absolute)
-   * - Build (Relative)
-   * - Build (RelativeOrAbsolute)
-   * - BuildUri (Absolute)
-   * - BuildUri (Relative)
-   */
-
   private readonly UrlBuilder _builder = new();
+
+  [Theory(DisplayName = "AddQuery: it should append a query value.")]
+  [InlineData(" limit ", "100")]
+  public void AddQuery_it_should_append_a_query_value(string key, string value)
+  {
+    Assert.False(string.IsNullOrWhiteSpace(value));
+
+    string otherValue = Guid.NewGuid().ToString();
+    _builder.SetQuery(key, otherValue);
+    Assert.Equal([otherValue], _builder.Query[key.Trim()]);
+
+    _builder.AddQuery(key, value);
+    Assert.Equal([otherValue, value.Trim()], _builder.Query[key.Trim()]);
+  }
+
+  [Theory(DisplayName = "AddQuery: it should append values that are not null or white space.")]
+  [InlineData(" id ", "39275fbd-56b0-48b7-bfa5-1417f360b8bd", "  65dd1fba-9bf4-4d6b-90b4-68aa50e4989a  ")]
+  public void AddQuery_it_should_append_values_that_are_not_null_or_white_space(string key, params string[] values)
+  {
+    Assert.All(values, value => Assert.False(string.IsNullOrWhiteSpace(value)));
+
+    string otherValue = Guid.NewGuid().ToString();
+    _builder.SetQuery(key, otherValue);
+    Assert.Equal([otherValue], _builder.Query[key.Trim()]);
+
+    _builder.AddQuery(key, values);
+    Assert.Equal(new[] { otherValue }.Concat(values.Select(value => value.Trim())), _builder.Query[key.Trim()]);
+  }
+
+  [Theory(DisplayName = "AddQuery: it should not append a null or white space value.")]
+  [InlineData(" limit ", null)]
+  [InlineData(" limit ", "")]
+  [InlineData(" limit ", "  ")]
+  public void AddQuery_it_should_not_append_null_or_white_space_values(string key, string? value)
+  {
+    Assert.True(string.IsNullOrWhiteSpace(value));
+
+    string otherValue = Guid.NewGuid().ToString();
+    _builder.SetQuery(key, otherValue);
+    Assert.Equal([otherValue], _builder.Query[key.Trim()]);
+
+    _builder.AddQuery(key, value!);
+    Assert.Equal([otherValue], _builder.Query[key.Trim()]);
+
+    _builder.AddQuery(key, [null!, string.Empty, "  "]);
+    Assert.Equal([otherValue], _builder.Query[key.Trim()]);
+  }
+
+  [Theory(DisplayName = "Authority: it should return the correct authority.")]
+  [InlineData("localhost", 8080)]
+  [InlineData(" www.test.com ", 443)]
+  [InlineData("www.test.com", 443, "admin")]
+  [InlineData("www.test.com", 443, "admin", "P@s$W0rD")]
+  public void Authority_it_should_return_the_correct_authority(string host, ushort port, string? identifier = null, string? secret = null)
+  {
+    _builder.SetHost(host);
+    _builder.SetPort(port);
+
+    Credentials? credentials = null;
+    if (identifier != null)
+    {
+      credentials = new(identifier, secret ?? string.Empty);
+      _builder.SetCredentials(credentials);
+    }
+
+    string authority = credentials == null ? $"{host.Trim()}:{port}" : $"{identifier}:{secret}@{host.Trim()}:{port}";
+    Assert.Equal(authority, _builder.Authority);
+  }
+
+  [Fact(DisplayName = "Build: it should build the correct absolute URL.")]
+  public void Build_it_should_build_the_correct_absolute_Url()
+  {
+    string id = Guid.NewGuid().ToString();
+
+    _builder.SetScheme("https", inferPort: true);
+    _builder.SetCredentials(new Credentials("admin", "Test123!"));
+    _builder.SetHost("www.test.com");
+    _builder.SetPath("/people//{id}/");
+    _builder.AddQuery("ref", "1234567890");
+    _builder.AddQuery("q", "francis");
+    _builder.AddQuery("q", "pion");
+    _builder.SetFragment(" #  profile ");
+    _builder.SetParameter(" id ", id);
+
+    string url = _builder.Build(UriKind.Absolute);
+    Assert.Equal($"https://admin:Test123!@www.test.com:443/people/{id}?ref=1234567890&q=francis&q=pion#profile", url);
+  }
+
+  [Fact(DisplayName = "Build: it should build the correct relative URL.")]
+  public void Build_it_should_build_the_correct_relative_Url()
+  {
+    string id = Guid.NewGuid().ToString();
+
+    _builder.SetScheme("https", inferPort: true);
+    _builder.SetCredentials(new Credentials("admin", "Test123!"));
+    _builder.SetHost("www.test.com");
+    _builder.SetPath("/people//{id}/");
+    _builder.AddQuery("ref", "1234567890");
+    _builder.AddQuery("q", "francis");
+    _builder.AddQuery("q", "pion");
+    _builder.SetFragment(" #  profile ");
+    _builder.SetParameter(" id ", id);
+
+    string url = _builder.Build(UriKind.Relative);
+    Assert.Equal($"/people/{id}?ref=1234567890&q=francis&q=pion#profile", url);
+  }
+
+  [Fact(DisplayName = "Build: it should throw ArgumentException when the kind is indeterminate.")]
+  public void Build_it_should_throw_ArgumentException_when_the_kind_is_indeterminate()
+  {
+    var exception = Assert.Throws<ArgumentException>(() => _builder.Build(UriKind.RelativeOrAbsolute));
+    Assert.StartsWith("The URL kind cannot be indeterminate.", exception.Message);
+    Assert.Equal("kind", exception.ParamName);
+  }
+
+  [Fact(DisplayName = "BuildUri: it should build the correct absolute URI.")]
+  public void BuildUri_it_should_build_the_correct_absolute_Uri()
+  {
+    string id = Guid.NewGuid().ToString();
+
+    _builder.SetScheme("https", inferPort: true);
+    _builder.SetCredentials(new Credentials("admin", "Test123!"));
+    _builder.SetHost("www.test.com");
+    _builder.SetPath("/people//{id}/");
+    _builder.AddQuery("ref", "1234567890");
+    _builder.AddQuery("q", "francis");
+    _builder.AddQuery("q", "pion");
+    _builder.SetFragment(" #  profile ");
+    _builder.SetParameter(" id ", id);
+
+    Uri uri = _builder.BuildUri(UriKind.Absolute);
+    Assert.Equal($"https://admin:Test123!@www.test.com/people/{id}?ref=1234567890&q=francis&q=pion#profile", uri.ToString());
+  }
+
+  [Fact(DisplayName = "BuildUri: it should build the correct relative URI.")]
+  public void BuildUri_it_should_build_the_correct_relative_Uri()
+  {
+    string id = Guid.NewGuid().ToString();
+
+    _builder.SetScheme("https", inferPort: true);
+    _builder.SetCredentials(new Credentials("admin", "Test123!"));
+    _builder.SetHost("www.test.com");
+    _builder.SetPath("/people//{id}/");
+    _builder.AddQuery("ref", "1234567890");
+    _builder.AddQuery("q", "francis");
+    _builder.AddQuery("q", "pion");
+    _builder.SetFragment(" #  profile ");
+    _builder.SetParameter(" id ", id);
+
+    Uri uri = _builder.BuildUri(UriKind.Relative);
+    Assert.Equal($"/people/{id}?ref=1234567890&q=francis&q=pion#profile", uri.ToString());
+  }
+
+  [Fact(DisplayName = "BuildUri: it should throw ArgumentException when the kind is indeterminate.")]
+  public void BuildUri_it_should_throw_ArgumentException_when_the_kind_is_indeterminate()
+  {
+    var exception = Assert.Throws<ArgumentException>(() => _builder.BuildUri(UriKind.RelativeOrAbsolute));
+    Assert.StartsWith("The URL kind cannot be indeterminate.", exception.Message);
+    Assert.Equal("kind", exception.ParamName);
+  }
 
   [Fact(DisplayName = "ctor: it should construct the correct builder from an absolute URI.")]
   public void ctor_it_should_construct_the_correct_builder_from_an_absolute_Uri()
@@ -162,6 +308,69 @@ public class UrlBuilderTests
     }
   }
 
+  [Fact(DisplayName = "QueryString: it should return the correct query string.")]
+  public void QueryString_it_should_return_the_correct_query_string()
+  {
+    _builder.AddQuery("ids", "09782db2-1348-4135-943a-fcbdab80799f");
+    _builder.AddQuery("sort", "desc.UpdatedOn");
+    _builder.AddQuery("skip", string.Empty);
+    _builder.AddQuery(" ids ", " ee0545c1-de76-40f2-84ab-ad2574c71e0b ");
+    _builder.AddQuery("limit", "2");
+
+    string queryString = "?ids=09782db2-1348-4135-943a-fcbdab80799f&ids=ee0545c1-de76-40f2-84ab-ad2574c71e0b&sort=desc.UpdatedOn&limit=2";
+    Assert.Equal(queryString, _builder.QueryString);
+  }
+
+  [Theory(DisplayName = "SetAuthority: it should set the correct authority.")]
+  [InlineData("localhost", 8080)]
+  [InlineData(" www.test.com ", 443)]
+  [InlineData("www.test.com", 443, "admin")]
+  [InlineData("www.test.com", 443, "admin", "Test123!")]
+  public void SetAuthority_it_should_set_the_correct_authority(string host, ushort port, string? identifier = null, string? secret = null)
+  {
+    Credentials? credentials = identifier == null ? null : new(identifier, secret ?? string.Empty);
+    string authority = credentials == null ? $"{host.Trim()}:{port}" : $"{identifier}:{secret}@{host.Trim()}:{port}";
+    _builder.SetAuthority(authority);
+
+    Assert.Equal(host.Trim(), _builder.Host);
+    Assert.Equal(port, _builder.Port);
+
+    if (credentials == null)
+    {
+      Assert.Null(_builder.Credentials);
+    }
+    else
+    {
+      Assert.Equal(credentials, _builder.Credentials);
+    }
+  }
+
+  [Theory(DisplayName = "SetAuthority: it should set the correct authority without port.")]
+  [InlineData(null)]
+  [InlineData("")]
+  [InlineData("  ")]
+  [InlineData("localhost")]
+  [InlineData("  localhost  ")]
+  public void SetAuthority_it_should_set_the_correct_authority_without_port(string? host)
+  {
+    ushort port = 12345;
+    _builder.SetPort(port);
+
+    _builder.SetAuthority(host ?? string.Empty);
+    Assert.Null(_builder.Credentials);
+    Assert.Equal(string.IsNullOrWhiteSpace(host) ? UrlBuilder.DefaultHost : host.Trim(), _builder.Host);
+    Assert.Equal(port, _builder.Port);
+  }
+
+  [Fact(DisplayName = "SetAuthority: it should throw ArgumentException when it is not a valid authority.")]
+  public void SetAuthority_it_should_throw_ArgumentException_when_it_is_not_a_valid_authority()
+  {
+    string authority = "admin:P@s$W0rD@localhost:8080";
+    var exception = Assert.Throws<ArgumentException>(() => _builder.SetAuthority(authority));
+    Assert.StartsWith($"The value '{authority}' is not a valid URL authority.", exception.Message);
+    Assert.Equal("authority", exception.ParamName);
+  }
+
   [Theory(DisplayName = "SetCredentials: it should set the correct credentials.")]
   [InlineData("admin", "P@s$W0rD")]
   public void SetCredentials_it_should_set_the_correct_credentials(string identifier, string secret)
@@ -243,6 +452,8 @@ public class UrlBuilderTests
   [InlineData("  ")]
   public void SetParameter_it_should_throw_ArgumentException_when_the_key_is_null_or_white_space(string? key)
   {
+    Assert.True(string.IsNullOrWhiteSpace(key));
+
     var exception = Assert.Throws<ArgumentException>(() => _builder.SetParameter(key!, value: null));
     Assert.StartsWith("The parameter key is required.", exception.Message);
     Assert.Equal("key", exception.ParamName);
@@ -296,6 +507,8 @@ public class UrlBuilderTests
   [InlineData("  ")]
   public void SetQuery_it_should_not_set_a_query_parameter_when_the_key_is_null_or_white_space(string? key)
   {
+    Assert.True(string.IsNullOrWhiteSpace(key));
+
     string value = Guid.NewGuid().ToString();
     _builder.SetQuery("id", value);
     Assert.Equal([value], _builder.Query["id"]);
@@ -363,6 +576,33 @@ public class UrlBuilderTests
 
     _builder.SetQuery(key, values);
     Assert.Equal(cleanValues, _builder.Query[key.Trim()]);
+  }
+
+  [Theory(DisplayName = "SetQueryString: it should reset the query string when it is null or white space.")]
+  [InlineData(null)]
+  [InlineData("")]
+  [InlineData("?")]
+  [InlineData("  ")]
+  [InlineData(" ? ")]
+  public void SetQueryString_it_should_reset_the_query_string_when_it_is_null_or_white_space(string? queryString)
+  {
+    _builder.SetQuery("id", Guid.NewGuid().ToString());
+    Assert.NotEmpty(_builder.Query);
+
+    _builder.SetQueryString(queryString);
+    Assert.Empty(_builder.Query);
+  }
+
+  [Fact(DisplayName = "SetQueryString: it should set the correct query string.")]
+  public void SetQueryString_it_should_set_the_correct_query_string()
+  {
+    string queryString = "  ?ids=09782db2-1348-4135-943a-fcbdab80799f&sort=desc.UpdatedOn&skip=& ids = ee0545c1-de76-40f2-84ab-ad2574c71e0b &limit=2";
+    _builder.SetQueryString(queryString);
+
+    Assert.Equal(3, _builder.Query.Count);
+    Assert.Contains(_builder.Query, q => q.Key == "ids" && q.Value.SequenceEqual(["09782db2-1348-4135-943a-fcbdab80799f", "ee0545c1-de76-40f2-84ab-ad2574c71e0b"]));
+    Assert.Contains(_builder.Query, q => q.Key == "sort" && q.Value.SequenceEqual(["desc.UpdatedOn"]));
+    Assert.Contains(_builder.Query, q => q.Key == "limit" && q.Value.SequenceEqual(["2"]));
   }
 
   [Theory(DisplayName = "SetScheme: it should set the correct scheme and port.")]
