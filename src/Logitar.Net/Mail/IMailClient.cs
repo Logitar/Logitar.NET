@@ -1,6 +1,4 @@
-﻿using System.Net.Mail;
-
-namespace Logitar.Net.Mail;
+﻿namespace Logitar.Net.Mail;
 
 /// <summary>
 /// Defines methods to manage email messages.
