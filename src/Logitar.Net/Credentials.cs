@@ -31,4 +31,26 @@ public record Credentials : ICredentials
     Identifier = identifier;
     Secret = secret;
   }
+
+  /// <summary>
+  /// Parses credentials from the specified string, using the '{identifier}:{secret}' format.
+  /// </summary>
+  /// <param name="credentials">The credentials to parse.</param>
+  /// <returns>The parsed credentials.</returns>
+  public static Credentials? Parse(string? credentials)
+  {
+    credentials = credentials?.CleanTrim();
+    if (credentials == null)
+    {
+      return null;
+    }
+
+    int index = credentials.IndexOf(':');
+    if (index < 0)
+    {
+      return new Credentials(credentials, secret: string.Empty);
+    }
+
+    return new Credentials(credentials[..index], credentials[(index + 1)..]);
+  }
 }
