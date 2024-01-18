@@ -41,9 +41,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Security", "src\Log
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Security.UnitTests", "tests\Logitar.Security.UnitTests\Logitar.Security.UnitTests.csproj", "{111D6861-12F3-46C2-AFE1-94719834E6C9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Net", "src\Logitar.Net\Logitar.Net.csproj", "{33A1CD52-AA1C-40C9-9001-FB55A6ABFDA9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Net", "src\Logitar.Net\Logitar.Net.csproj", "{33A1CD52-AA1C-40C9-9001-FB55A6ABFDA9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Net.UnitTests", "tests\Logitar.Net.UnitTests\Logitar.Net.UnitTests.csproj", "{08C2CC46-9865-4500-B7F7-BC1BD1A505BB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Net.UnitTests", "tests\Logitar.Net.UnitTests\Logitar.Net.UnitTests.csproj", "{08C2CC46-9865-4500-B7F7-BC1BD1A505BB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demo", "Demo", "{202D8AE0-51C3-44C0-951D-CDF464D1FCFB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Demo", "demo\Logitar.Demo\Logitar.Demo.csproj", "{810DEC30-7D48-4B81-9668-AF78F21E7D53}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -107,6 +111,10 @@ Global
 		{08C2CC46-9865-4500-B7F7-BC1BD1A505BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{08C2CC46-9865-4500-B7F7-BC1BD1A505BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{08C2CC46-9865-4500-B7F7-BC1BD1A505BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{810DEC30-7D48-4B81-9668-AF78F21E7D53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{810DEC30-7D48-4B81-9668-AF78F21E7D53}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{810DEC30-7D48-4B81-9668-AF78F21E7D53}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{810DEC30-7D48-4B81-9668-AF78F21E7D53}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -120,6 +128,7 @@ Global
 		{75296C91-0FF6-44A5-901A-A2A1DD3F1905} = {746BA5D1-0E1A-4191-9645-88D14B1C69BF}
 		{111D6861-12F3-46C2-AFE1-94719834E6C9} = {746BA5D1-0E1A-4191-9645-88D14B1C69BF}
 		{08C2CC46-9865-4500-B7F7-BC1BD1A505BB} = {746BA5D1-0E1A-4191-9645-88D14B1C69BF}
+		{810DEC30-7D48-4B81-9668-AF78F21E7D53} = {202D8AE0-51C3-44C0-951D-CDF464D1FCFB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B0AA9E53-02AD-4000-8ED5-53AFF5D1B32D}
