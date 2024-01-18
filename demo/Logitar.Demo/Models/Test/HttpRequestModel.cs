@@ -10,7 +10,7 @@ public record HttpRequestModel
   public string Url { get; set; } = string.Empty;
   public string? Content { get; set; }
   public List<HttpHeader> Headers { get; set; } = [];
-  public IHttpAuthorization? Authorization { get; set; }
+  public HttpAuthorization? Authorization { get; set; }
 
   public static async Task<HttpRequestModel> FromRequestAsync(HttpRequest request, CancellationToken cancellationToken)
   {
