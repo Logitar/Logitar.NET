@@ -140,6 +140,7 @@ public class UrlBuilder : IUrlBuilder
   {
     Scheme = DefaultScheme;
     Host = DefaultHost;
+    Port = InferPort(Scheme);
   }
 
   /// <summary>
@@ -360,20 +361,23 @@ public class UrlBuilder : IUrlBuilder
   /// <returns>The URL builder.</returns>
   public virtual IUrlBuilder AddQuery(string key, IEnumerable<string> values)
   {
-    key = key.Trim();
-    if (QueryParameters.TryGetValue(key, out List<string>? existingValues))
+    if (!string.IsNullOrWhiteSpace(key))
     {
-      foreach (string value in values)
+      key = key.Trim();
+      if (QueryParameters.TryGetValue(key, out List<string>? existingValues))
       {
-        if (!string.IsNullOrWhiteSpace(value))
+        foreach (string value in values)
         {
-          existingValues.Add(value.Trim());
+          if (!string.IsNullOrWhiteSpace(value))
+          {
+            existingValues.Add(value.Trim());
+          }
         }
       }
-    }
-    else
-    {
-      SetQuery(key, values);
+      else
+      {
+        SetQuery(key, values);
+      }
     }
     return this;
   }
@@ -392,16 +396,26 @@ public class UrlBuilder : IUrlBuilder
   /// <returns>The URL builder.</returns>
   public virtual IUrlBuilder SetQuery(string key, IEnumerable<string> values)
   {
-    key = key.Trim();
-    List<string> queryValues = [];
-    foreach (string value in values)
+    if (!string.IsNullOrWhiteSpace(key))
     {
-      if (!string.IsNullOrWhiteSpace(value))
+      key = key.Trim();
+      List<string> queryValues = [];
+      foreach (string value in values)
       {
-        queryValues.Add(value.Trim());
+        if (!string.IsNullOrWhiteSpace(value))
+        {
+          queryValues.Add(value.Trim());
+        }
+      }
+      if (queryValues.Count > 0)
+      {
+        QueryParameters[key] = queryValues;
+      }
+      else
+      {
+        QueryParameters.Remove(key);
       }
     }
-    QueryParameters[key] = queryValues;
     return this;
   }
   /// <summary>
@@ -436,7 +450,8 @@ public class UrlBuilder : IUrlBuilder
   /// <returns>The URL builder.</returns>
   public virtual IUrlBuilder SetFragment(string? fragment)
   {
-    Fragment = fragment?.Trim().TrimStart('#').CleanTrim();
+    fragment = fragment?.Trim().TrimStart('#').CleanTrim();
+    Fragment = fragment == null ? null : string.Concat('#', fragment);
     return this;
   }
 
@@ -446,8 +461,14 @@ public class UrlBuilder : IUrlBuilder
   /// <param name="key">The key of the parameter.</param>
   /// <param name="value">The value of the parameter.</param>
   /// <returns>The URL builder.</returns>
+  /// <exception cref="ArgumentException">The parameter key is missing.</exception>
   public virtual IUrlBuilder SetParameter(string key, string? value)
   {
+    if (string.IsNullOrWhiteSpace(key))
+    {
+      throw new ArgumentException("The parameter key is required.", nameof(key));
+    }
+
     key = key.Trim();
     if (string.IsNullOrWhiteSpace(value))
     {
@@ -493,7 +514,7 @@ public class UrlBuilder : IUrlBuilder
 
     if (Fragment != null)
     {
-      url.Append('#').Append(Fragment);
+      url.Append(Fragment);
     }
 
     string urlString = url.ToString();
