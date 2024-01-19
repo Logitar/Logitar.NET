@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+Nothing yet.
+
+## [1.12.0] - 2024-01-19
+
 ### Added
 
 - Implemented HTTP utils and API clients.
@@ -145,7 +149,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Implemented StringExtensions.
 
-[unreleased]: https://github.com/Logitar/Logitar.NET/compare/v1.11.0...HEAD
+[unreleased]: https://github.com/Logitar/Logitar.NET/compare/v1.12.0...HEAD
+[1.12.0]: https://github.com/Logitar/Logitar.NET/compare/v1.11.0...v1.12.0
 [1.11.0]: https://github.com/Logitar/Logitar.NET/compare/v1.10.0...v1.11.0
 [1.10.0]: https://github.com/Logitar/Logitar.NET/compare/v1.9.0...v1.10.0
 [1.9.0]: https://github.com/Logitar/Logitar.NET/compare/v1.8.0...v1.9.0
