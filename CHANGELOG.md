@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-Nothing yet.
+### Added
+
+- Implemented HTTP utils and API clients.
 
 ## [1.11.0] - 2024-01-10
 
