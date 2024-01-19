@@ -3,10 +3,10 @@
 /// <summary>
 /// Implements the settings of the SendGrid API.
 /// </summary>
-public class SendGridSettings : ISendGridSettings
+public record SendGridSettings : ISendGridSettings
 {
   /// <summary>
-  /// Gets or sets the API key to authorize the SendGrid API calls.
+  /// Gets or sets the API key used to authorize the SendGrid API calls.
   /// </summary>
   public string? ApiKey { get; set; }
 
@@ -27,4 +27,20 @@ public class SendGridSettings : ISendGridSettings
     Method = "POST",
     Path = "/v3/mail/send"
   };
+
+  /// <summary>
+  /// Initializes a new instance of the <see cref="SendGridSettings"/> class.
+  /// </summary>
+  public SendGridSettings() : this(apiKey: null)
+  {
+  }
+
+  /// <summary>
+  /// Initializes a new instance of the <see cref="SendGridSettings"/> class.
+  /// </summary>
+  /// <param name="apiKey">The API key used to authorize the SendGrid API calls.</param>
+  public SendGridSettings(string? apiKey)
+  {
+    ApiKey = apiKey;
+  }
 }

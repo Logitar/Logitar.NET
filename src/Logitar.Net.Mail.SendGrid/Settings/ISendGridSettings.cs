@@ -6,7 +6,7 @@
 public interface ISendGridSettings
 {
   /// <summary>
-  /// Gets the API key to authorize the SendGrid API calls.
+  /// Gets the API key used to authorize the SendGrid API calls.
   /// </summary>
   string? ApiKey { get; }
 

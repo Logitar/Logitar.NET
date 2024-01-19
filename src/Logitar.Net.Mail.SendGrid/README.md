@@ -1,3 +1,3 @@
 # Logitar.Net.Mail.SendGrid
 
-TODO
+Enhances the System.Net.Mail namespace, using the SendGrid API for email management.

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -30,8 +30,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Using Include="System.Net" />
     <Using Include="System.Net.Mail" />
     <Using Include="System.Net.Mime" />
+    <Using Include="System.Reflection" />
+    <Using Include="System.Security.Cryptography" />
     <Using Include="Xunit" />
   </ItemGroup>
 

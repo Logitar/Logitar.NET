@@ -9,7 +9,7 @@
     <Title>Logitar.Net.Mail.SendGrid</Title>
     <Authors>Francis Pion</Authors>
     <Product>Logitar.NET</Product>
-    <Description>TODO</Description>
+    <Description>Enhances the System.Net.Mail namespace, using the SendGrid API for email management.</Description>
     <Copyright>© 2024 Logitar All Rights Reserved.</Copyright>
     <PackageIcon>logitar.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
@@ -22,7 +22,7 @@
     <Version>6.0.0</Version>
     <NeutralLanguage>en-CA</NeutralLanguage>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <PackageReleaseNotes>TODO</PackageReleaseNotes>
+    <PackageReleaseNotes>Implemented a SendGridClient.</PackageReleaseNotes>
     <PackageTags>logitar net framework http email sendgrid</PackageTags>
     <PackageProjectUrl>https://github.com/Logitar/Logitar.NET/tree/dev/src/Logitar.Net.Mail.SendGrid</PackageProjectUrl>
   </PropertyGroup>
@@ -47,6 +47,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Using Include="System.Net.Http.Json" />
     <Using Include="System.Net.Mail" />
     <Using Include="System.Net.Mime" />
     <Using Include="System.Text.Json.Serialization" />
