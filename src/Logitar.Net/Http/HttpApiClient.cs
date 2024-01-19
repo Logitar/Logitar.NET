@@ -9,15 +9,15 @@ public abstract class HttpApiClient<T> : IDisposable
   /// <summary>
   /// Gets or sets the HTTP client of this instance.
   /// </summary>
-  protected HttpClient Client { get; set; }
+  protected virtual HttpClient Client { get; set; }
   /// <summary>
   /// Gets or sets a value indicating whether or not to dispose the HTTP client when disposing this instance.
   /// </summary>
-  protected bool DisposeClient { get; set; } = false;
+  protected virtual bool DisposeClient { get; set; } = false;
   /// <summary>
   /// Gets or sets a value indicating whether or not to throw an <see cref="HttpFailureException{T}"/> when an HTTP response does not indicate success.
   /// </summary>
-  protected bool ThrowOnFailure { get; set; } = true;
+  protected virtual bool ThrowOnFailure { get; set; } = true;
 
   /// <summary>
   /// Initializes a new instance of the <see cref="HttpApiClient{T}"/> class.
@@ -60,7 +60,7 @@ public abstract class HttpApiClient<T> : IDisposable
   /// <summary>
   /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
   /// </summary>
-  public void Dispose()
+  public virtual void Dispose()
   {
     if (DisposeClient)
     {

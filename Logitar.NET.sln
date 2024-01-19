@@ -51,6 +51,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Demo", "demo\Logita
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Net.IntegrationTests", "tests\Logitar.Net.IntegrationTests\Logitar.Net.IntegrationTests.csproj", "{6F03DBDD-196D-463B-A1F8-DB6081981FBE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Net.Mail.SendGrid", "src\Logitar.Net.Mail.SendGrid\Logitar.Net.Mail.SendGrid.csproj", "{ECEF5AB1-2AB1-4564-84F6-BEB0729E7B8C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Net.Mail.SendGrid.UnitTests", "tests\Logitar.Net.Mail.SendGrid.UnitTests\Logitar.Net.Mail.SendGrid.UnitTests.csproj", "{8C98F0D3-E27B-4B0F-AB0F-DEE5AF3BAA48}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Net.Mail.SendGrid.IntegrationTests", "tests\Logitar.Net.Mail.SendGrid.IntegrationTests\Logitar.Net.Mail.SendGrid.IntegrationTests.csproj", "{8710CBF6-653F-4D52-929C-468A472EADEF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -121,6 +127,18 @@ Global
 		{6F03DBDD-196D-463B-A1F8-DB6081981FBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6F03DBDD-196D-463B-A1F8-DB6081981FBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6F03DBDD-196D-463B-A1F8-DB6081981FBE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ECEF5AB1-2AB1-4564-84F6-BEB0729E7B8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECEF5AB1-2AB1-4564-84F6-BEB0729E7B8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECEF5AB1-2AB1-4564-84F6-BEB0729E7B8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECEF5AB1-2AB1-4564-84F6-BEB0729E7B8C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C98F0D3-E27B-4B0F-AB0F-DEE5AF3BAA48}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C98F0D3-E27B-4B0F-AB0F-DEE5AF3BAA48}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C98F0D3-E27B-4B0F-AB0F-DEE5AF3BAA48}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C98F0D3-E27B-4B0F-AB0F-DEE5AF3BAA48}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8710CBF6-653F-4D52-929C-468A472EADEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8710CBF6-653F-4D52-929C-468A472EADEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8710CBF6-653F-4D52-929C-468A472EADEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8710CBF6-653F-4D52-929C-468A472EADEF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -136,6 +154,8 @@ Global
 		{08C2CC46-9865-4500-B7F7-BC1BD1A505BB} = {746BA5D1-0E1A-4191-9645-88D14B1C69BF}
 		{810DEC30-7D48-4B81-9668-AF78F21E7D53} = {202D8AE0-51C3-44C0-951D-CDF464D1FCFB}
 		{6F03DBDD-196D-463B-A1F8-DB6081981FBE} = {746BA5D1-0E1A-4191-9645-88D14B1C69BF}
+		{8C98F0D3-E27B-4B0F-AB0F-DEE5AF3BAA48} = {746BA5D1-0E1A-4191-9645-88D14B1C69BF}
+		{8710CBF6-653F-4D52-929C-468A472EADEF} = {746BA5D1-0E1A-4191-9645-88D14B1C69BF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B0AA9E53-02AD-4000-8ED5-53AFF5D1B32D}
