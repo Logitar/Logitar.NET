@@ -1,6 +1,6 @@
 ﻿namespace Logitar.Net.Http;
 
-internal class HttpApiClientMock : HttpApiClient
+public class HttpApiClientMock : HttpApiClient
 {
   public new HttpClient Client => base.Client;
   public new bool DisposeClient => base.DisposeClient;
@@ -27,8 +27,12 @@ internal class HttpApiClientMock : HttpApiClient
     return await base.BuildRequestAsync(parameters, cancellationToken);
   }
 
-  public new async Task<HttpApiResult> BuildResultAsync(HttpResponseMessage response, CancellationToken cancellationToken)
+  public async Task<HttpApiResult> BuildResultBaseAsync(HttpResponseMessage response, CancellationToken cancellationToken)
   {
     return await base.BuildResultAsync(response, cancellationToken);
+  }
+  protected override async Task<HttpApiResult> BuildResultAsync(HttpResponseMessage response, CancellationToken cancellationToken)
+  {
+    return await JsonApiResult.FromResponseAsync(response, cancellationToken);
   }
 }

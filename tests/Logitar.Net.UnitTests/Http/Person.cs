@@ -1,6 +1,6 @@
 ﻿namespace Logitar.Net.Http;
 
-internal record Person
+public record Person
 {
   public string FirstName { get; set; }
   public string LastName { get; set; }

@@ -1,6 +1,6 @@
 ﻿namespace Logitar.Net.Http;
 
-internal class JsonApiClientMock : JsonApiClient
+public class JsonApiClientMock : JsonApiClient
 {
   public new HttpClient Client => base.Client;
   public new bool DisposeClient => base.DisposeClient;

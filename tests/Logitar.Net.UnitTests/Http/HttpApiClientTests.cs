@@ -48,7 +48,7 @@ public class HttpApiClientTests
     response.Headers.Add("Timestamp", DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString());
 
     CancellationToken cancellationToken = default;
-    HttpApiResult result = await _client.BuildResultAsync(response, cancellationToken);
+    HttpApiResult result = await _client.BuildResultBaseAsync(response, cancellationToken);
 
     Assert.Equal(response.Version, result.Version);
     Assert.Equal(response.StatusCode, result.Status.Value);

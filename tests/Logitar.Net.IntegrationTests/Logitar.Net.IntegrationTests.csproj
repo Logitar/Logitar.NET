@@ -35,6 +35,7 @@
     <Using Include="System.Net.Http.Json" />
     <Using Include="System.Security.Cryptography" />
     <Using Include="System.Text.Json" />
+    <Using Include="System.Text.Json.Serialization" />
     <Using Include="Xunit" />
   </ItemGroup>
 
