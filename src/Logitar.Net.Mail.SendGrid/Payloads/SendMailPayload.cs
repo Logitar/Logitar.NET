@@ -56,7 +56,7 @@ public record SendMailPayload
   public SendMailPayload(MailMessage message)
   {
     MailAddress from = message.Sender ?? message.From
-      ?? throw new ArgumentException($"At least one of the following must be provided: {message.From}, {nameof(message.Sender)}.", nameof(message));
+      ?? throw new ArgumentException($"At least one of the following must be provided: {nameof(message.From)}, {nameof(message.Sender)}.", nameof(message));
 
     Personalizations.Add(new(message));
     From = new(from);
