@@ -38,7 +38,7 @@ public record ContentPayload
   /// <summary>
   /// Initializes a new instance of the <see cref="ContentPayload"/> class.
   /// </summary>
-  /// <param name="message">An email message.#</param>
+  /// <param name="message">An email message.</param>
   public ContentPayload(MailMessage message)
   {
     Type = message.IsBodyHtml ? MediaTypeNames.Text.Html : MediaTypeNames.Text.Plain;
