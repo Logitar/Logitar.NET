@@ -8,7 +8,7 @@ public class SendMailResultTests
   {
     SendMailResult result;
 
-    result = new(isSuccess: true);
+    result = new(succeeded: true);
     Assert.True(result.Succeeded);
     Assert.Empty(result.Data);
 
@@ -16,7 +16,7 @@ public class SendMailResultTests
     {
       ["Error"] = "Validation failed."
     };
-    result = new(isSuccess: false, data);
+    result = new(succeeded: false, data);
     Assert.False(result.Succeeded);
     Assert.Equal(data, result.Data);
   }

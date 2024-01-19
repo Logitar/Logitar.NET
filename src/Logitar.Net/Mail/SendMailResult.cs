@@ -18,11 +18,11 @@ public record SendMailResult
   /// <summary>
   /// Initializes a new instance of the <see cref="SendMailResult"/> class.
   /// </summary>
-  /// <param name="isSuccess">A value indicating whether or not the operation succeeded.</param>
+  /// <param name="succeeded">A value indicating whether or not the operation succeeded.</param>
   /// <param name="data">The result data.</param>
-  public SendMailResult(bool isSuccess, IDictionary<string, object?>? data = null)
+  public SendMailResult(bool succeeded, IDictionary<string, object?>? data = null)
   {
-    Succeeded = isSuccess;
+    Succeeded = succeeded;
     Data = (data ?? new Dictionary<string, object?>()).AsReadOnly();
   }
 
@@ -30,11 +30,11 @@ public record SendMailResult
   /// Initializes a new instance of the <see cref="SendMailResult"/> class with a failure status.
   /// </summary>
   /// <param name="data">The result data.</param>
-  public static SendMailResult Failure(IDictionary<string, object?>? data = null) => new(isSuccess: false, data);
+  public static SendMailResult Failure(IDictionary<string, object?>? data = null) => new(succeeded: false, data);
 
   /// <summary>
   /// Initializes a new instance of the <see cref="SendMailResult"/> class with a success status.
   /// </summary>
   /// <param name="data">The result data.</param>
-  public static SendMailResult Success(IDictionary<string, object?>? data = null) => new(isSuccess: true, data);
+  public static SendMailResult Success(IDictionary<string, object?>? data = null) => new(succeeded: true, data);
 }
