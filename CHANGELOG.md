@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Nothing yet.
 
+## [1.12.1] - 2024-01-20
+
+### Fixed
+
+- DateTime claim creation.
+
 ## [1.12.0] - 2024-01-19
 
 ### Added
@@ -149,7 +155,8 @@ Nothing yet.
 
 - Implemented StringExtensions.
 
-[unreleased]: https://github.com/Logitar/Logitar.NET/compare/v1.12.0...HEAD
+[unreleased]: https://github.com/Logitar/Logitar.NET/compare/v1.12.1...HEAD
+[1.12.1]: https://github.com/Logitar/Logitar.NET/compare/v1.12.0...v1.12.1
 [1.12.0]: https://github.com/Logitar/Logitar.NET/compare/v1.11.0...v1.12.0
 [1.11.0]: https://github.com/Logitar/Logitar.NET/compare/v1.10.0...v1.11.0
 [1.10.0]: https://github.com/Logitar/Logitar.NET/compare/v1.9.0...v1.10.0
