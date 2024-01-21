@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Nothing yet.
 
+## [1.12.2] - 2024-01-21
+
+### Fixed
+
+- DateTime claim creation again.
+
 ## [1.12.1] - 2024-01-20
 
 ### Fixed
