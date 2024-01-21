@@ -54,3 +54,5 @@ public static class ClaimHelper
     return DateTime.SpecifyKind(DateTimeOffset.FromUnixTimeSeconds(value).DateTime, DateTimeKind.Utc);
   }
 }
+
+// TODO(fpion): refactor to use DateTimeHelper
