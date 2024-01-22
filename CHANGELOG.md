@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Nothing yet.
 
+## [1.13.0] - 2024-01-21
+
+### Added
+
+- Added `GetBase64String` methods to `RandomStringGenerator`.
+- Implemented cryptographically strong string generation from a list of characters.
+
+### Changed
+
+- Improved performance of `RandomStringGenerator.GetString` method.
+
 ## [1.12.2] - 2024-01-21
 
 ### Fixed
@@ -161,7 +172,8 @@ Nothing yet.
 
 - Implemented StringExtensions.
 
-[unreleased]: https://github.com/Logitar/Logitar.NET/compare/v1.12.2...HEAD
+[unreleased]: https://github.com/Logitar/Logitar.NET/compare/v1.13.0...HEAD
+[1.13.0]: https://github.com/Logitar/Logitar.NET/compare/v1.12.2...v1.13.0
 [1.12.2]: https://github.com/Logitar/Logitar.NET/compare/v1.12.1...v1.12.2
 [1.12.1]: https://github.com/Logitar/Logitar.NET/compare/v1.12.0...v1.12.1
 [1.12.0]: https://github.com/Logitar/Logitar.NET/compare/v1.11.0...v1.12.0
