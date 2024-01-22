@@ -13,6 +13,27 @@ public abstract class RandomStringGenerator
   }
 
   /// <summary>
+  /// Creates a string with a cryptographically strong random sequence of 32 bytes (256 bits) converted to Base64.
+  /// </summary>
+  /// <param name="bytes">The generated cryptographically strong random sequence of bytes.</param>
+  /// <returns>The generated cryptographically strong Base64 string.</returns>
+  public static string GetBase64String(out byte[] bytes)
+  {
+    return GetBase64String(256 / 8, out bytes);
+  }
+  /// <summary>
+  /// Creates a string with a cryptographically strong random sequence of bytes converted to Base64.
+  /// </summary>
+  /// <param name="count">The number of bytes of random values to created.</param>
+  /// <param name="bytes">The generated cryptographically strong random sequence of bytes.</param>
+  /// <returns>The generated cryptographically strong Base64 string.</returns>
+  public static string GetBase64String(int count, out byte[] bytes)
+  {
+    bytes = RandomNumberGenerator.GetBytes(count);
+    return Convert.ToBase64String(bytes);
+  }
+
+  /// <summary>
   /// Creates a string with a cryptographically strong random sequence of characters. The characters will be selected randomly in the following string:
   /// <br />!"#$%&amp;'()*+,-./0123456789:;&lt;=&gt;?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~
   /// </summary>

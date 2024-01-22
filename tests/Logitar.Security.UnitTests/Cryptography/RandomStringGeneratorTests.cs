@@ -3,6 +3,16 @@
 [Trait(Traits.Category, Categories.Unit)]
 public class RandomStringGeneratorTests
 {
+  [Theory(DisplayName = "It should generate the correct Base64 string.")]
+  [InlineData(null)]
+  [InlineData(36)]
+  public void It_should_generate_the_correct_Base64_string(int? count = null)
+  {
+    string generated = count.HasValue ? RandomStringGenerator.GetBase64String(count.Value, out byte[] bytes) : RandomStringGenerator.GetBase64String(out bytes);
+    Assert.Equal(count ?? (256 / 8), bytes.Length);
+    Assert.Equal(Convert.ToBase64String(bytes), generated);
+  }
+
   [Theory(DisplayName = "It should generate the correct string.")]
   [InlineData(null)]
   [InlineData(20)]
