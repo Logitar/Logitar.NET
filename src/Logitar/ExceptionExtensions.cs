@@ -11,5 +11,10 @@ public static class ExceptionExtensions
   /// </summary>
   /// <param name="exception">The exception to format from.</param>
   /// <returns>The formatted error code.</returns>
-  public static string GetErrorCode(this Exception exception) => exception.GetType().Name.Remove(nameof(Exception));
+  public static string GetErrorCode(this Exception exception)
+  {
+    string code = exception.GetType().Name.Remove(nameof(Exception));
+    int index = code.IndexOf('`');
+    return index < 0 ? code : code[..index];
+  }
 }
