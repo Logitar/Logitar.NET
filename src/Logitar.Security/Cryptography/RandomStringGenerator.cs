@@ -34,7 +34,7 @@ public abstract class RandomStringGenerator
   }
 
   /// <summary>
-  /// Creates a string with a cryptographically strong random sequence of characters. The characters will be selected randomly in the following string:
+  /// Creates a string with a cryptographically strong random sequence of characters, selecting characters randomly in the following character set:
   /// <br />!"#$%&amp;'()*+,-./0123456789:;&lt;=&gt;?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~
   /// </summary>
   /// <param name="count">The number of characters of random values to create. Defaults to 32 characters (256 bits).</param>
@@ -44,7 +44,7 @@ public abstract class RandomStringGenerator
     return GetString("!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~", count);
   }
   /// <summary>
-  /// Creates a string with a cryptographically strong random sequence of characters from the specified list of characters.
+  /// Creates a string with a cryptographically strong random sequence of characters selected from the specified character set.
   /// </summary>
   /// <param name="characters">The list of characters to pick from.</param>
   /// <param name="count">The number of characters of random values to create. Defaults to 32 characters (256 bits).</param>

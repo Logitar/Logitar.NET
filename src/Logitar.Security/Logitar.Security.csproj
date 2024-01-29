@@ -15,14 +15,14 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/Logitar/Logitar.NET</RepositoryUrl>
-    <AssemblyVersion>6.1.0.0</AssemblyVersion>
+    <AssemblyVersion>6.1.1.0</AssemblyVersion>
     <FileVersion>$(AssemblyVersion)</FileVersion>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-    <Version>6.1.0</Version>
+    <Version>6.1.1</Version>
     <NeutralLanguage>en-CA</NeutralLanguage>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <PackageReleaseNotes>Refactored RandomStringGenerator and added GetBase64String methods.</PackageReleaseNotes>
+    <PackageReleaseNotes>Fixed documentation.</PackageReleaseNotes>
     <PackageTags>logitar net framework security</PackageTags>
     <PackageProjectUrl>https://github.com/Logitar/Logitar.NET/tree/dev/src/Logitar.Security</PackageProjectUrl>
   </PropertyGroup>
