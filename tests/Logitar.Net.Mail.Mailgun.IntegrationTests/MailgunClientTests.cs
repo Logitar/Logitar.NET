@@ -1,29 +1,29 @@
 ﻿using FluentValidation;
 using Logitar.Net.Http;
-using Logitar.Net.Mail.SendGrid.Settings;
+using Logitar.Net.Mail.Mailgun.Settings;
 using Microsoft.Extensions.Configuration;
 
-namespace Logitar.Net.Mail.SendGrid;
+namespace Logitar.Net.Mail.Mailgun;
 
 [Trait(Traits.Category, Categories.Integration)]
-public class SendGridClientTests : IDisposable
+public class MailgunClientTests : IDisposable
 {
   private readonly CancellationToken _cancellationToken = default;
 
-  private readonly SendGridTestSettings _settings;
-  private readonly SendGridClient _client;
+  private readonly MailgunTestSettings _settings;
+  private readonly MailgunClient _client;
 
-  public SendGridClientTests()
+  public MailgunClientTests()
   {
     IConfiguration configuration = new ConfigurationBuilder()
       .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
-      .AddUserSecrets("0186de17-901c-4f62-b4ae-99c208289df8")
+      .AddUserSecrets("e30e27d5-0d3b-47b4-8e2d-c819041f66cf")
       .Build();
 
-    _settings = configuration.Get<SendGridTestSettings>() ?? new();
-    new SendGridTestValidator().ValidateAndThrow(_settings);
+    _settings = configuration.Get<MailgunTestSettings>() ?? new();
+    new MailgunTestValidator().ValidateAndThrow(_settings);
 
-    _client = new(_settings.ApiKey);
+    _client = new(_settings.ApiKey, _settings.DomainName);
   }
 
   public void Dispose()
@@ -56,10 +56,17 @@ public class SendGridClientTests : IDisposable
     SendMailResult result = await _client.SendAsync(message, _cancellationToken);
     Assert.True(result.Succeeded);
     Assert.Equal(new Version(1, 1), result.Data["Version"]);
-    Assert.Equal(new HttpStatus(HttpStatusCode.Accepted), result.Data["Status"]);
-    Assert.Equal(HttpStatusCode.Accepted.ToString(), result.Data["ReasonPhrase"]);
+    Assert.Equal(new HttpStatus(HttpStatusCode.OK), result.Data["Status"]);
+    Assert.Equal(HttpStatusCode.OK.ToString(), result.Data["ReasonPhrase"]);
     Assert.True(result.Data.ContainsKey("Headers"));
     Assert.True(result.Data.ContainsKey("TrailingHeaders"));
-    Assert.Null(result.Data["JsonContent"]);
+
+    Assert.True(result.Data.ContainsKey("JsonContent"));
+    string? jsonContent = result.Data["JsonContent"] as string;
+    Assert.NotNull(jsonContent);
+    MailgunSendMessageResult? response = JsonSerializer.Deserialize<MailgunSendMessageResult>(jsonContent);
+    Assert.NotNull(response);
+    Assert.NotNull(response.Id);
+    Assert.NotNull(response.Message);
   }
 }

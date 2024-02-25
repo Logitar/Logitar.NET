@@ -83,22 +83,22 @@ public class MailgunClient : IDisposable, IMailClient
 
     MultipartFormDataContent content = new()
     {
-      { new StringContent("from"), from.ToString() }, // TODO(fpion): will this work?
-      { new StringContent("subject"), message.Subject },
-      { new StringContent(message.IsBodyHtml ? "html" : "text"), message.Body }
+      { new StringContent(from.ToString()), "from" }, // TODO(fpion): will this work?
+      { new StringContent(message.Subject), "subject" },
+      { new StringContent(message.Body), message.IsBodyHtml ? "html" : "text" },
     };
 
     foreach (MailAddress recipient in message.To)
     {
-      content.Add(new StringContent("to"), recipient.ToString()); // TODO(fpion): will this work?
+      content.Add(new StringContent(recipient.ToString()), "to"); // TODO(fpion): will this work?
     }
     foreach (MailAddress recipient in message.CC)
     {
-      content.Add(new StringContent("cc"), recipient.ToString());
+      content.Add(new StringContent(recipient.ToString()), "cc");
     }
-    foreach (MailAddress recipient in message.To)
+    foreach (MailAddress recipient in message.Bcc)
     {
-      content.Add(new StringContent("bcc"), recipient.ToString());
+      content.Add(new StringContent(recipient.ToString()), "bcc");
     }
 
     EndPointSettings endPoint = Settings.SendMail;
