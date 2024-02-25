@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+Nothing yet.
+
+## [1.14.0] - 2024-02-25
+
 ### Added
 
 - Implemented a MailgunClient.
@@ -185,7 +189,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Implemented StringExtensions.
 
-[unreleased]: https://github.com/Logitar/Logitar.NET/compare/v1.13.1...HEAD
+[unreleased]: https://github.com/Logitar/Logitar.NET/compare/v1.14.0...HEAD
+[1.14.0]: https://github.com/Logitar/Logitar.NET/compare/v1.13.1...v1.14.0
 [1.13.1]: https://github.com/Logitar/Logitar.NET/compare/v1.13.0...v1.13.1
 [1.13.0]: https://github.com/Logitar/Logitar.NET/compare/v1.12.2...v1.13.0
 [1.12.2]: https://github.com/Logitar/Logitar.NET/compare/v1.12.1...v1.12.2
