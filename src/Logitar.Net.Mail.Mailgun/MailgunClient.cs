@@ -83,14 +83,14 @@ public class MailgunClient : IDisposable, IMailClient
 
     MultipartFormDataContent content = new()
     {
-      { new StringContent(from.ToString()), "from" }, // TODO(fpion): will this work?
+      { new StringContent(from.ToString()), "from" },
       { new StringContent(message.Subject), "subject" },
       { new StringContent(message.Body), message.IsBodyHtml ? "html" : "text" },
     };
 
     foreach (MailAddress recipient in message.To)
     {
-      content.Add(new StringContent(recipient.ToString()), "to"); // TODO(fpion): will this work?
+      content.Add(new StringContent(recipient.ToString()), "to");
     }
     foreach (MailAddress recipient in message.CC)
     {
