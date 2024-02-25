@@ -1,10 +1,13 @@
-﻿using Logitar.Net.Http;
+﻿using Bogus;
+using Logitar.Net.Http;
 
-namespace Logitar.Net.Mail.SendGrid.Settings;
+namespace Logitar.Net.Mail.Mailgun.Settings;
 
 [Trait(Traits.Category, Categories.Unit)]
-public class SendGridSettingsExtensionsTests
+public class MailgunSettingsExtensionsTests
 {
+  private readonly Faker _faker = new();
+
   [Theory(DisplayName = "ToHttpApiSettings: authorization should be null when the API key is null.")]
   [InlineData(null)]
   [InlineData("")]
@@ -13,7 +16,7 @@ public class SendGridSettingsExtensionsTests
   {
     Assert.True(string.IsNullOrWhiteSpace(apiKey));
 
-    SendGridSettings settings = new(apiKey);
+    MailgunSettings settings = new(apiKey, _faker.Internet.DomainName());
     IHttpApiSettings apiSettings = settings.ToHttpApiSettings();
     Assert.Null(apiSettings.Authorization);
   }
@@ -21,12 +24,17 @@ public class SendGridSettingsExtensionsTests
   [Fact(DisplayName = "ToHttpApiSettings: it should return the correct HTTP API settings.")]
   public void ToHttpApiSettings_it_should_return_the_correct_Http_Api_settings()
   {
-    SendGridSettings settings = new(SendGridHelper.GenerateApiKey());
+    MailgunSettings settings = new(MailgunHelper.GenerateApiKey(), _faker.Internet.DomainName());
     IHttpApiSettings apiSettings = settings.ToHttpApiSettings();
     Assert.Equal(settings.BaseUri, apiSettings.BaseUri);
 
     Assert.NotNull(apiSettings.Authorization);
-    Assert.Equal(Http.AuthenticationSchemes.Bearer, apiSettings.Authorization.Scheme);
-    Assert.Equal(settings.ApiKey, apiSettings.Authorization.Credentials);
+    Assert.Equal(Http.AuthenticationSchemes.Basic, apiSettings.Authorization.Scheme);
+
+    Assert.NotNull(apiSettings.Authorization.Credentials);
+    Credentials? credentials = Credentials.Parse(Encoding.ASCII.GetString(Convert.FromBase64String(apiSettings.Authorization.Credentials)));
+    Assert.NotNull(credentials);
+    Assert.Equal(settings.Username, credentials.Identifier);
+    Assert.Equal(settings.Password, credentials.Secret);
   }
 }

@@ -1,6 +1,6 @@
 ﻿namespace Logitar.Net.Mail.SendGrid;
 
-internal static class IntegrationTestHelper
+internal static class SendGridHelper
 {
   public static string GenerateApiKey()
   {
