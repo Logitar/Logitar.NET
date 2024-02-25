@@ -47,15 +47,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Net.UnitTests", "te
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demo", "Demo", "{202D8AE0-51C3-44C0-951D-CDF464D1FCFB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Demo", "demo\Logitar.Demo\Logitar.Demo.csproj", "{810DEC30-7D48-4B81-9668-AF78F21E7D53}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Demo", "demo\Logitar.Demo\Logitar.Demo.csproj", "{810DEC30-7D48-4B81-9668-AF78F21E7D53}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Net.IntegrationTests", "tests\Logitar.Net.IntegrationTests\Logitar.Net.IntegrationTests.csproj", "{6F03DBDD-196D-463B-A1F8-DB6081981FBE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Net.IntegrationTests", "tests\Logitar.Net.IntegrationTests\Logitar.Net.IntegrationTests.csproj", "{6F03DBDD-196D-463B-A1F8-DB6081981FBE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Net.Mail.SendGrid", "src\Logitar.Net.Mail.SendGrid\Logitar.Net.Mail.SendGrid.csproj", "{ECEF5AB1-2AB1-4564-84F6-BEB0729E7B8C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Net.Mail.SendGrid", "src\Logitar.Net.Mail.SendGrid\Logitar.Net.Mail.SendGrid.csproj", "{ECEF5AB1-2AB1-4564-84F6-BEB0729E7B8C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Net.Mail.SendGrid.UnitTests", "tests\Logitar.Net.Mail.SendGrid.UnitTests\Logitar.Net.Mail.SendGrid.UnitTests.csproj", "{8C98F0D3-E27B-4B0F-AB0F-DEE5AF3BAA48}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Net.Mail.SendGrid.UnitTests", "tests\Logitar.Net.Mail.SendGrid.UnitTests\Logitar.Net.Mail.SendGrid.UnitTests.csproj", "{8C98F0D3-E27B-4B0F-AB0F-DEE5AF3BAA48}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Net.Mail.SendGrid.IntegrationTests", "tests\Logitar.Net.Mail.SendGrid.IntegrationTests\Logitar.Net.Mail.SendGrid.IntegrationTests.csproj", "{8710CBF6-653F-4D52-929C-468A472EADEF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Net.Mail.SendGrid.IntegrationTests", "tests\Logitar.Net.Mail.SendGrid.IntegrationTests\Logitar.Net.Mail.SendGrid.IntegrationTests.csproj", "{8710CBF6-653F-4D52-929C-468A472EADEF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Net.Mail.Mailgun", "src\Logitar.Net.Mail.Mailgun\Logitar.Net.Mail.Mailgun.csproj", "{D2B2B2D0-577E-422D-A3DF-68E38ABB382A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -139,6 +141,10 @@ Global
 		{8710CBF6-653F-4D52-929C-468A472EADEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8710CBF6-653F-4D52-929C-468A472EADEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8710CBF6-653F-4D52-929C-468A472EADEF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2B2B2D0-577E-422D-A3DF-68E38ABB382A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2B2B2D0-577E-422D-A3DF-68E38ABB382A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2B2B2D0-577E-422D-A3DF-68E38ABB382A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2B2B2D0-577E-422D-A3DF-68E38ABB382A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

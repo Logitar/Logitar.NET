@@ -6,10 +6,10 @@
     <Nullable>enable</Nullable>
     <WarningsAsErrors>Nullable</WarningsAsErrors>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Title>Logitar.Net.Mail.SendGrid</Title>
+    <Title>Logitar.Net.Mail.Mailgun</Title>
     <Authors>Francis Pion</Authors>
     <Product>Logitar.NET</Product>
-    <Description>Enhances the System.Net.Mail namespace, using the SendGrid API for email management.</Description>
+    <Description>Enhances the System.Net.Mail namespace, using the Mailgun API for email management.</Description>
     <Copyright>© 2024 Logitar All Rights Reserved.</Copyright>
     <PackageIcon>logitar.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
@@ -22,9 +22,9 @@
     <Version>6.0.0</Version>
     <NeutralLanguage>en-CA</NeutralLanguage>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <PackageReleaseNotes>Implemented a SendGridClient.</PackageReleaseNotes>
-    <PackageTags>logitar net framework http email sendgrid</PackageTags>
-    <PackageProjectUrl>https://github.com/Logitar/Logitar.NET/tree/dev/src/Logitar.Net.Mail.SendGrid</PackageProjectUrl>
+    <PackageReleaseNotes>Implemented a MailgunClient.</PackageReleaseNotes>
+    <PackageTags>logitar net framework http email mailgun</PackageTags>
+    <PackageProjectUrl>https://github.com/Logitar/Logitar.NET/tree/dev/src/Logitar.Net.Mail.Mailgun</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
@@ -47,10 +47,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Using Include="System.Net.Http.Json" />
     <Using Include="System.Net.Mail" />
-    <Using Include="System.Net.Mime" />
-    <Using Include="System.Text.Json.Serialization" />
   </ItemGroup>
 
 </Project>
