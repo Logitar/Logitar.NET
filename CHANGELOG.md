@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+Nothing yet.
+
+## [1.15.0] - 2024-03-03
+
 ### Added
 
 - Implemented the Mask string extension method.
@@ -191,7 +195,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Implemented StringExtensions.
 
-[unreleased]: https://github.com/Logitar/Logitar.NET/compare/v1.14.0...HEAD
+[unreleased]: https://github.com/Logitar/Logitar.NET/compare/v1.15.0...HEAD
+[1.15.0]: https://github.com/Logitar/Logitar.NET/compare/v1.14.0...v1.15.0
 [1.14.0]: https://github.com/Logitar/Logitar.NET/compare/v1.13.1...v1.14.0
 [1.13.1]: https://github.com/Logitar/Logitar.NET/compare/v1.13.0...v1.13.1
 [1.13.0]: https://github.com/Logitar/Logitar.NET/compare/v1.12.2...v1.13.0
