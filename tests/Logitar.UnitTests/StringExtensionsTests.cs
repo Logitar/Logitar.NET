@@ -7,9 +7,9 @@ public class StringExtensionsTests
   [InlineData(null)]
   [InlineData("")]
   [InlineData("  ")]
-  public void CleanTrim_it_returns_null_if_string_is_null_empty_or_only_white_space(string s)
+  public void CleanTrim_it_returns_null_if_string_is_null_empty_or_only_white_space(string? s)
   {
-    Assert.Null(s.CleanTrim());
+    Assert.Null(s!.CleanTrim());
   }
 
   [Theory(DisplayName = "CleanTrim: it returns trimmed string if it is not null, empty, or only white space.")]
@@ -29,6 +29,16 @@ public class StringExtensionsTests
     string s = Convert.ToBase64String(bytes).ToUriSafeBase64();
     byte[] other = Convert.FromBase64String(s.FromUriSafeBase64());
     Assert.Equal(bytes, other);
+  }
+
+  [Theory(DisplayName = "Mask: it returns the correct masked string.")]
+  [InlineData("    ")]
+  [InlineData("P@s$W0rD", '-')]
+  public void Mask_it_returns_the_correct_masked_string(string originalString, char? mask = null)
+  {
+    string expectedString = new(originalString.Select(c => mask ?? '*').ToArray());
+    string maskedString = mask.HasValue ? originalString.Mask(mask.Value) : originalString.Mask();
+    Assert.Equal(expectedString, maskedString);
   }
 
   [Theory(DisplayName = "Remove: it returns the same string if no occurrence of the pattern.")]

@@ -34,6 +34,19 @@ public static class StringExtensions
   public static string ToUriSafeBase64(this string s) => s.Replace('+', '-').Replace('/', '_').TrimEnd('=');
 
   /// <summary>
+  /// Returns a new string where every character of the specified string has been replaced by the specified mask character (defaults to '*').
+  /// </summary>
+  /// <param name="s">The original string.</param>
+  /// <param name="mask">The mask character (defaults to '*').</param>
+  /// <returns>The masked string.</returns>
+  public static string Mask(this string s, char mask = '*')
+  {
+    char[] masked = new char[s.Length];
+    Array.Fill(masked, mask);
+    return new string(masked);
+  }
+
+  /// <summary>
   /// Removes all occurrences of the specified pattern from the specified string.
   /// </summary>
   /// <param name="s">The string to remove the pattern.</param>
