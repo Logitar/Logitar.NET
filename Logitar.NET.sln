@@ -59,9 +59,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Net.Mail.SendGrid.I
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Net.Mail.Mailgun", "src\Logitar.Net.Mail.Mailgun\Logitar.Net.Mail.Mailgun.csproj", "{D2B2B2D0-577E-422D-A3DF-68E38ABB382A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Net.Mail.Mailgun.UnitTests", "tests\Logitar.Net.Mail.Mailgun.UnitTests\Logitar.Net.Mail.Mailgun.UnitTests.csproj", "{5AB2A6A7-9CCA-4ADA-B4AE-81C668D1D412}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Net.Mail.Mailgun.UnitTests", "tests\Logitar.Net.Mail.Mailgun.UnitTests\Logitar.Net.Mail.Mailgun.UnitTests.csproj", "{5AB2A6A7-9CCA-4ADA-B4AE-81C668D1D412}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Net.Mail.Mailgun.IntegrationTests", "tests\Logitar.Net.Mail.Mailgun.IntegrationTests\Logitar.Net.Mail.Mailgun.IntegrationTests.csproj", "{C9D19807-4BB8-4C5F-9744-9B381FE21DC7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Net.Mail.Mailgun.IntegrationTests", "tests\Logitar.Net.Mail.Mailgun.IntegrationTests\Logitar.Net.Mail.Mailgun.IntegrationTests.csproj", "{C9D19807-4BB8-4C5F-9744-9B381FE21DC7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Net.Sms.Twilio", "src\Logitar.Net.Sms.Twilio\Logitar.Net.Sms.Twilio.csproj", "{5B3D2DBD-F2AE-4B30-A5DA-B0A330D0DC32}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Net.Sms.Twilio.UnitTests", "tests\Logitar.Net.Sms.Twilio.UnitTests\Logitar.Net.Sms.Twilio.UnitTests.csproj", "{628AF6B3-4C97-4E65-B808-D5BAF74BCAEF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Net.Sms.Twilio.IntegrationTests", "tests\Logitar.Net.Sms.Twilio.IntegrationTests\Logitar.Net.Sms.Twilio.IntegrationTests.csproj", "{1EABF5F9-E504-4C2C-B5CC-3CD33B27C041}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -157,6 +163,18 @@ Global
 		{C9D19807-4BB8-4C5F-9744-9B381FE21DC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C9D19807-4BB8-4C5F-9744-9B381FE21DC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C9D19807-4BB8-4C5F-9744-9B381FE21DC7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B3D2DBD-F2AE-4B30-A5DA-B0A330D0DC32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B3D2DBD-F2AE-4B30-A5DA-B0A330D0DC32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B3D2DBD-F2AE-4B30-A5DA-B0A330D0DC32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B3D2DBD-F2AE-4B30-A5DA-B0A330D0DC32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{628AF6B3-4C97-4E65-B808-D5BAF74BCAEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{628AF6B3-4C97-4E65-B808-D5BAF74BCAEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{628AF6B3-4C97-4E65-B808-D5BAF74BCAEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{628AF6B3-4C97-4E65-B808-D5BAF74BCAEF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1EABF5F9-E504-4C2C-B5CC-3CD33B27C041}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1EABF5F9-E504-4C2C-B5CC-3CD33B27C041}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1EABF5F9-E504-4C2C-B5CC-3CD33B27C041}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1EABF5F9-E504-4C2C-B5CC-3CD33B27C041}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -176,6 +194,8 @@ Global
 		{8710CBF6-653F-4D52-929C-468A472EADEF} = {746BA5D1-0E1A-4191-9645-88D14B1C69BF}
 		{5AB2A6A7-9CCA-4ADA-B4AE-81C668D1D412} = {746BA5D1-0E1A-4191-9645-88D14B1C69BF}
 		{C9D19807-4BB8-4C5F-9744-9B381FE21DC7} = {746BA5D1-0E1A-4191-9645-88D14B1C69BF}
+		{628AF6B3-4C97-4E65-B808-D5BAF74BCAEF} = {746BA5D1-0E1A-4191-9645-88D14B1C69BF}
+		{1EABF5F9-E504-4C2C-B5CC-3CD33B27C041} = {746BA5D1-0E1A-4191-9645-88D14B1C69BF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B0AA9E53-02AD-4000-8ED5-53AFF5D1B32D}

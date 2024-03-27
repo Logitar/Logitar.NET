@@ -7,7 +7,7 @@
 
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
-    <RootNamespace>Logitar.Net</RootNamespace>
+    <RootNamespace>Logitar.Net.Sms.Twilio</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -19,30 +19,29 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
-    <PackageReference Include="xunit" Version="2.6.6" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.5.6">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    <PackageReference Include="coverlet.collector" Version="6.0.2">
       <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="coverlet.collector" Version="6.0.0">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
+    <PackageReference Include="xunit" Version="2.7.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.5.7">
       <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Logitar.Net\Logitar.Net.csproj" />
+    <ProjectReference Include="..\..\src\Logitar.Net.Sms.Twilio\Logitar.Net.Sms.Twilio.csproj" />
     <ProjectReference Include="..\Logitar.UnitTests\Logitar.UnitTests.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Using Include="System.Net" />
-    <Using Include="System.Net.Http.Headers" />
-    <Using Include="System.Net.Http.Json" />
     <Using Include="System.Net.Mime" />
+    <Using Include="System.Reflection" />
+    <Using Include="System.Security.Cryptography" />
     <Using Include="System.Text" />
-    <Using Include="System.Text.Json" />
     <Using Include="Xunit" />
   </ItemGroup>
 
