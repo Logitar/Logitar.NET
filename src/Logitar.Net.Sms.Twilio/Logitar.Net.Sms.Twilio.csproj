@@ -5,25 +5,25 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Title>Logitar.Net</Title>
+    <Title>Logitar.Net.Sms.Twilio</Title>
     <Authors>Francis Pion</Authors>
     <Product>Logitar.NET</Product>
-    <Description>Enhances the System.Net namespace.</Description>
+    <Description>Enhances the System.Net namespace, using the Twilio API for text-message management.</Description>
     <Copyright>© 2024 Logitar All Rights Reserved.</Copyright>
     <PackageIcon>logitar.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/Logitar/Logitar.NET</RepositoryUrl>
-    <AssemblyVersion>6.1.0.0</AssemblyVersion>
+    <AssemblyVersion>6.0.0.0</AssemblyVersion>
     <FileVersion>$(AssemblyVersion)</FileVersion>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-    <Version>6.1.0</Version>
+    <Version>6.0.0</Version>
     <NeutralLanguage>en-CA</NeutralLanguage>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <PackageReleaseNotes>Created a SmsClient interface.</PackageReleaseNotes>
-    <PackageTags>logitar net framework http email</PackageTags>
-    <PackageProjectUrl>https://github.com/Logitar/Logitar.NET/tree/main/src/Logitar.Net</PackageProjectUrl>
+    <PackageReleaseNotes>Implemented a TwilioClient.</PackageReleaseNotes>
+    <PackageTags>logitar net framework http sms text message twilio</PackageTags>
+    <PackageProjectUrl>https://github.com/Logitar/Logitar.NET/tree/main/src/Logitar.Net.Sms.Twilio</PackageProjectUrl>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -35,7 +35,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Logitar\Logitar.csproj" />
+    <ProjectReference Include="..\Logitar.Net\Logitar.Net.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -51,16 +51,6 @@
       <PackagePath>\</PackagePath>
       <Pack>True</Pack>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Using Include="System.Net" />
-    <Using Include="System.Net.Http.Headers" />
-    <Using Include="System.Net.Http.Json" />
-    <Using Include="System.Net.Mail" />
-    <Using Include="System.Text" />
-    <Using Include="System.Text.Json" />
-    <Using Include="System.Text.Json.Serialization" />
   </ItemGroup>
 
 </Project>
