@@ -14,16 +14,16 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/Logitar/Logitar.NET</RepositoryUrl>
-    <AssemblyVersion>6.0.0.0</AssemblyVersion>
+    <AssemblyVersion>6.1.0.0</AssemblyVersion>
     <FileVersion>$(AssemblyVersion)</FileVersion>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-    <Version>6.0.0</Version>
+    <Version>6.1.0</Version>
     <NeutralLanguage>en-CA</NeutralLanguage>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <PackageReleaseNotes>Implemented HTTP and email utils.</PackageReleaseNotes>
+    <PackageReleaseNotes>Created a SmsClient interface.</PackageReleaseNotes>
     <PackageTags>logitar net framework http email</PackageTags>
-    <PackageProjectUrl>https://github.com/Logitar/Logitar.NET/tree/dev/src/Logitar.Net</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/Logitar/Logitar.NET/tree/main/src/Logitar.Net</PackageProjectUrl>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
