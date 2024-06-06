@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace Logitar.Net.Sms.Twilio;
+﻿namespace Logitar.Net.Sms.Twilio;
 
 internal record TwilioCreateMessageResult
 {

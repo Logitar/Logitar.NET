@@ -7,7 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-Nothing yet.
+### Changed
+
+- `Logitar` class library now targets .NET Standard 2.1.
+
+### Fixed
+
+- System usings.
 
 ## [1.16.0] - 2024-03-26
 
