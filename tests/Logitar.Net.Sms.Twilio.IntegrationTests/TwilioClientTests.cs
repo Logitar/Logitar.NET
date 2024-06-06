@@ -2,8 +2,6 @@
 using Logitar.Net.Http;
 using Logitar.Net.Sms.Twilio.Settings;
 using Microsoft.Extensions.Configuration;
-using System.Net;
-using System.Text.Json;
 
 namespace Logitar.Net.Sms.Twilio;
 
