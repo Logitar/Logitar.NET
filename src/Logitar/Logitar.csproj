@@ -15,14 +15,14 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/Logitar/Logitar.NET</RepositoryUrl>
-    <AssemblyVersion>6.2.0.0</AssemblyVersion>
+    <AssemblyVersion>6.3.0.0</AssemblyVersion>
     <FileVersion>$(AssemblyVersion)</FileVersion>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-    <Version>6.2.0</Version>
+    <Version>6.3.0</Version>
     <NeutralLanguage>en-CA</NeutralLanguage>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <PackageReleaseNotes>Now targeting .NET Standard 2.1.</PackageReleaseNotes>
+    <PackageReleaseNotes>Added DateTimeExtensions and upgraded NuGet.</PackageReleaseNotes>
     <PackageTags>logitar net framework</PackageTags>
     <PackageProjectUrl>https://github.com/Logitar/Logitar.NET/tree/dev/src/Logitar</PackageProjectUrl>
   </PropertyGroup>
@@ -36,7 +36,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Text.Json" Version="8.0.3" />
+    <PackageReference Include="System.Text.Json" Version="8.0.4" />
   </ItemGroup>
 
   <ItemGroup>
@@ -56,6 +56,7 @@
 
   <ItemGroup>
     <Using Include="System.Collections" />
+    <Using Include="System.Globalization" />
     <Using Include="System.Text.Json" />
   </ItemGroup>
 
