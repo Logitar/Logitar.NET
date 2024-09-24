@@ -9,10 +9,27 @@ public record ColumnId
   /// Initializes a new instance of the <see cref="ColumnId"/> class.
   /// </summary>
   /// <param name="name">The name of the column.</param>
+  /// <exception cref="ArgumentException">The column name was missing.</exception>
+  public ColumnId(string name) : this(name, table: null)
+  {
+  }
+  /// <summary>
+  /// Initializes a new instance of the <see cref="ColumnId"/> class.
+  /// </summary>
+  /// <param name="name">The name of the column.</param>
+  /// <param name="table">The table in which the column is.</param>
+  /// <exception cref="ArgumentException">The column name was missing.</exception>
+  public ColumnId(string name, TableId? table) : this(name, table, alias: null)
+  {
+  }
+  /// <summary>
+  /// Initializes a new instance of the <see cref="ColumnId"/> class.
+  /// </summary>
+  /// <param name="name">The name of the column.</param>
   /// <param name="table">The table in which the column is.</param>
   /// <param name="alias">The alias of the column.</param>
   /// <exception cref="ArgumentException">The column name was missing.</exception>
-  public ColumnId(string name, TableId? table = null, string? alias = null) : this(table)
+  public ColumnId(string name, TableId? table, string? alias) : this(table)
   {
     if (string.IsNullOrWhiteSpace(name))
     {
