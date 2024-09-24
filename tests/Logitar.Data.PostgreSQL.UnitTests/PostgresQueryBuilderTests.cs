@@ -19,11 +19,11 @@ public class PostgresQueryBuilderTests
   {
     ColumnId priority = new("Priority", _table);
     ColumnId id = new($"{_table.Table}Id", _table);
+    ColumnId value = new("Value", _table, alias: "val");
     TableId tasks = new("MesTâches", "t");
     Assert.NotNull(id.Name);
 
-    IQuery query = _builder
-      .Select(ColumnId.All(), id)
+    IQuery query = _builder.Select(ColumnId.All(), id, value)
       .Join(new ColumnId(id.Name, tasks), id, new OperatorCondition(new ColumnId("IsClosed", tasks), Operators.IsEqualTo(false)))
       .FullJoin(new ColumnId("ProjectId", new TableId("MesProjets")), new ColumnId("ProjectId", _table))
       .LeftJoin(new ColumnId("ProjectId", new TableId("MesCommentaires")), new ColumnId("ProjectId", _table))
@@ -36,24 +36,24 @@ public class PostgresQueryBuilderTests
       .Where(new OperatorCondition(id, Operators.IsNotIn(7, 49, 343)))
       .Where(new OperatorCondition(new ColumnId("Trace"), Operators.IsLike("%fail%")))
       .Where(new OperatorCondition(new ColumnId("Trace"), PostgresOperators.IsNotLikeInsensitive("%fail%")))
+      .Where(new OperatorCondition(value, Operators.IsNotNull()))
       .OrderBy(
         new OrderBy(new ColumnId("DisplayName", _table)),
         new OrderBy(new ColumnId("UpdatedOn"), isDescending: true)
       )
       .Build();
     string text = string.Join(Environment.NewLine,
-      @"SELECT *, ""x"".""MaTableId""",
+      @"SELECT *, ""x"".""MaTableId"", ""x"".""Value"" AS ""val""",
       @"FROM ""public"".""MaTable"" ""x""",
       @"INNER JOIN ""public"".""MesTâches"" ""t"" ON ""t"".""MaTableId"" = ""x"".""MaTableId"" AND ""t"".""IsClosed"" = @p0",
       @"FULL JOIN ""public"".""MesProjets"" ON ""public"".""MesProjets"".""ProjectId"" = ""x"".""ProjectId""",
       @"LEFT JOIN ""public"".""MesCommentaires"" ON ""public"".""MesCommentaires"".""ProjectId"" = ""x"".""ProjectId""",
       @"RIGHT JOIN ""public"".""MesUtilisateurs"" ON ""public"".""MesUtilisateurs"".""UserId"" = ""x"".""UserId""",
-      @"WHERE (""x"".""Priority"" BETWEEN @p1 AND @p2 OR ""x"".""Priority"" IS NULL) AND ""Status"" <> @p3 AND ""x"".""MaTableId"" NOT IN (@p4, @p5, @p6) AND ""Trace"" LIKE @p7 AND ""Trace"" NOT ILIKE @p8",
+      @"WHERE (""x"".""Priority"" BETWEEN @p1 AND @p2 OR ""x"".""Priority"" IS NULL) AND ""Status"" <> @p3 AND ""x"".""MaTableId"" NOT IN (@p4, @p5, @p6) AND ""Trace"" LIKE @p7 AND ""Trace"" NOT ILIKE @p8 AND ""val"" IS NOT NULL",
       @"ORDER BY ""x"".""DisplayName"" ASC, ""UpdatedOn"" DESC");
     Assert.Equal(text, query.Text);
 
-    Dictionary<string, NpgsqlParameter> parameters = query.Parameters.Select(p => (NpgsqlParameter)p)
-      .ToDictionary(p => p.ParameterName, p => p);
+    Dictionary<string, NpgsqlParameter> parameters = query.Parameters.Select(p => (NpgsqlParameter)p).ToDictionary(p => p.ParameterName, p => p);
     Assert.Equal(9, parameters.Count);
     Assert.Equal(false, parameters["p0"].Value);
     Assert.Equal(2, parameters["p1"].Value);

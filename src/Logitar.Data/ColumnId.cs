@@ -10,8 +10,9 @@ public record ColumnId
   /// </summary>
   /// <param name="name">The name of the column.</param>
   /// <param name="table">The table in which the column is.</param>
+  /// <param name="alias">The alias of the column.</param>
   /// <exception cref="ArgumentException">The column name was missing.</exception>
-  public ColumnId(string name, TableId? table = null) : this(table)
+  public ColumnId(string name, TableId? table = null, string? alias = null) : this(table)
   {
     if (string.IsNullOrWhiteSpace(name))
     {
@@ -19,6 +20,7 @@ public record ColumnId
     }
 
     Name = name.Trim();
+    Alias = alias?.CleanTrim();
   }
   /// <summary>
   /// Initializes a new instance of the <see cref="ColumnId"/> class.
@@ -33,6 +35,10 @@ public record ColumnId
   /// Gets the name of the column.
   /// </summary>
   public string? Name { get; }
+  /// <summary>
+  /// Gets the alias of the column.
+  /// </summary>
+  public string? Alias { get; }
   /// <summary>
   /// Gets the table in which the column is.
   /// </summary>

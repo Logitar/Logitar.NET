@@ -20,11 +20,11 @@ public class QueryBuilderTests
   {
     ColumnId priority = new("Priority", _table);
     ColumnId id = new($"{_table.Table}Id", _table);
+    ColumnId value = new("Value", _table, alias: "val");
     TableId tasks = new("MesTâches", "t");
     Assert.NotNull(id.Name);
 
-    IQuery query = _builder
-      .Select(ColumnId.All(), id)
+    IQuery query = _builder.Select(ColumnId.All(), id, value)
       .Join(new ColumnId(id.Name, tasks), id, new OperatorCondition(new ColumnId("IsClosed", tasks), Operators.IsEqualTo(false)))
       .FullJoin(new ColumnId("ProjectId", new TableId("MesProjets")), new ColumnId("ProjectId", _table))
       .LeftJoin(new ColumnId("ProjectId", new TableId("MesCommentaires")), new ColumnId("ProjectId", _table))
@@ -36,24 +36,24 @@ public class QueryBuilderTests
       .Where(new OperatorCondition(new ColumnId("Status"), Operators.IsNotEqualTo("Success")))
       .Where(new OperatorCondition(id, Operators.IsNotIn(7, 49, 343)))
       .Where(new OperatorCondition(new ColumnId("Trace"), Operators.IsLike("%fail%")))
+      .Where(new OperatorCondition(value, Operators.IsNotNull()))
       .OrderBy(
         new OrderBy(new ColumnId("DisplayName", _table)),
         new OrderBy(new ColumnId("UpdatedOn"), isDescending: true)
       )
       .Build();
     string text = string.Join(Environment.NewLine,
-      "SÉLECTIONNER Ω, «x»·«MaTableId»",
+      "SÉLECTIONNER Ω, «x»·«MaTableId», «x»·«Value» EN TANT QUE «val»",
       "DEPUIS «défaut»·«MaTable» «x»",
       "JOINDRE À L'INTÉRIEUR «défaut»·«MesTâches» «t» SUR «t»·«MaTableId» == «x»·«MaTableId» ET «t»·«IsClosed» == Πp0Θ",
       "JOINDRE COMPLÈTEMENT «défaut»·«MesProjets» SUR «défaut»·«MesProjets»·«ProjectId» == «x»·«ProjectId»",
       "JOINDRE À GAUCHE «défaut»·«MesCommentaires» SUR «défaut»·«MesCommentaires»·«ProjectId» == «x»·«ProjectId»",
       "JOINDRE À DROITE «défaut»·«MesUtilisateurs» SUR «défaut»·«MesUtilisateurs»·«UserId» == «x»·«UserId»",
-      "OÙ («x»·«Priority» DANS L'INTERVALLE Πp1Θ ET Πp2Θ OU «x»·«Priority» EST NUL) ET «Status» != Πp3Θ ET «x»·«MaTableId» NON DANS (Πp4Θ, Πp5Θ, Πp6Θ) ET «Trace» COMME Πp7Θ",
+      "OÙ («x»·«Priority» DANS L'INTERVALLE Πp1Θ ET Πp2Θ OU «x»·«Priority» EST NUL) ET «Status» != Πp3Θ ET «x»·«MaTableId» NON DANS (Πp4Θ, Πp5Θ, Πp6Θ) ET «Trace» COMME Πp7Θ ET «val» EST NON NUL",
       "ORDONNER PAR «x»·«DisplayName» ↑, «UpdatedOn» ↓");
     Assert.Equal(text, query.Text);
 
-    Dictionary<string, IParameter> parameters = query.Parameters.Select(p => (IParameter)p)
-      .ToDictionary(p => p.Name, p => p);
+    Dictionary<string, IParameter> parameters = query.Parameters.Select(p => (IParameter)p).ToDictionary(p => p.Name, p => p);
     Assert.Equal(8, parameters.Count);
     Assert.Equal(false, parameters["p0"].Value);
     Assert.Equal(2, parameters["p1"].Value);

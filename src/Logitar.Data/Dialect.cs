@@ -39,6 +39,10 @@ public record Dialect
   /// </summary>
   public virtual string AllColumnsClause => "*";
   /// <summary>
+  /// Gets the AS clause in the generic dialect.
+  /// </summary>
+  public virtual string AsClause => "AS";
+  /// <summary>
   /// Gets the DELETE FROM clause in the generic dialect.
   /// </summary>
   public virtual string DeleteFromClause => "DELETE FROM";

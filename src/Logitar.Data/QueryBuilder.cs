@@ -96,7 +96,7 @@ public class QueryBuilder : SqlBuilder, IQueryBuilder
 
     if (Selections.Any())
     {
-      text.Append(Dialect.SelectClause).Append(' ').AppendLine(string.Join(", ", Selections.Select(Format)));
+      text.Append(Dialect.SelectClause).Append(' ').AppendLine(string.Join(", ", Selections.Select(x => Format(x, fullName: true))));
     }
 
     text.Append(Dialect.FromClause).Append(' ').AppendLine(Format(Source, fullName: true));
