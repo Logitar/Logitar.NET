@@ -15,14 +15,24 @@ public class ColumnIdTests
   }
 
   [Theory(DisplayName = "Ctor: it constructs the correct column identifier.")]
-  [InlineData("MyColumn", null)]
-  [InlineData("  MyColumn  ", "MyTable")]
-  public void Ctor_it_constructs_the_correct_column_identifier(string columnName, string? tableName)
+  [InlineData("MyColumn", null, null)]
+  [InlineData("  MyColumn  ", "MyTable", null)]
+  [InlineData("MyColumn", "MyTable", "  Value  ")]
+  public void Ctor_it_constructs_the_correct_column_identifier(string columnName, string? tableName, string? alias)
   {
     TableId? table = tableName == null ? null : new(tableName);
-    ColumnId column = new(columnName, table);
+    ColumnId column = new(columnName, table, alias);
     Assert.Equal(columnName.Trim(), column.Name);
     Assert.Same(table, column.Table);
+
+    if (string.IsNullOrWhiteSpace(alias))
+    {
+      Assert.Null(column.Alias);
+    }
+    else
+    {
+      Assert.Equal(alias.Trim(), column.Alias);
+    }
   }
 
   [Theory(DisplayName = "Ctor: it throws ArgumentException when column name is null, empty, or white space.")]

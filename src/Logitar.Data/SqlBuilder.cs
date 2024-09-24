@@ -209,9 +209,15 @@ public abstract class SqlBuilder
   /// Formats the specified column identifier to SQL.
   /// </summary>
   /// <param name="column">The column identifier to format.</param>
+  /// <param name="fullName">If true, the full column identifier, including the table name and schema or alias, column name and column alias will be returned. Else, only the alias, or column table and name will be returned.</param>
   /// <returns>The formatted SQL.</returns>
-  protected virtual string Format(ColumnId column)
+  protected virtual string Format(ColumnId column, bool fullName = false)
   {
+    if (!fullName && column.Alias != null)
+    {
+      return Format(column.Alias);
+    }
+
     StringBuilder formatted = new();
 
     if (column.Table != null)
@@ -220,6 +226,11 @@ public abstract class SqlBuilder
     }
 
     formatted.Append(column.Name == null ? Dialect.AllColumnsClause : Format(column.Name));
+
+    if (column.Alias != null)
+    {
+      formatted.Append(' ').Append(Dialect.AsClause).Append(' ').Append(Format(column.Alias));
+    }
 
     return formatted.ToString();
   }

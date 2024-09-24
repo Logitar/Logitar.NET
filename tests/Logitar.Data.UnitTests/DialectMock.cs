@@ -29,6 +29,7 @@ public record DialectMock : Dialect
 
   public override string SelectClause => "SÉLECTIONNER";
   public override string AllColumnsClause => "Ω";
+  public override string AsClause => "EN TANT QUE";
   public override string DeleteFromClause => "SUPPRIMER DE";
   public override string InsertIntoClause => "INSÉRER DANS";
   public override string ValuesClause => "VALEURS";
