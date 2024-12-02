@@ -17,9 +17,9 @@ public class ParameterTests
   [InlineData(null)]
   [InlineData("")]
   [InlineData("  ")]
-  public void Ctor_it_throws_ArgumentException_when_parameter_name_is_null_empty_or_only_white_space(string name)
+  public void Ctor_it_throws_ArgumentException_when_parameter_name_is_null_empty_or_only_white_space(string? name)
   {
-    var exception = Assert.Throws<ArgumentException>(() => new Parameter(name, 0));
+    var exception = Assert.Throws<ArgumentException>(() => new Parameter(name!, 0));
     Assert.Equal("name", exception.ParamName);
   }
 }

@@ -17,9 +17,9 @@ public class ComparisonOperatorTests
   [InlineData(null)]
   [InlineData("")]
   [InlineData("  ")]
-  public void Ctor_it_throws_ArgumentException_when_operator_is_null_empty_or_only_white_space(string @operator)
+  public void Ctor_it_throws_ArgumentException_when_operator_is_null_empty_or_only_white_space(string? @operator)
   {
-    var exception = Assert.Throws<ArgumentException>(() => new ComparisonOperator(@operator, 0));
+    var exception = Assert.Throws<ArgumentException>(() => new ComparisonOperator(@operator!, 0));
     Assert.Equal("operator", exception.ParamName);
   }
 }

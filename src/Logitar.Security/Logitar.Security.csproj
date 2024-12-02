@@ -1,10 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <WarningsAsErrors>Nullable</WarningsAsErrors>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Title>Logitar.Security</Title>
     <Authors>Francis Pion</Authors>
@@ -25,6 +24,14 @@
     <PackageReleaseNotes>Fixed documentation.</PackageReleaseNotes>
     <PackageTags>logitar net framework security</PackageTags>
     <PackageProjectUrl>https://github.com/Logitar/Logitar.NET/tree/dev/src/Logitar.Security</PackageProjectUrl>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>

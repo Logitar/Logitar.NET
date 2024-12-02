@@ -39,9 +39,9 @@ public class ColumnIdTests
   [InlineData(null)]
   [InlineData("")]
   [InlineData("  ")]
-  public void Ctor_it_throws_ArgumentException_when_column_name_is_null_empty_or_white_space(string name)
+  public void Ctor_it_throws_ArgumentException_when_column_name_is_null_empty_or_white_space(string? name)
   {
-    var exception = Assert.Throws<ArgumentException>(() => new ColumnId(name));
+    var exception = Assert.Throws<ArgumentException>(() => new ColumnId(name!));
     Assert.Equal("name", exception.ParamName);
   }
 }
