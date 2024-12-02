@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Changed YML extensions to YAML.
+
 ### Removed
 
 - Removed `ExceptionDetail` and dependency from `System.Text.Json`.
