@@ -28,12 +28,12 @@ public class ConditionGroupTests
   [InlineData(null)]
   [InlineData("")]
   [InlineData("  ")]
-  public void Ctor_it_throws_ArgumentException_when_operator_is_null_empty_or_only_white_space(string @operator)
+  public void Ctor_it_throws_ArgumentException_when_operator_is_null_empty_or_only_white_space(string? @operator)
   {
     Condition[] conditions = new[]
     {
       new OperatorCondition(new ColumnId("Id"), new NullOperator(notNull: true))
     };
-    var exception = Assert.Throws<ArgumentException>(() => new ConditionGroupMock(conditions, @operator));
+    var exception = Assert.Throws<ArgumentException>(() => new ConditionGroupMock(conditions, @operator!));
   }
 }

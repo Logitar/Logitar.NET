@@ -32,9 +32,9 @@ public class TableIdTests
   [InlineData(null)]
   [InlineData("")]
   [InlineData("  ")]
-  public void Ctor_it_throws_ArgumentException_when_table_is_null_empty_or_only_white_space(string table)
+  public void Ctor_it_throws_ArgumentException_when_table_is_null_empty_or_only_white_space(string? table)
   {
-    var exception = Assert.Throws<ArgumentException>(() => new TableId(schema: null, table));
+    var exception = Assert.Throws<ArgumentException>(() => new TableId(schema: null, table!));
     Assert.Equal("table", exception.ParamName);
   }
 
@@ -53,9 +53,9 @@ public class TableIdTests
   [InlineData(null)]
   [InlineData("")]
   [InlineData("  ")]
-  public void FromAlias_it_throws_ArgumentException_when_alias_is_null_empty_or_only_white_space(string alias)
+  public void FromAlias_it_throws_ArgumentException_when_alias_is_null_empty_or_only_white_space(string? alias)
   {
-    var exception = Assert.Throws<ArgumentException>(() => TableId.FromAlias(alias));
+    var exception = Assert.Throws<ArgumentException>(() => TableId.FromAlias(alias!));
     Assert.Equal("alias", exception.ParamName);
   }
 

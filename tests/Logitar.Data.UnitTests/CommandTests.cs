@@ -17,8 +17,8 @@ public class CommandTests
   [InlineData(null)]
   [InlineData("")]
   [InlineData("  ")]
-  public void Ctor_it_throws_ArgumentException_when_text_is_null_empty_or_only_white_space(string text)
+  public void Ctor_it_throws_ArgumentException_when_text_is_null_empty_or_only_white_space(string? text)
   {
-    var exception = Assert.Throws<ArgumentException>(() => new Command(text, Enumerable.Empty<object>()));
+    var exception = Assert.Throws<ArgumentException>(() => new Command(text!, Enumerable.Empty<object>()));
   }
 }

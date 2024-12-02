@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Changed YML extensions to YAML.
+- Migrated to .NET9.
+- Upgraded NuGet packages.
+
+### Fixed
+
+- Standardized project configuration.
 
 ### Removed
 
