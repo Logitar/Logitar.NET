@@ -14,14 +14,14 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/Logitar/Logitar.NET</RepositoryUrl>
-    <AssemblyVersion>6.0.0.0</AssemblyVersion>
+    <AssemblyVersion>7.0.0.0</AssemblyVersion>
     <FileVersion>$(AssemblyVersion)</FileVersion>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-    <Version>6.0.0</Version>
+    <Version>7.0.0</Version>
     <NeutralLanguage>en-CA</NeutralLanguage>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <PackageReleaseNotes>Implemented a TwilioClient.</PackageReleaseNotes>
+    <PackageReleaseNotes>Upgraded to .NET9.</PackageReleaseNotes>
     <PackageTags>logitar net framework http sms text message twilio</PackageTags>
     <PackageProjectUrl>https://github.com/Logitar/Logitar.NET/tree/main/src/Logitar.Net.Sms.Twilio</PackageProjectUrl>
   </PropertyGroup>
