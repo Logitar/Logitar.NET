@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-Nothing yet.
+### Removed
+
+- Removed `ExceptionDetail` and dependency from `System.Text.Json`.
 
 ## [1.19.2] - 2024-11-19
 
