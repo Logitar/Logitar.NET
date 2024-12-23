@@ -2,11 +2,16 @@ services:
   logitar_mssql:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: Logitar.NET_mssql
+    user: root
     environment:
       ACCEPT_EULA: 'Y'
       SA_PASSWORD: faQphSAm596DxBN4
     ports:
       - 1434:1433
+    volumes:
+      - mssql_backup:/var/opt/mssql/backup
+      - mssql_data:/var/opt/mssql/data
+      - mssql_log:/var/opt/mssql/log
 
   logitar_postgres:
     image: postgres
@@ -15,6 +20,8 @@ services:
       POSTGRES_PASSWORD: F2n5WCB4e7tgfqEJ
     ports:
       - 5434:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
   logitar_demo:
     build:
@@ -27,3 +34,9 @@ services:
       ASPNETCORE_Environment: Development
     ports:
       - 48080:8080
+
+volumes:
+  mssql_backup:
+  mssql_data:
+  mssql_log:
+  postgres_data:
