@@ -13,7 +13,7 @@ public static class ClaimHelper
   /// <returns>The created claim.</returns>
   public static Claim Create(string name, DateTime moment)
   {
-    string value = new DateTimeOffset(moment.ToUniversalTime()).ToUnixTimeSeconds().ToString();
+    string value = new DateTimeOffset(moment.AsUniversalTime()).ToUnixTimeSeconds().ToString();
 
     return new Claim(name, value, ClaimValueTypes.Integer64);
   }

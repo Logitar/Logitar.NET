@@ -9,7 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Added volumes to Docker Compose.
+- Volumes to Docker Compose.
+
+### Fixed
+
+- ClaimHelper UTC conversion.
 
 ## [1.20.0] - 2024-11-19
 

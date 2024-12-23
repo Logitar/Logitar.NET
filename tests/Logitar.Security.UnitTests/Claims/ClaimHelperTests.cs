@@ -15,7 +15,7 @@ public class ClaimHelperTests
     Assert.Equal(value, local.Value);
     Assert.Equal(ClaimValueTypes.Integer64, local.ValueType);
 
-    Claim utc = ClaimHelper.Create(name, moment.ToUniversalTime());
+    Claim utc = ClaimHelper.Create(name, moment.AsUniversalTime());
     Assert.Equal(local.Type, utc.Type);
     Assert.Equal(local.Value, utc.Value);
     Assert.Equal(local.ValueType, utc.ValueType);
@@ -30,7 +30,7 @@ public class ClaimHelperTests
     Claim claim = ClaimHelper.Create(Rfc7519ClaimNames.ExpirationTime, unspecified);
     DateTime value = ClaimHelper.ExtractDateTime(claim);
     Assert.Equal(DateTimeKind.Utc, value.Kind);
-    Assert.Equal(ToUnixTimeSeconds(local), ToUnixTimeSeconds(value));
+    Assert.Equal(ToUnixTimeSeconds(unspecified.AsUniversalTime()), ToUnixTimeSeconds(value));
   }
 
   [Fact(DisplayName = "It should extract the correct date and time from a claim.")]
