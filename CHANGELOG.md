@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Nothing yet.
 
+## [1.20.2] - 2024-12-23
+
+### Fixed
+
+- NuGet publishing pipeline.
+
 ## [1.20.1] - 2024-12-23
 
 ### Added
@@ -269,7 +275,8 @@ Nothing yet.
 
 - Implemented StringExtensions.
 
-[unreleased]: https://github.com/Logitar/Logitar.NET/compare/v1.20.1...HEAD
+[unreleased]: https://github.com/Logitar/Logitar.NET/compare/v1.20.2...HEAD
+[1.20.2]: https://github.com/Logitar/Logitar.NET/compare/v1.20.1...v1.20.2
 [1.20.1]: https://github.com/Logitar/Logitar.NET/compare/v1.20.0...v1.20.1
 [1.20.0]: https://github.com/Logitar/Logitar.NET/compare/v1.19.2...v1.20.0
 [1.19.2]: https://github.com/Logitar/Logitar.NET/compare/v1.19.1...v1.19.2
