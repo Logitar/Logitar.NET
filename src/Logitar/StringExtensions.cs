@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace Logitar;
+﻿namespace Logitar;
 
 /// <summary>
 /// Provides extension methods for <see cref="string"/> instances.

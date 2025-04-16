@@ -53,6 +53,7 @@
   <ItemGroup>
     <Using Include="System.Collections" />
     <Using Include="System.Globalization" />
+    <Using Include="System.Text" />
   </ItemGroup>
 
 </Project>
