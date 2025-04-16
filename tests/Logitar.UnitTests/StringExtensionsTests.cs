@@ -31,6 +31,17 @@ public class StringExtensionsTests
     Assert.Equal(bytes, other);
   }
 
+  [Theory(DisplayName = "Humanize: it should return the correct humanized string.")]
+  [InlineData("", "")]
+  [InlineData("   ", "   ")]
+  [InlineData("helloWorld", "hello World")]
+  [InlineData("HelloWorld1!", "Hello World1!")]
+  [InlineData("UserID", "User ID")]
+  public void Humanize_it_returns_the_correct_humanized_string(string input, string expected)
+  {
+    Assert.Equal(expected, input.Humanize());
+  }
+
   [Theory(DisplayName = "Mask: it returns the correct masked string.")]
   [InlineData("    ")]
   [InlineData("P@s$W0rD", '-')]

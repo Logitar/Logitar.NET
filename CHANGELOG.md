@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Nothing yet.
 
+## [1.20.4] - 2025-04-16
+
+### Added
+
+- Method `StringExtensions.Humanize`.
+
 ## [1.20.3] - 2025-04-16
 
 ### Fixed
@@ -281,7 +287,8 @@ Nothing yet.
 
 - Implemented StringExtensions.
 
-[unreleased]: https://github.com/Logitar/Logitar.NET/compare/v1.20.3...HEAD
+[unreleased]: https://github.com/Logitar/Logitar.NET/compare/v1.20.4...HEAD
+[1.20.4]: https://github.com/Logitar/Logitar.NET/compare/v1.20.3...v1.20.4
 [1.20.3]: https://github.com/Logitar/Logitar.NET/compare/v1.20.2...v1.20.3
 [1.20.2]: https://github.com/Logitar/Logitar.NET/compare/v1.20.1...v1.20.2
 [1.20.1]: https://github.com/Logitar/Logitar.NET/compare/v1.20.0...v1.20.1
