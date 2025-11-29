@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+Nothing yet.
+
+## [1.21.1] - 2025-11-29
+
 ### Fixed
 
 - Upgraded GitHub Actions.
@@ -300,7 +304,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Implemented StringExtensions.
 
-[unreleased]: https://github.com/Logitar/Logitar.NET/compare/v1.21.0...HEAD
+[unreleased]: https://github.com/Logitar/Logitar.NET/compare/v1.21.1...HEAD
+[1.21.1]: https://github.com/Logitar/Logitar.NET/compare/v1.21.0...v1.21.1
 [1.21.0]: https://github.com/Logitar/Logitar.NET/compare/v1.20.4...v1.21.0
 [1.20.4]: https://github.com/Logitar/Logitar.NET/compare/v1.20.3...v1.20.4
 [1.20.3]: https://github.com/Logitar/Logitar.NET/compare/v1.20.2...v1.20.3
