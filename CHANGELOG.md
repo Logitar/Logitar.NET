@@ -7,7 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-Nothing yet.
+### Fixed
+
+- Upgraded GitHub Actions.
+- Upgraded LICENSE year.
 
 ## [1.21.0] - 2025-11-29
 
