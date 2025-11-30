@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-Nothing yet.
+### Added
+
+- Implemented `EnvironmentHelper` and tests.
 
 ## [1.21.1] - 2025-11-29
 
