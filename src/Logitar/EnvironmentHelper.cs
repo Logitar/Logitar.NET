@@ -24,6 +24,42 @@ public static class EnvironmentHelper
   }
 
   /// <summary>
+  /// Retrieves the decimal value of an environment variable.
+  /// </summary>
+  /// <param name="variable">The name of the variable.</param>
+  /// <param name="defaultValue">The default value.</param>
+  /// <returns>The value of the environment value.</returns>
+  public static decimal GetDecimal(string variable, decimal defaultValue = 0m) => TryGetDecimal(variable) ?? defaultValue;
+  /// <summary>
+  /// Retrieves the decimal value of an environment variable. Returns null if it is not found.
+  /// </summary>
+  /// <param name="variable">The name of the variable.</param>
+  /// <returns>The value of the environment value, or null if not found.</returns>
+  public static decimal? TryGetDecimal(string variable)
+  {
+    string value = Environment.GetEnvironmentVariable(variable);
+    return !string.IsNullOrWhiteSpace(value) && decimal.TryParse(value.Trim(), NumberStyles.Any, CultureInfo.InvariantCulture, out decimal number) ? number : null;
+  }
+
+  /// <summary>
+  /// Retrieves the double value of an environment variable.
+  /// </summary>
+  /// <param name="variable">The name of the variable.</param>
+  /// <param name="defaultValue">The default value.</param>
+  /// <returns>The value of the environment value.</returns>
+  public static double GetDouble(string variable, double defaultValue = 0d) => TryGetDouble(variable) ?? defaultValue;
+  /// <summary>
+  /// Retrieves the double value of an environment variable. Returns null if it is not found.
+  /// </summary>
+  /// <param name="variable">The name of the variable.</param>
+  /// <returns>The value of the environment value, or null if not found.</returns>
+  public static double? TryGetDouble(string variable)
+  {
+    string value = Environment.GetEnvironmentVariable(variable);
+    return !string.IsNullOrWhiteSpace(value) && double.TryParse(value.Trim(), NumberStyles.Any, CultureInfo.InvariantCulture, out double number) ? number : null;
+  }
+
+  /// <summary>
   /// Retrieves the enum value of an environment variable.
   /// </summary>
   /// <param name="variable">The name of the variable.</param>
@@ -59,7 +95,7 @@ public static class EnvironmentHelper
   public static int? TryGetInt32(string variable)
   {
     string value = Environment.GetEnvironmentVariable(variable);
-    return !string.IsNullOrWhiteSpace(value) && int.TryParse(value.Trim(), out int integer) ? integer : null;
+    return !string.IsNullOrWhiteSpace(value) && int.TryParse(value.Trim(), out int number) ? number : null;
   }
 
   /// <summary>
